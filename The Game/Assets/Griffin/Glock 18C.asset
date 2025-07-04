@@ -12,14 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b76cd2e7ce49924cb5d58ad55f4573f, type: 3}
   m_Name: Glock 18C
   m_EditorClassIdentifier: 
+  Name: Glock 18C
   Mesh: {fileID: 7017884965191235337, guid: 1103415af87b36d40b14e7d6f30eb759, type: 3}
+  Materials:
+  - {fileID: 2100000, guid: bd6c369eafd4ac142a9e6db4d6bf93d1, type: 2}
+  - {fileID: 2100000, guid: 03002324182002740a7938a02c434338, type: 2}
   Capacity: 15
   ReserveCapacity: 60
   FireRate: 1200
   Damage: 10
   FireModes: 5
   OpenBolt: 0
-  Position: {x: 0.256, y: -0.2, z: 0.27}
-  ReloadTime: 4
+  Position: {x: 0.256, y: -0.15, z: 0.27}
+  ReloadTime: 2.5
   EquipTime: 1
-  MaxRange: 0
+  MaxRange: 50

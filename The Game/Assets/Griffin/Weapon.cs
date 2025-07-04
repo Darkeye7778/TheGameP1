@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 [Flags]
@@ -12,27 +13,45 @@ public enum FireMode
 [CreateAssetMenu(fileName = "Weapon", menuName = "Scriptable Objects/Weapon")]
 public class Weapon : ScriptableObject
 {
-    public Mesh Mesh;
+    public string Name;
     
-    public uint Capacity, ReserveCapacity, FireRate;
+    [Header("Display")]
+    public Mesh Mesh;
+    public Material[] Materials;
+    public Vector3 Position;
+
+    [Header("Sounds")] 
+    public AudioClip EquipSound;
+    public AudioClip FireSound;
+    public AudioClip ReloadSound;
+    public AudioClip EmptySound;
+
+    [Header("Statistics")] 
+    public uint Capacity;
+    public uint ReserveCapacity;
+    public uint FireRate;
     public int Damage; // Possible healing weapons?
     public FireMode FireModes;
     public bool OpenBolt;
-    public Vector3 Position;
-
+    
     public float ReloadTime;
     public float EquipTime;
     public float MaxRange;
 
     public uint FinalCapacity => Capacity + (OpenBolt ? 0u : 1u);
-    public float FireDelta => 1.0f / FireRate;
+    public float FireDelta => 60.0f / FireRate;
 
     public FireMode GetDefaultFireMode()
     {
-        FireMode mode = FireMode.Auto;
-        while ((FireModes & mode) != mode)
-            mode = (FireMode)((uint)mode >> 1);
-        return mode;
+        if (FireModes == 0)
+            return 0;
+
+        int shiftCount = sizeof(uint) * 8 - 1;
+        for(; shiftCount >= 0; --shiftCount)
+            if (((uint)FireModes & 1 << shiftCount) != 0)
+                return (FireMode)(1 << shiftCount);
+
+        return 0;
     }
 }
 
