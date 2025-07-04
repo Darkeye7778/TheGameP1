@@ -6,7 +6,7 @@ public enum SoundType
     HeavyFootstep,
 }
 
-[CreateAssetMenu(fileName = "SoundEmitterSettings", menuName = "ScriptableObjects/SoundEmitterSettings")]
+[CreateAssetMenu(fileName = "SoundEmitterSettings", menuName = "Scriptable Objects/SoundEmitterSettings")]
 public class SoundEmitterSettings : ScriptableObject
 {
     public AudioClip Footstep;

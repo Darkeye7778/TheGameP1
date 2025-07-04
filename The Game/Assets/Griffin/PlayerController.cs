@@ -2,13 +2,16 @@
 
 using System;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
+[Serializable]
 public struct GroundState
 {
     public float Distance;
+    public bool NearGround;
     public bool Grounded;
     [CanBeNull] public SoundEmitterSettings SoundSettings;
 }
@@ -31,6 +34,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float CrouchingHeight = 1.0f;
     
     public float GroundSnapTime = 0.1f;
+    public float CrouchTime = 0.2f;
 
     private Vector3 _velocity;
     private float _rotationX, _rotationY;
@@ -50,13 +54,17 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         CalculateVelocity();
         CalculateRotation();
-        
-        _controller.height = Input.GetKey(KeyCode.C) ? CrouchingHeight : StandingHeight;
 
-        if (Input.GetKeyDown(KeyCode.C))
-            _controller.Move(Vector3.down * ((StandingHeight - CrouchingHeight) * 0.5f));
-        else if(Input.GetKeyUp(KeyCode.C))
-            _controller.Move(Vector3.up * ((StandingHeight - CrouchingHeight) * 0.5f));
+        float originalHeight = _controller.height;
+        float targetHeight = Input.GetKey(KeyCode.C) ? CrouchingHeight : StandingHeight;
+        
+        if(!Mathf.Approximately(_controller.height, targetHeight))
+        {
+            _controller.height =
+                Mathf.MoveTowards(_controller.height, targetHeight, 1.0f / CrouchTime * Time.deltaTime);
+
+            _controller.Move((_controller.height - originalHeight) * 0.5f * Vector3.up);
+        }
 
     #if PLAYERCONTROLLER_USE_INERTIA
         _controller.Move(_velocity * Time.deltaTime);
@@ -67,24 +75,26 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     void CalculateVelocity()
     {
-        float speedDifference = _velocity.sqrMagnitude - GetSpeed();
+        // _ground.Grounded has an extended hit range to help with walking down slopes.
         
-        if (!_controller.isGrounded)
+        float speedDifference = (_velocity.magnitude - GetSpeed()) / GetSpeed();
+        
+        if (!_ground.Grounded)
         {
-            if(_ground.Distance < _controller.stepOffset && _fallingTime < GroundSnapTime)
-                _controller.Move(new Vector3(0, -_ground.Distance, 0));
-            
+            if (_ground.NearGround && _fallingTime <= GroundSnapTime) 
+                _controller.Move(Vector3.down * _ground.Distance);
+     
             _velocity += Physics.gravity * Time.deltaTime;
             _fallingTime += Time.deltaTime;
         }
         else
-        {
-            _fallingTime = 0.0f;
             _velocity.y = 0.0f;
-        }
-        
-        if (!_ground.Grounded)
+
+        if (!_ground.NearGround)
             return;
+        
+        if(_ground.Grounded || _fallingTime < GroundSnapTime)
+            _fallingTime = 0.0f;
         
     #if PLAYERCONTROLLER_USE_INERTIA
         Vector3 direction = Input.GetAxisRaw("Vertical") * transform.forward +
@@ -95,11 +105,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     #endif
 
         // Slows down the character when not actively moving.
-        if(direction.sqrMagnitude == 0.0f)
-            _velocity *= 1.0f - Deacceleration * Time.deltaTime;
+        if (direction.sqrMagnitude == 0.0f)
+            _velocity *= 1.0f - (Deacceleration * Time.deltaTime);
         // Slows down the character when over target speed.
         else if(speedDifference > 0.0f)
-            _velocity *= 1.0f - (Deacceleration * Time.deltaTime * speedDifference / GetSpeed());
+            _velocity *= Mathf.Clamp01(1.0f - (Deacceleration * Time.deltaTime * speedDifference));
         
         direction.Normalize();
         _velocity += direction * (Acceleration * Time.deltaTime);
@@ -108,13 +118,13 @@ public class PlayerController : MonoBehaviour, IDamagable
     void CalculateRotation()
     {
         float x = Input.GetAxis("Mouse X"), // Left to Right
-              y = -Input.GetAxis("Mouse Y"); // Down to Up
+              y = Input.GetAxis("Mouse Y"); // Down to Up
 
         _rotationX += x * MouseSensitivity;
         _rotationY = Mathf.Clamp(_rotationY + y * MouseSensitivity, RotationClamp.x, RotationClamp.y);
         
         transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
-        Camera.transform.localRotation = Quaternion.Euler(_rotationY, 0.0f, 0.0f);
+        Camera.transform.localRotation = Quaternion.Euler(-_rotationY, 0.0f, 0.0f);
     }
 
     float GetSpeed()
@@ -139,16 +149,22 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         GroundState result = new GroundState();
 
-        Debug.DrawRay(transform.position, Vector3.down, Color.yellow);
-        RaycastHit rayResult;
-        if (!Physics.Raycast(transform.position, Vector3.down, out rayResult, _controller.height))
-            return result;
+        result.Grounded = _controller.isGrounded;
+        result.NearGround = result.Grounded;
 
-        result.Distance = rayResult.distance - _controller.skinWidth - _controller.height / 2.0f;
-        result.Grounded = result.Distance < _controller.stepOffset || _controller.isGrounded;
+        Vector3 rayOrigin = transform.position + Vector3.down * (_controller.height / 2.0f);
         
-        ISoundEmitter emitter = rayResult.collider.GetComponent<ISoundEmitter>();
-        if (emitter != null)
+        RaycastHit rayResult;
+        if (!Physics.Raycast(rayOrigin, Vector3.down, out rayResult, _controller.stepOffset))
+            return result;
+        
+        Debug.DrawRay(rayOrigin, Vector3.down * rayResult.distance, Color.red);
+
+        result.Distance = Mathf.Max(rayResult.distance - _controller.skinWidth, 0.0f);
+        result.NearGround |= result.Distance < _controller.stepOffset;
+        
+        SoundEmitter emitter = rayResult.collider.GetComponent<SoundEmitter>();
+        if (emitter is not null)
             result.SoundSettings = emitter.GetSettings();
         
         return result;
