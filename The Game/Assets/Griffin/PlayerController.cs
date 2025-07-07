@@ -60,9 +60,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         if(!Mathf.Approximately(_controller.height, targetHeight))
         {
-            _controller.height =
-                Mathf.MoveTowards(_controller.height, targetHeight, 1.0f / CrouchTime * Time.deltaTime);
-
+            _controller.height = Mathf.MoveTowards(_controller.height, targetHeight, 1.0f / CrouchTime * Time.deltaTime);
             _controller.Move((_controller.height - originalHeight) * 0.5f * Vector3.up);
         }
 
@@ -76,8 +74,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     void CalculateVelocity()
     {
         // _ground.Grounded has an extended hit range to help with walking down slopes.
-        
-        float speedDifference = (_velocity.magnitude - GetSpeed()) / GetSpeed();
+        float targetSpeed = GetSpeedDirectional();
+        float speedDifference = (_velocity.magnitude - targetSpeed) / targetSpeed;
         
         if (!_ground.Grounded)
         {
@@ -108,7 +106,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (direction.sqrMagnitude == 0.0f)
             _velocity *= 1.0f - (Deacceleration * Time.deltaTime);
         // Slows down the character when over target speed.
-        else if(speedDifference > 0.0f)
+        else if (speedDifference > 0.0f)
             _velocity *= Mathf.Clamp01(1.0f - (Deacceleration * Time.deltaTime * speedDifference));
         
         direction.Normalize();
@@ -133,6 +131,16 @@ public class PlayerController : MonoBehaviour, IDamagable
             return CrouchingSpeed;
         
         return Input.GetKey(KeyCode.LeftShift) ? RunningSpeed : WalkingSpeed;
+    }
+
+    float GetSpeedDirectional()
+    {
+        float targetSpeed = GetSpeed();
+        if (targetSpeed != RunningSpeed)
+            return targetSpeed;
+        
+        float dotProduct = Mathf.Clamp01(Vector3.Dot(_velocity, transform.forward));
+        return Mathf.Lerp(WalkingSpeed, targetSpeed, dotProduct);
     }
 
     public void OnTakeDamage(float damage)
