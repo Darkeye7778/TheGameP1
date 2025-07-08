@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     [Range(0.01f, 10.0f)] 
     public float MouseSensitivity;
     public Vector2 RotationClamp = new(-90.0f, 90.0f);
+    public int MaximumHealth = 100;
 
     [Header("Stamina")]
     public float MaximumStamina = 1.0f;
@@ -50,6 +51,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float Deacceleration = 15.0f;
 
     public float StaminaRelative => _stamina / MaximumStamina;
+    public int Health => (int) _health;
+    public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
+    public bool IsDead => Health == 0;
 
     private Vector3 _velocity;
     private float _rotationX, _rotationY;
@@ -58,6 +62,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _fallingTime;
     private float _stamina, _staminaRecoveryTimer;
     private bool _running;
+    private float _health;
 
     void Start()
     {
@@ -167,7 +172,8 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void OnTakeDamage(DamageSource source, float damage)
     {
-        throw new System.NotImplementedException();
+        _health -= damage;
+        _health = Mathf.Clamp(_health, 0.0f, MaximumHealth);
     }
 
     private GroundState GetGround()
