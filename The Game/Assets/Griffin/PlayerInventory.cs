@@ -137,8 +137,8 @@ public class PlayerInventory : MonoBehaviour
 
         if (!hit.collider.TryGetComponent(out IDamagable dmg))
             return;
-                
-        dmg.OnTakeDamage(CurrentWeapon.Weapon.Damage);
+
+        dmg.OnTakeDamage(new DamageSource{ Name = name, Object = gameObject }, CurrentWeapon.Weapon.Damage);
     }
 
     private float GetInterpolateTime()
