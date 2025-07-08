@@ -69,6 +69,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         Cursor.lockState = CursorLockMode.Locked;
         _controller = GetComponent<CharacterController>();
         _stamina = MaximumStamina;
+        _health = MaximumHealth;
     }
     
     void Update()
