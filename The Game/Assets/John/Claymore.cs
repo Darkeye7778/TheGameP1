@@ -1,78 +1,69 @@
 using UnityEngine;
 using System.Collections;
 
-public class Claymore : MonoBehaviour
+public class Claymore : MonoBehaviour, IDamagable
 {
-    public float detectionDistance = 5f;
-    public float explosionDelay = 3f; // Delay before the claymore activates
-    public bool shouldDebug = false;
-    public LayerMask playerLayer;
-    public AudioSource activationSound;
-    public AudioSource explosionSound;
+    [SerializeField] int tripLength = 4;
+    [SerializeField] int explosionRadius = 5;
+    [SerializeField] int explodeDelay = 2;
+    bool activated = false;
 
 
-    DamageSource source = new DamageSource{};
-
-     
-   
-    bool isActivated = false;
-    private void Start()
+    private void Update()
     {
-        source.Object = gameObject; // Set the source object to this claymore
-        source.Name = "Claymore"; // Set the name of the source
+        CheckForTrip();
     }
-    void Update()
+
+    void CheckForTrip()
     {
-        if (isActivated)
-            return;
+        if (activated) return;
 
-        if (CheckForPlayer()) StartCoroutine(Activate());
+        RaycastHit hit;
 
-        if (shouldDebug)
+        if (Physics.Raycast(transform.position, transform.forward, out hit, tripLength))
         {
-            Debug.DrawRay(transform.position, transform.forward * detectionDistance, Color.red);
+            if (hit.collider.CompareTag("Player"))
+            {
+                //Activate
+                StartCoroutine(Activate());
+            }
         }
     }
 
     IEnumerator Activate()
     {
-        isActivated = true;
-        activationSound.Play();
-        Debug.Log("Claymore activated! Waiting for explosion...");
-        yield return new WaitForSeconds(explosionDelay);
-        explosionSound.Play();
-        Debug.Log("Claymore exploded!");
-        
+        activated = true;
+        Debug.Log("Claymore Activated");
+        yield return new WaitForSeconds(explodeDelay);
+        Debug.Log("Claymore Exploded");
         Explode();
-
-    }
-
-    bool CheckForPlayer()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, playerLayer))
-        {
-            
-            return true;
-        }
-        return false;
+        
     }
 
     void Explode()
     {
-        RaycastHit hit;
+        Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius);
 
-        if (Physics.SphereCast(transform.position, 5f, Vector3.up, out hit,playerLayer))
+        foreach (Collider col in hits)
         {
-            IDamagable damagable = hit.collider.GetComponent<IDamagable>();
+
+            IDamagable damagable = col.GetComponent<IDamagable>();
+
+            float damage = Mathf.Clamp(100f / (col.transform.position - transform.position).magnitude, 0f, 100f);
             if (damagable != null)
             {
-                damagable.OnTakeDamage(source, 100f / hit.distance); // Deal damage based on distance
-                Debug.Log($"Dealt damage to {hit.collider.name} from Claymore explosion.");
+                damagable.OnTakeDamage(new DamageSource { Name = "Claymore", Object = gameObject }, damage);
+                Debug.Log(col.name + " Was Hit");
             }
+            
+
+            
         }
+    }
 
-
-        Destroy(gameObject);
+    public void OnTakeDamage(DamageSource source, float damage)
+    {
+        // This method is not used in this script, but is required by the IDamagable interface.
+        Debug.Log($"Claymore has taken {damage} damage.");
     }
 }
