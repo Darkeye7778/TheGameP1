@@ -6,15 +6,25 @@ public class Claymore : MonoBehaviour
     public float detectionDistance = 5f;
     public float explosionDelay = 3f; // Delay before the claymore activates
     public bool shouldDebug = false;
+    public LayerMask playerLayer;
     public AudioSource activationSound;
     public AudioSource explosionSound;
 
+
+    DamageSource source = new DamageSource{};
+
+     
+   
     bool isActivated = false;
-    bool isPlayerInTrigger = false;
+    private void Start()
+    {
+        source.Object = gameObject; // Set the source object to this claymore
+        source.Name = "Claymore"; // Set the name of the source
+    }
     void Update()
     {
         if (isActivated)
-            return; 
+            return;
 
         if (CheckForPlayer()) StartCoroutine(Activate());
 
@@ -27,46 +37,42 @@ public class Claymore : MonoBehaviour
     IEnumerator Activate()
     {
         isActivated = true;
-        if (activationSound != null) activationSound.Play();
+        activationSound.Play();
         Debug.Log("Claymore activated! Waiting for explosion...");
         yield return new WaitForSeconds(explosionDelay);
-        if (explosionSound != null)  explosionSound.Play();
+        explosionSound.Play();
         Debug.Log("Claymore exploded!");
-        if (isPlayerInTrigger)
-        {
-            // Here you can add logic to deal damage to the player
-            Debug.Log("Player hit by Claymore explosion!");
-        }
+        
+        Explode();
 
     }
 
     bool CheckForPlayer()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, playerLayer))
         {
-            if (hit.collider.CompareTag("Player"))
-            {
-                Debug.Log("Player detected by Claymore!");
-                return true;
-            }
+            
+            return true;
         }
         return false;
     }
 
-    private void OnTriggerEnter(Collider other)
+    void Explode()
     {
-        if(other.CompareTag("Player"))
-        {
-            isPlayerInTrigger = true;
-        }
-    }
+        RaycastHit hit;
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        if (Physics.SphereCast(transform.position, 5f, Vector3.up, out hit,playerLayer))
         {
-            isPlayerInTrigger = false;
+            IDamagable damagable = hit.collider.GetComponent<IDamagable>();
+            if (damagable != null)
+            {
+                damagable.OnTakeDamage(source, 100f / hit.distance); // Deal damage based on distance
+                Debug.Log($"Dealt damage to {hit.collider.name} from Claymore explosion.");
+            }
         }
+
+
+        Destroy(gameObject);
     }
 }
