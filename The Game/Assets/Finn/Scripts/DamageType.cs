@@ -7,6 +7,8 @@ public class DamageType : MonoBehaviour
     [SerializeField] damageType type;
     [SerializeField] Rigidbody rb;
 
+    [SerializeField] GameObject damageSource;
+
     [SerializeField] int damageAmount;
     [SerializeField] float damageRate;
     [SerializeField] int speed;
@@ -39,10 +41,13 @@ public class DamageType : MonoBehaviour
         if (other.isTrigger)
             return;
         IDamagable dmg = other.GetComponent<IDamagable>();
+        DamageSource source = new DamageSource();
+        source.Name = damageSource.name;
+        source.Object = damageSource;
 
         if (dmg != null && type != damageType.DOT)
         {
-            dmg.OnTakeDamage(damageAmount);
+            dmg.OnTakeDamage(source, damageAmount);
         }
         if (type == damageType.moving || type == damageType.homing)
         {
@@ -62,8 +67,11 @@ public class DamageType : MonoBehaviour
     }
     IEnumerator damageOther(IDamagable d)
     {
+        DamageSource source = new DamageSource();
+        source.Name = damageSource.name;
+        source.Object = damageSource;
         isDamaging = true;
-        d.OnTakeDamage(damageAmount);
+        d.OnTakeDamage(source, damageAmount);
         yield return new WaitForSeconds(damageRate);
         isDamaging = false;
     }

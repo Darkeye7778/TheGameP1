@@ -131,15 +131,22 @@ MonoBehaviour:
   Camera: {fileID: 3952001986159457984}
   MouseSensitivity: 1
   RotationClamp: {x: -90, y: 90}
+  MaximumHealth: 100
+  MaximumStamina: 1
+  StaminaRecoveryTime: 0.5
+  StandingRecoveryRate: 1
   WalkingSpeed: 1
-  RunningSpeed: 3
-  CrouchingSpeed: 0.5
-  Acceleration: 20
-  Deacceleration: 20
+  WalkingRecoveryMultiplier: 0.5
   StandingHeight: 2
-  CrouchingHeight: 1
+  RunningSpeed: 3
+  RunningDepletionRate: 0.5
+  CrouchingSpeed: 0.5
+  CrouchingRecoveryRate: 2
   GroundSnapTime: 0.1
   CrouchTime: 0.2
+  CrouchingHeight: 1
+  Acceleration: 20
+  Deacceleration: 20
 --- !u!114 &4603149333419299780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,7 +161,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyMask:
     serializedVersion: 2
-    m_Bits: 448
+    m_Bits: 192
   Eye: {fileID: 7480624893103111750}
   Viewmodel: {fileID: 6835678667763479095}
   Primary:

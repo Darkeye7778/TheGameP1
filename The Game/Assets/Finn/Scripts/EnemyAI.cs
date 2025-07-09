@@ -34,7 +34,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     void Start()
     {
         colorOrg = model.material.color;
-        gameManager.instance.updateGameGoal(1);
+        gameManager.instance.updateTerroristCount(1);
         startingPos = transform.position;
         stoppingDistOrig = agent.stoppingDistance;
     }
@@ -126,12 +126,13 @@ public class enemyAI : MonoBehaviour, IDamagable
             agent.stoppingDistance = 0;
         }
     }
-    public void OnTakeDamage(float amount)
+    public void OnTakeDamage(DamageSource source, float amount)
     {
+        Debug.Log($"{source} / {amount}");
         HP -= amount;
         if (HP <= 0)
         {
-            gameManager.instance.updateGameGoal(-1);
+            gameManager.instance.updateTerroristCount(-1);
             Destroy(gameObject);
         }
         else
@@ -141,6 +142,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     }
     public void OnDeath()
     {
+        gameManager.instance.updateTerroristCount(-1);
         Destroy(gameObject);
     }
     IEnumerator flashRed()

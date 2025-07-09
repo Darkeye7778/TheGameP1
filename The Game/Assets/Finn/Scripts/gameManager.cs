@@ -18,7 +18,9 @@ public class gameManager : MonoBehaviour
 
     float timeScaleOrig;
 
-    int gameGoalCount;
+    public int gameTerroristCount;
+    public int gameHostageCount;
+    public int gameHostageSaved;
 
     void Awake()
     {
@@ -65,14 +67,24 @@ public class gameManager : MonoBehaviour
 
     public void updateGameGoal(int amount)
     {
-        gameGoalCount += amount;
+        gameHostageCount += amount;
 
-        if (gameGoalCount <= 0)
+        if (gameHostageCount <= 0)
         {
             statePause();
             menuActive = menuWin;
             menuActive.SetActive(true);
         }
+    }
+
+    public void updateTerroristCount(int amount)
+    {
+        gameTerroristCount += amount;
+    }
+
+    public void updateHostagesSaved(int amount)
+    {
+        gameHostageSaved += amount;
     }
 
     public void youLose()

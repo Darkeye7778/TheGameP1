@@ -22,7 +22,7 @@ public class HostageAI : MonoBehaviour, IDamagable
         if (playerInTrigger)
         {
             Destroy(gameObject);
-            gameManager.instance.updateGameGoal(-1);
+            gameManager.instance.updateHostagesSaved(1);
         }
     }
 
@@ -41,8 +41,9 @@ public class HostageAI : MonoBehaviour, IDamagable
         }
     }
 
-    public void OnTakeDamage(float amount)
+    public void OnTakeDamage(DamageSource source, float amount)
     {
+        Debug.Log($"{source} / {amount}");
         HP -= amount;
         if (HP <= 0)
         {
