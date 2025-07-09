@@ -1,4 +1,5 @@
-#define PLAYERCONTROLLER_USE_INERTIA
+#define PLAYERCONTROLLER_INERTIA
+#define PLAYERCONTROLLER_DIRECTIONAL_SPEED
 
 using System;
 using JetBrains.Annotations;
@@ -61,7 +62,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private GroundState _ground;
     private float _fallingTime;
     private float _stamina, _staminaRecoveryTimer;
-    private bool _running;
+    private bool _running, _crouch;
     private float _health;
 
     void Start()
@@ -75,6 +76,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     void Update()
     {
         _ground = GetGround();
+        _crouch = ShouldCrouch();
         _running = GetRunning();
         
         CalculateVelocity();
@@ -84,7 +86,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
 
         float originalHeight = _controller.height;
-        float targetHeight = Input.GetKey(KeyCode.C) ? CrouchingHeight : StandingHeight;
+        float targetHeight = _crouch ? CrouchingHeight : StandingHeight;
         
         if(!Mathf.Approximately(_controller.height, targetHeight))
         {
@@ -92,7 +94,7 @@ public class PlayerController : MonoBehaviour, IDamagable
             _controller.Move((_controller.height - originalHeight) * 0.5f * Vector3.up);
         }
 
-    #if PLAYERCONTROLLER_USE_INERTIA
+    #if PLAYERCONTROLLER_INERTIA
         _controller.Move(_velocity * Time.deltaTime);
     #else
         _controller.Move(transform.rotation * _velocity * Time.deltaTime);
@@ -102,8 +104,13 @@ public class PlayerController : MonoBehaviour, IDamagable
     void CalculateVelocity()
     {
         // _ground.Grounded has an extended hit range to help with walking down slopes.
+    #if PLAYERCONTROLLER_DIRECTIONAL_SPEED
         float targetSpeed = GetSpeedDirectional();
-        float speedDifference = (_velocity.magnitude - targetSpeed) / targetSpeed;
+    #else
+        float targetSpeed = GetSpeed();
+    #endif
+
+        float speedDifference = Mathf.Clamp01((_velocity.magnitude - targetSpeed) / targetSpeed);
         
         if (!_ground.Grounded)
         {
@@ -122,7 +129,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if(_ground.Grounded || _fallingTime < GroundSnapTime)
             _fallingTime = 0.0f;
         
-    #if PLAYERCONTROLLER_USE_INERTIA
+    #if PLAYERCONTROLLER_INERTIA
         Vector3 direction = Input.GetAxisRaw("Vertical") * transform.forward +
                             Input.GetAxisRaw("Horizontal") * transform.right;
     #else
@@ -135,7 +142,7 @@ public class PlayerController : MonoBehaviour, IDamagable
             _velocity *= 1.0f - (Deacceleration * Time.deltaTime);
         // Slows down the character when over target speed.
         else if (speedDifference > 0.0f)
-            _velocity *= Mathf.Clamp01(1.0f - (Deacceleration * Time.deltaTime * speedDifference));
+            _velocity *= 1.0f - (Deacceleration * Time.deltaTime * speedDifference);
         
         direction.Normalize();
         _velocity += direction * (Acceleration * Time.deltaTime);
@@ -155,7 +162,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     float GetSpeed()
     {
-        if (Input.GetKey(KeyCode.C))
+        if (_crouch)
             return CrouchingSpeed;
         
         return _running ? RunningSpeed : WalkingSpeed;
@@ -206,7 +213,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private bool GetRunning()
     {
         _staminaRecoveryTimer += Time.deltaTime;
-        return Input.GetKey(KeyCode.LeftShift) && _stamina > 0.0f;
+        return Input.GetKey(KeyCode.LeftShift) && _stamina > 0.0f && !_crouch;
     }
 
     private float GetStaminaRecoveryRate()
@@ -231,5 +238,15 @@ public class PlayerController : MonoBehaviour, IDamagable
             result *= WalkingRecoveryMultiplier;
         
         return result;
+    }
+    
+    private bool ShouldCrouch()
+    {
+        if (Input.GetKey(KeyCode.C))
+            return true;
+
+        float heightDifference = StandingHeight - _controller.height / 2.0f - _controller.radius;
+        // I cannot get Physics.CheckCapsule to work.
+        return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference, ~gameObject.layer);
     }
 }
