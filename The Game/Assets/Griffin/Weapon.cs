@@ -19,6 +19,8 @@ public class Weapon : ScriptableObject
     public Mesh Mesh;
     public Material[] Materials;
     public Vector3 Position;
+    public Vector3 Scale;
+    public Quaternion Rotation;
 
     [Header("Sounds")] 
     public AudioClip EquipSound;

@@ -107,8 +107,9 @@ public class PlayerInventory : MonoBehaviour
     {
         _viewmodelMesh.mesh = weapon.Weapon.Mesh;
         _viewmodelRenderer.materials = weapon.Weapon.Materials;
-
-
+        _viewmodelMesh.transform.localScale = weapon.Weapon.Scale;
+        _viewmodelMesh.transform.localRotation = weapon.Weapon.Rotation;
+        
         _audioSource.clip = weapon.Weapon.EquipSound;
         _audioSource.Play();
         
@@ -130,7 +131,7 @@ public class PlayerInventory : MonoBehaviour
             return;
         
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
-        _audioSource.Play();
+        _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
         
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;

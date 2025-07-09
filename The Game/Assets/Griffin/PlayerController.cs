@@ -184,6 +184,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = Mathf.Clamp(_health, 0.0f, MaximumHealth);
     }
 
+    public GameObject GameObject()
+    {
+        return gameObject; 
+    }
+
     private GroundState GetGround()
     {
         GroundState result = new GroundState
