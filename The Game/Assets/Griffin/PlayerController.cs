@@ -1,6 +1,7 @@
 #define PLAYERCONTROLLER_USE_INERTIA
 
 using System;
+using System.Collections;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -63,6 +64,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _stamina, _staminaRecoveryTimer;
     private bool _running;
     private float _health;
+    private bool _poisoned;
 
     void Start()
     {
@@ -231,5 +233,26 @@ public class PlayerController : MonoBehaviour, IDamagable
             result *= WalkingRecoveryMultiplier;
         
         return result;
+    }
+
+    public void ApplyPoison(DamageType.PoisonData data)
+    {
+        if (!_poisoned)
+            StartCoroutine(PoisonOverTime(data));
+    }
+
+    IEnumerator PoisonOverTime(DamageType.PoisonData data)
+    {
+        _poisoned = true;
+        float elapsed = 0f;
+
+        while (elapsed < data.duration)
+        {
+            OnTakeDamage(new DamageSource { Name = "Poison", Object = null }, data.damagePerTick);
+            yield return new WaitForSeconds(data.tickRate);
+            elapsed += data.tickRate;
+        }
+
+        _poisoned = false;
     }
 }
