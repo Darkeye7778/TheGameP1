@@ -470,15 +470,22 @@ MonoBehaviour:
   Camera: {fileID: 1311553098}
   MouseSensitivity: 1
   RotationClamp: {x: -90, y: 90}
+  MaximumHealth: 100
+  MaximumStamina: 1
+  StaminaRecoveryTime: 0.5
+  StandingRecoveryRate: 1
   WalkingSpeed: 1
-  RunningSpeed: 3
-  CrouchingSpeed: 0.5
-  Acceleration: 20
-  Deacceleration: 20
+  WalkingRecoveryMultiplier: 0.5
   StandingHeight: 2
-  CrouchingHeight: 1
+  RunningSpeed: 3
+  RunningDepletionRate: 0.5
+  CrouchingSpeed: 0.5
+  CrouchingRecoveryRate: 2
   GroundSnapTime: 0.1
   CrouchTime: 0.2
+  CrouchingHeight: 1
+  Acceleration: 20
+  Deacceleration: 20
 --- !u!23 &69032381
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -12826,7 +12833,7 @@ PrefabInstance:
       objectReference: {fileID: 1150007523}
     - target: {fileID: 3500324907134799554, guid: 01de1f7707022054c87ae169c904e1e0, type: 3}
       propertyPath: m_VersionIndex
-      value: 538
+      value: 541
       objectReference: {fileID: 0}
     - target: {fileID: 4317235033778138419, guid: 01de1f7707022054c87ae169c904e1e0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12875,6 +12882,10 @@ PrefabInstance:
     - target: {fileID: 8080341053289785211, guid: 01de1f7707022054c87ae169c904e1e0, type: 3}
       propertyPath: m_Name
       value: Claymore
+      objectReference: {fileID: 0}
+    - target: {fileID: 8080341053289785211, guid: 01de1f7707022054c87ae169c904e1e0, type: 3}
+      propertyPath: m_TagString
+      value: Trap
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
