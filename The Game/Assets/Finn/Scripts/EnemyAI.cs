@@ -140,6 +140,12 @@ public class enemyAI : MonoBehaviour, IDamagable
             StartCoroutine(flashRed());
         }
     }
+
+    public GameObject GameObject()
+    {
+        return gameObject;
+    }
+    
     public void OnDeath()
     {
         gameManager.instance.updateTerroristCount(-1);
