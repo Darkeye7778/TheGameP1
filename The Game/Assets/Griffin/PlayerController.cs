@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float MouseSensitivity;
     public Vector2 RotationClamp = new(-90.0f, 90.0f);
     public int MaximumHealth = 100;
+    public LayerMask GroundMask;
 
     [Header("Stamina")]
     public float MaximumStamina = 1.0f;
@@ -86,6 +87,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     void Update()
     {
+        if (Time.timeScale == 0.0f)
+            return;
+        
         GetRealVelocity();
         _ground = GetGround();
         _crouch = ShouldCrouch();
@@ -232,7 +236,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         Vector3 rayOrigin = transform.position + Vector3.down * (_controller.height / 2.0f);
         
         RaycastHit rayResult;
-        if (!Physics.Raycast(rayOrigin, Vector3.down, out rayResult, _controller.stepOffset))
+        if (!Physics.Raycast(rayOrigin, Vector3.down, out rayResult, _controller.stepOffset, GroundMask))
             return result;
         
         Debug.DrawRay(rayOrigin, Vector3.down * rayResult.distance, Color.red);
@@ -283,7 +287,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         float heightDifference = StandingHeight - _controller.height / 2.0f - _controller.radius;
         // I cannot get Physics.CheckCapsule to work.
-        return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference, ~gameObject.layer);
+        return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference);
     }
 
     private void GetStandingTime()

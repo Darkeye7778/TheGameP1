@@ -128,7 +128,6 @@ public class enemyAI : MonoBehaviour, IDamagable
     }
     public void OnTakeDamage(DamageSource source, float amount)
     {
-        Debug.Log($"{source} / {amount}");
         HP -= amount;
         if (HP <= 0)
         {

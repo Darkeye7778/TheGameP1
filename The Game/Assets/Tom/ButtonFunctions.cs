@@ -4,14 +4,14 @@ public class ButtonFunctions : MonoBehaviour
 {
     public void Resume()
     {
-        gamemanager.instance.StateResume();
+        gameManager.instance.stateUnpause();
     }
 
     public void Restart()
     {
+        Time.timeScale = 1.0f;
+        gameManager.instance.stateUnpause();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        gamemanager.instance.StateResume();
-
     }
 
     public void Quit()
