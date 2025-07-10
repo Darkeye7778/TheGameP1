@@ -16,9 +16,11 @@ public class PlayerInventory : MonoBehaviour
     public WeaponInstance CurrentWeapon => _useSecondary ? Secondary : Primary;
     public Vector3 UnequippedOffset;
     
+    [Header("Audio")]
+    [SerializeField] private AudioSource _audioSource;
+    
     private MeshFilter _viewmodelMesh;
     private Renderer _viewmodelRenderer;
-    private AudioSource _audioSource;
     private bool _useSecondary;
     private float _equipTime;
     private InventoryState _state;
@@ -27,7 +29,6 @@ public class PlayerInventory : MonoBehaviour
     {
         _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
         _viewmodelRenderer = Viewmodel.GetComponent<Renderer>();
-        _audioSource = GetComponent<AudioSource>();
         
         if(Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();

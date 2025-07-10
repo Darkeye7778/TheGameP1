@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float WalkingSpeed = 1.34f;
     public float WalkingRecoveryMultiplier = 0.5f;
     public float StandingHeight = 2.0f;
+    public float FootstepOffset;
     
     [Header("Running")]
     public float RunningSpeed = 5.0f;
@@ -56,7 +57,10 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
     public bool IsDead => Health == 0;
 
-    private Vector3 _velocity;
+    private bool _moving => _ground.NearGround && _realVelocity.sqrMagnitude > 0.01;
+
+    private Vector3 _velocity, _previousPosition, _realVelocity;
+    
     private float _rotationX, _rotationY;
     private CharacterController _controller;
     private GroundState _ground;
@@ -64,6 +68,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _stamina, _staminaRecoveryTimer;
     private bool _running, _crouch;
     private float _health;
+    
+    private float _standingTimer, _footstepOffset;
+    
+    [Header("Audio")]
+    [SerializeField] private AudioSource _footstepAudioSource;
 
     void Start()
     {
@@ -71,13 +80,17 @@ public class PlayerController : MonoBehaviour, IDamagable
         _controller = GetComponent<CharacterController>();
         _stamina = MaximumStamina;
         _health = MaximumHealth;
+
+        _previousPosition = transform.position;
     }
     
     void Update()
     {
+        GetRealVelocity();
         _ground = GetGround();
         _crouch = ShouldCrouch();
         _running = GetRunning();
+        GetStandingTime();
         
         CalculateVelocity();
         CalculateRotation();
@@ -92,6 +105,19 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             _controller.height = Mathf.MoveTowards(_controller.height, targetHeight, 1.0f / CrouchTime * Time.deltaTime);
             _controller.Move((_controller.height - originalHeight) * 0.5f * Vector3.up);
+        }
+
+        if (_standingTimer > 0.1)
+            _footstepOffset = 0.0f;
+        
+        if (_moving && _footstepOffset >= FootstepOffset)
+        {
+            if(_ground.SoundSettings is not null)
+            {
+                _footstepAudioSource.clip = _ground.SoundSettings.Footstep;
+                _footstepAudioSource.Play();
+            }
+            _footstepOffset %= FootstepOffset;
         }
 
     #if PLAYERCONTROLLER_INERTIA
@@ -114,17 +140,19 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         if (!_ground.Grounded)
         {
-            if (_ground.NearGround && _fallingTime <= GroundSnapTime) 
+            if (_ground.NearGround && _fallingTime <= GroundSnapTime)
                 _controller.Move(Vector3.down * _ground.Distance);
      
             _velocity += Physics.gravity * Time.deltaTime;
-            _fallingTime += Time.deltaTime;
         }
         else
             _velocity.y = 0.0f;
 
         if (!_ground.NearGround)
+        {
+            _fallingTime += Time.deltaTime;
             return;
+        }
         
         if(_ground.Grounded || _fallingTime < GroundSnapTime)
             _fallingTime = 0.0f;
@@ -145,7 +173,11 @@ public class PlayerController : MonoBehaviour, IDamagable
             _velocity *= 1.0f - (Deacceleration * Time.deltaTime * speedDifference);
         
         direction.Normalize();
-        _velocity += direction * (Acceleration * Time.deltaTime);
+        
+        if(_ground.NearGround)
+            _velocity += direction * (Acceleration * Time.deltaTime);
+        
+        _footstepOffset += new Vector2(_realVelocity.x, _realVelocity.z).magnitude * Time.deltaTime;
     }
 
     void CalculateRotation()
@@ -208,9 +240,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         result.Distance = Mathf.Max(rayResult.distance - _controller.skinWidth, 0.0f);
         result.NearGround |= result.Distance < _controller.stepOffset;
         
-        SoundEmitter emitter = rayResult.collider.GetComponent<SoundEmitter>();
-        if (emitter is not null)
-            result.SoundSettings = emitter.GetSettings();
+        GroundSoundProfile profile = rayResult.collider.GetComponent<GroundSoundProfile>();
+        if (profile is not null)
+            result.SoundSettings = profile.GetSettings();
         
         return result;
     }
@@ -223,7 +255,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private float GetStaminaRecoveryRate()
     {
-        bool running = _running && _ground.NearGround && _velocity.magnitude > WalkingSpeed * 1.01; // 1.01 as epsilon.
+        bool running = _running && _ground.NearGround && _realVelocity.magnitude > WalkingSpeed * 1.01; // 1.01 as epsilon.
         if (running)
         {
             _staminaRecoveryTimer = 0.0f;
@@ -238,8 +270,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (Input.GetKey(KeyCode.C))
             result *= CrouchingRecoveryRate;
 
-        bool moving = _ground.NearGround && _velocity.sqrMagnitude > 0.01;
-        if (moving)
+        if (_moving)
             result *= WalkingRecoveryMultiplier;
         
         return result;
@@ -253,5 +284,18 @@ public class PlayerController : MonoBehaviour, IDamagable
         float heightDifference = StandingHeight - _controller.height / 2.0f - _controller.radius;
         // I cannot get Physics.CheckCapsule to work.
         return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference, ~gameObject.layer);
+    }
+
+    private void GetStandingTime()
+    {
+        _standingTimer += Time.deltaTime;
+        if (_moving)
+            _standingTimer = 0.0f;
+    }
+
+    private void GetRealVelocity()
+    {
+        _realVelocity = (transform.position - _previousPosition) / Time.deltaTime;
+        _previousPosition = transform.position;
     }
 }
