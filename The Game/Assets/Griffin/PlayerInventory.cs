@@ -38,6 +38,9 @@ public class PlayerInventory : MonoBehaviour
     
     void Update()
     {
+        if (Time.timeScale == 0.0f)
+            return;
+        
         Primary.Update();
         Secondary.Update();
         

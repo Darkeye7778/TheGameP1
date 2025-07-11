@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,6 +41,7 @@ public class gameManager : MonoBehaviour
     public Image PlayerHealthBar;
     public Image PlayerSprintBar;
     public Image GunAmmoBar;
+    public GameObject PlayerHurt;
 
     public float StartingTime = 120;
     private float _timer;
@@ -115,10 +117,20 @@ public class gameManager : MonoBehaviour
         PlayerHealthBar.fillAmount = playerScript.HealthRelative;
 
         _timer -= Time.deltaTime;
-        TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
+
+        int minutes = (int)_timer / 60;
+        int seconds = (int) _timer % 60;
+
+        int tens = seconds / 10;
+        int ones = seconds % 10;
+        
+        TimerTxt.text = $"{minutes}:{tens}{ones}";
         
         if(_timer <= 0.0f)
             youLose();
+
+        /*if (playerScript.TookDamage)
+            StartCoroutine(PlayerHurtFlash());*/
     }
     public void statePause()
     {
@@ -168,5 +180,12 @@ public class gameManager : MonoBehaviour
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
+    }
+
+    IEnumerator PlayerHurtFlash()
+    {
+        PlayerHurt.SetActive(true);
+        yield return new WaitForSeconds(0.05f);
+        PlayerHurt.SetActive(false);
     }
 }

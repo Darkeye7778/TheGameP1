@@ -57,6 +57,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public int Health => (int) _health;
     public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
     public bool IsDead => Health == 0;
+    public bool TookDamage => Health != _previousHealth;
 
     private bool _moving => _ground.NearGround && _realVelocity.sqrMagnitude > 0.01;
 
@@ -68,7 +69,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _fallingTime;
     private float _stamina, _staminaRecoveryTimer;
     private bool _running, _crouch;
-    private float _health;
+    private float _health, _previousHealth;
     
     private float _standingTimer, _footstepOffset;
     
@@ -80,7 +81,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         Cursor.lockState = CursorLockMode.Locked;
         _controller = GetComponent<CharacterController>();
         _stamina = MaximumStamina;
-        _health = MaximumHealth;
+        _health= _previousHealth = MaximumHealth;
 
         _previousPosition = transform.position;
     }
@@ -89,6 +90,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         if (Time.timeScale == 0.0f)
             return;
+
+        _previousHealth = _health;
         
         GetRealVelocity();
         _ground = GetGround();
