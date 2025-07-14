@@ -59,10 +59,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     public bool IsDead => Health == 0;
     public bool TookDamage => Health != _previousHealth;
 
-    private bool _moving => _ground.NearGround && _realVelocity.sqrMagnitude > 0.01;
+    private bool _moving => _ground.NearGround && RealVelocity.sqrMagnitude > 0.01;
 
-    private Vector3 _velocity, _previousPosition, _realVelocity;
-    
+    Vector3 _velocity, _previousPosition;
+
+    public Vector3 RealVelocity { get; private set; }
+
     private float _rotationX, _rotationY;
     private CharacterController _controller;
     private GroundState _ground;
@@ -184,7 +186,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if(_ground.NearGround)
             _velocity += direction * (Acceleration * Time.deltaTime);
         
-        _footstepOffset += new Vector2(_realVelocity.x, _realVelocity.z).magnitude * Time.deltaTime;
+        _footstepOffset += new Vector2(RealVelocity.x, RealVelocity.z).magnitude * Time.deltaTime;
     }
 
     void CalculateRotation()
@@ -262,7 +264,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private float GetStaminaRecoveryRate()
     {
-        bool running = _running && _ground.NearGround && _realVelocity.magnitude > WalkingSpeed * 1.01; // 1.01 as epsilon.
+        bool running = _running && _ground.NearGround && RealVelocity.magnitude > WalkingSpeed * 1.01; // 1.01 as epsilon.
         if (running)
         {
             _staminaRecoveryTimer = 0.0f;
@@ -302,7 +304,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void GetRealVelocity()
     {
-        _realVelocity = (transform.position - _previousPosition) / Time.deltaTime;
+        RealVelocity = (transform.position - _previousPosition) / Time.deltaTime;
         _previousPosition = transform.position;
     }
 }
