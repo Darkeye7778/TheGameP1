@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,22 +22,23 @@ public class gameManager : MonoBehaviour
     public int gameTerroristCount;
     public int gameHostageCount;
     public int gameHostageSaved;
-    
+
     public int EnemySpawnAmount = 4;
     public int TrapSpawnAmount = 4;
     public int HostageSpawnAmount = 2;
-    
+
+    public GameObject PlayerDamagedFlash;
     public GameObject HostagePrefab;
     public GameObject[] EnemyPrefabs;
     public GameObject TrapPrefab;
-    
+
     [SerializeField] TextMeshProUGUI GunName;
     [SerializeField] TextMeshProUGUI TerroristCountTxt;
     [SerializeField] TextMeshProUGUI TimerTxt;
     [SerializeField] TextMeshProUGUI HostageTxt;
     [SerializeField] TextMeshProUGUI AmmoReserveTxt;
     [SerializeField] TextMeshProUGUI GunModeTxt;
-    
+
     public Image PlayerHealthBar;
     public Image PlayerSprintBar;
     public Image GunAmmoBar;
@@ -48,14 +50,13 @@ public class gameManager : MonoBehaviour
     {
         menuActive = null;
         stateUnpause();
-        
+
         instance = this;
 
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<PlayerController>();
         inventoryScript = player.GetComponent<PlayerInventory>();
         timeScaleOrig = Time.timeScale;
-
         int hostageSpawned = HostageSpawnAmount;
         GameObject hostageLocations = GameObject.FindWithTag("HostageLocation");
         for (int i = 0; i < hostageLocations.transform.childCount; i++)
@@ -105,7 +106,7 @@ public class gameManager : MonoBehaviour
 
         if (playerScript.IsDead)
             youLose();
-        
+
         GunAmmoBar.fillAmount = (float) inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
         GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
         AmmoReserveTxt.text = $"{inventoryScript.CurrentWeapon.LoadedAmmo}/{inventoryScript.CurrentWeapon.ReserveAmmo}";
@@ -116,7 +117,7 @@ public class gameManager : MonoBehaviour
 
         _timer -= Time.deltaTime;
         TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
-        
+
         if(_timer <= 0.0f)
             youLose();
     }
@@ -134,7 +135,7 @@ public class gameManager : MonoBehaviour
         Time.timeScale = 1.0f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        if(menuActive != null) 
+        if(menuActive != null)
             menuActive.SetActive(false);
         menuActive = null;
     }
@@ -157,7 +158,7 @@ public class gameManager : MonoBehaviour
         gameTerroristCount += amount;
         TerroristCountTxt.text = gameTerroristCount.ToString("F0");
     }
-    
+
     public void updateHostagesSaved(int amount)
     {
         gameHostageSaved += amount;
