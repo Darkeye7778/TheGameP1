@@ -56,6 +56,11 @@ public class HostageAI : MonoBehaviour, IDamagable
         }
     }
 
+    public GameObject GameObject()
+    {
+        return gameObject;
+    }
+
     public void OnDeath()
     {
         Destroy(gameObject);

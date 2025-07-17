@@ -16,9 +16,11 @@ public class PlayerInventory : MonoBehaviour
     public WeaponInstance CurrentWeapon => _useSecondary ? Secondary : Primary;
     public Vector3 UnequippedOffset;
     
+    [Header("Audio")]
+    [SerializeField] private AudioSource _audioSource;
+    
     private MeshFilter _viewmodelMesh;
     private Renderer _viewmodelRenderer;
-    private AudioSource _audioSource;
     private bool _useSecondary;
     private float _equipTime;
     private InventoryState _state;
@@ -27,7 +29,6 @@ public class PlayerInventory : MonoBehaviour
     {
         _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
         _viewmodelRenderer = Viewmodel.GetComponent<Renderer>();
-        _audioSource = GetComponent<AudioSource>();
         
         if(Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
@@ -107,8 +108,9 @@ public class PlayerInventory : MonoBehaviour
     {
         _viewmodelMesh.mesh = weapon.Weapon.Mesh;
         _viewmodelRenderer.materials = weapon.Weapon.Materials;
-
-
+        _viewmodelMesh.transform.localScale = weapon.Weapon.Scale;
+        _viewmodelMesh.transform.localRotation = weapon.Weapon.Rotation;
+        
         _audioSource.clip = weapon.Weapon.EquipSound;
         _audioSource.Play();
         
@@ -130,7 +132,7 @@ public class PlayerInventory : MonoBehaviour
             return;
         
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
-        _audioSource.Play();
+        _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
         
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;
