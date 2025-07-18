@@ -27,6 +27,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     public int MaximumHealth = 100;
     public LayerMask GroundMask;
 
+    [Header("Leaning")]
+    public bool ToggleLeaning = true;
+    public float Angle = 30f;
+    public float TransitionSpeed = 1.2f;
+
     [Header("Stamina")]
     public float MaximumStamina = 1.0f;
     public float StaminaRecoveryTime = 0.5f;
@@ -65,6 +70,8 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public Vector3 RealVelocity { get; private set; }
 
+    public GameObject CurrentInteractable { get; private set; }
+
     private float _rotationX, _rotationY;
     private CharacterController _controller;
     private GroundState _ground;
@@ -74,7 +81,11 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _health, _previousHealth;
     
     private float _standingTimer, _footstepOffset;
-    
+    private float _leaningAngle, _leaningTarget;
+    private bool _leaning, _leaningLeft, _leaningRight;
+
+    private Vector3 _cameraOrigin, _cameraTarget;
+
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
 
@@ -83,8 +94,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         Cursor.lockState = CursorLockMode.Locked;
         _controller = GetComponent<CharacterController>();
         _stamina = MaximumStamina;
-        _health= _previousHealth = MaximumHealth;
+        _health = _previousHealth = MaximumHealth;
 
+        _cameraOrigin = Camera.transform.localPosition;
         _previousPosition = transform.position;
     }
     
@@ -100,10 +112,10 @@ public class PlayerController : MonoBehaviour, IDamagable
         _crouch = ShouldCrouch();
         _running = GetRunning();
         GetStandingTime();
-        
+        CheckInteract();
         CalculateVelocity();
         CalculateRotation();
-
+        CalculateLeaning();
         _stamina += GetStaminaRecoveryRate() * Time.deltaTime;
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
 
@@ -198,15 +210,116 @@ public class PlayerController : MonoBehaviour, IDamagable
         _rotationY = Mathf.Clamp(_rotationY + y * MouseSensitivity, RotationClamp.x, RotationClamp.y);
         
         transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
-        Camera.transform.localRotation = Quaternion.Euler(-_rotationY, 0.0f, 0.0f);
+        Camera.transform.localRotation = Quaternion.Euler(-_rotationY, 0.0f, _leaningAngle);
     }
+    
+    void CalculateLeaning()
+    {
+        //Leaning has the option to be toggled or held.
+        if (ToggleLeaning)
+        {
+            
+            //leaning will reset when the same key is pressed again.
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                
+                if (!_leaningLeft)
+                {
+                    _leaningTarget = Angle;
+                    _leaning = true;
+                    _leaningLeft = true;
+                    _leaningRight = false;
+                }
+                else
+                {
+                    _leaningTarget = 0.0f;
+                    _leaning = false;
+                    _leaningLeft = false;
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                if (!_leaningRight)
+                {
+                    _leaningTarget = -Angle;
+                    _leaning = true;
+                    _leaningRight = true;
+                    _leaningLeft = false;
+                }
+                else
+                {
+                    _leaningTarget = 0.0f;
+                    _leaning = false;
+                    _leaningRight = false;
+                }
+            }
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.Q))
+            {
+                _leaningTarget = Angle;
+                _leaning = true;
+                _leaningLeft = true;
+                _leaningRight = false;
+            }
+            else if (Input.GetKey(KeyCode.E))
+            {
+                _leaningTarget = -Angle;
+                _leaning = true;
+                _leaningRight = true;
+                _leaningLeft = false;
+            }
+            else
+            {
+                _leaningTarget = 0.0f;
+                _leaning = false;
+                _leaningLeft = false;
+                _leaningRight = false;
+            }
+        }
+        // Smoothly transition the leaning angle towards the target.
+        _leaningAngle = Mathf.MoveTowards(_leaningAngle, _leaningTarget, TransitionSpeed * 100f * Time.deltaTime);
 
+
+        // Calculate the camera target position based on leaning.
+        float cameraOffset;
+        if (_leaning)
+            cameraOffset = (-_leaningTarget * 0.03f);
+        else
+            cameraOffset = 0;
+
+        
+        _cameraTarget = new Vector3(_cameraOrigin.x + cameraOffset, _cameraOrigin.y, _cameraOrigin.z);
+
+        Camera.transform.localPosition = Vector3.Lerp(Camera.transform.localPosition, _cameraTarget, TransitionSpeed * 5f * Time.deltaTime);
+    }
+    
     float GetSpeed()
     {
         if (_crouch)
             return CrouchingSpeed;
         
         return _running ? RunningSpeed : WalkingSpeed;
+    }
+    
+    void CheckInteract()
+    {
+        if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out RaycastHit hit, 3.0f))
+        {
+            if (hit.collider.TryGetComponent(out Interactable interactable))
+            {
+                CurrentInteractable = hit.collider.gameObject;
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    interactable.OnInteract(Camera);
+                }
+            }
+            else
+            {
+                CurrentInteractable = null;
+            }
+        }
     }
 
     float GetSpeedDirectional()
