@@ -26,16 +26,27 @@ public class PlayerController : MonoBehaviour, IDamagable
     public Vector2 RotationClamp = new(-90.0f, 90.0f);
     public int MaximumHealth = 100;
     public LayerMask GroundMask;
+    
+    public int Health => (int) _health;
+    public bool TookDamage => Health != _previousHealth;
+    public bool IsDead => Health == 0;
+    public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
 
     [Header("Leaning")]
     public bool ToggleLeaning = true;
-    public float Angle = 30f;
-    public float TransitionSpeed = 1.2f;
+    [FormerlySerializedAs("Angle")] public float LeanAngle = 30f;
+    [FormerlySerializedAs("TransitionSpeed")] public float LeanTransitionSpeed = 1.2f;
+    public bool Leaning => _leaningTarget != 0.0f;
+    public bool LeaningLeft => _leaningTarget > 0.0f;
+    public bool LeaningRight => _leaningTarget < 0.0f;
+    
 
     [Header("Stamina")]
     public float MaximumStamina = 1.0f;
     public float StaminaRecoveryTime = 0.5f;
     public float StandingRecoveryRate = 1.0f;
+    public float StaminaRelative => _stamina / MaximumStamina;
+    
     
     [Header("Walking")]
     public float WalkingSpeed = 1.34f;
@@ -57,20 +68,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     [Header("Inertia")]
     public float Acceleration = 7.0f;
     public float Deacceleration = 15.0f;
-
-    public float StaminaRelative => _stamina / MaximumStamina;
-    public int Health => (int) _health;
-    public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
-    public bool IsDead => Health == 0;
-    public bool TookDamage => Health != _previousHealth;
-
-    private bool _moving => _ground.NearGround && RealVelocity.sqrMagnitude > 0.01;
-
-    Vector3 _velocity, _previousPosition;
-
     public Vector3 RealVelocity { get; private set; }
 
     public GameObject CurrentInteractable { get; private set; }
+    
+    private bool _moving => _ground.NearGround && RealVelocity.sqrMagnitude > 0.01;
+    Vector3 _velocity, _previousPosition;
 
     private float _rotationX, _rotationY;
     private CharacterController _controller;
@@ -82,8 +85,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     private float _standingTimer, _footstepOffset;
     private float _leaningAngle, _leaningTarget;
-    private bool _leaning, _leaningLeft, _leaningRight;
-
+    
     private Vector3 _cameraOrigin, _cameraTarget;
 
     [Header("Audio")]
@@ -220,79 +222,44 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             
             //leaning will reset when the same key is pressed again.
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKeyDown(KeyCode.Q)) // Left
             {
-                
-                if (!_leaningLeft)
-                {
-                    _leaningTarget = Angle;
-                    _leaning = true;
-                    _leaningLeft = true;
-                    _leaningRight = false;
-                }
+                if (!LeaningLeft)
+                    _leaningTarget = LeanAngle;
                 else
-                {
                     _leaningTarget = 0.0f;
-                    _leaning = false;
-                    _leaningLeft = false;
-                }
             }
-            else if (Input.GetKeyDown(KeyCode.E))
+            else if (Input.GetKeyDown(KeyCode.E)) // Right
             {
-                if (!_leaningRight)
-                {
-                    _leaningTarget = -Angle;
-                    _leaning = true;
-                    _leaningRight = true;
-                    _leaningLeft = false;
-                }
+                if (!LeaningRight)
+                    _leaningTarget = -LeanAngle;
                 else
-                {
                     _leaningTarget = 0.0f;
-                    _leaning = false;
-                    _leaningRight = false;
-                }
             }
         }
         else
         {
             if (Input.GetKey(KeyCode.Q))
-            {
-                _leaningTarget = Angle;
-                _leaning = true;
-                _leaningLeft = true;
-                _leaningRight = false;
-            }
+                _leaningTarget = LeanAngle;
             else if (Input.GetKey(KeyCode.E))
-            {
-                _leaningTarget = -Angle;
-                _leaning = true;
-                _leaningRight = true;
-                _leaningLeft = false;
-            }
+                _leaningTarget = -LeanAngle;
             else
-            {
                 _leaningTarget = 0.0f;
-                _leaning = false;
-                _leaningLeft = false;
-                _leaningRight = false;
-            }
         }
         // Smoothly transition the leaning angle towards the target.
-        _leaningAngle = Mathf.MoveTowards(_leaningAngle, _leaningTarget, TransitionSpeed * 100f * Time.deltaTime);
+        _leaningAngle = Mathf.MoveTowards(_leaningAngle, _leaningTarget, LeanTransitionSpeed * 100f * Time.deltaTime);
 
 
         // Calculate the camera target position based on leaning.
         float cameraOffset;
-        if (_leaning)
-            cameraOffset = (-_leaningTarget * 0.03f);
+        if (Leaning)
+            cameraOffset = -_leaningTarget * 0.03f;
         else
             cameraOffset = 0;
-
         
         _cameraTarget = new Vector3(_cameraOrigin.x + cameraOffset, _cameraOrigin.y, _cameraOrigin.z);
 
-        Camera.transform.localPosition = Vector3.Lerp(Camera.transform.localPosition, _cameraTarget, TransitionSpeed * 5f * Time.deltaTime);
+        Camera.transform.localPosition = Vector3.Lerp(Camera.transform.localPosition, _cameraTarget, LeanTransitionSpeed * 10.0f * Time.deltaTime);
     }
     
     float GetSpeed()
