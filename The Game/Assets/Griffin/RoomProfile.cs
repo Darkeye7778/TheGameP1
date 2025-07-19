@@ -1,39 +1,73 @@
-using Unity.VisualScripting;
+//#define ROOM_KEEP_PARENT
+
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RoomProfile : MonoBehaviour
 { 
     [field: SerializeField]
     public RoomProperties Properties { get; private set; }
 
-    public bool GenerateLeafs(uint connectionIndex, GridTransform exitOffset, ref GenerationParams parameters)
+    public bool AlreadyGenerated { get; private set; } = false;
+
+    private void Awake()
     {
-        var connectionIn = Properties.ConnectionPoints[connectionIndex];
-        transform.localRotation = Direction.ToQuaternion(Direction.RotateToSouth(connectionIn.Transform.Rotation));
-        transform.localPosition = exitOffset.WorldPosition - Quaternion.Inverse(transform.localRotation) * connectionIn.Transform.WorldPosition;
+        BoxCollider collider = GetComponent<BoxCollider>();
         
-        bool generatedAll = true;
+        collider.size = Properties.CollisionBox;
+        collider.center = Properties.CollisionOffset;
+        
+        if(CheckCollision())
+            Destroy(gameObject);
+        else
+            MapGenerator.Instance._params.Rooms.Add(this);
+    }
 
-        parameters.RemainingRooms--;
+    public bool CheckCollision()
+    {
+        BoxCollider collider = GetComponent<BoxCollider>();
 
-        for (var i = 0; i < Properties.ConnectionPoints.Length; i++)
+        collider.enabled = false;
+        bool hit = Physics.CheckBox(transform.position + transform.rotation * Properties.CollisionOffset, Properties.CollisionBox * 0.45f);
+        collider.enabled = true;
+        
+        return hit;
+    }
+
+    public bool GenerateLeafs(GenerationParams parameters)
+    {
+        AlreadyGenerated = true;
+        
+        if(Properties.Type != RoomType.Hallway)
+            parameters.RemainingRooms--;
+
+        foreach (Connection connection in Properties.ConnectionPoints)
         {
-            var connection = Properties.ConnectionPoints[i];
-            
-            if(i == connectionIndex)
-                continue;
-
-            float rand = Random.Range(0.0f, 1.0f);
-            if (rand > 0.75f)
-                continue;
-
-            if (parameters.RemainingRooms == 0)
+            if (parameters.RemainingRooms <= 0)
                 break;
 
-            GameObject newCell = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, transform);
-            newCell.GetComponent<RoomProfile>().GenerateLeafs(0, connection.Transform, ref parameters);
-        }
+            if (!connection.Required && Random.Range(0f, 1f) > connection.Odds) 
+                continue;
+            
+            Vector3 position = transform.position + transform.rotation * connection.Transform.WorldPosition;
+            Quaternion rotation = transform.rotation * Direction.ToQuaternion(connection.Transform.Rotation);
 
-        return generatedAll;
+        #if ROOM_KEEP_PARENT
+            GameObject newCell = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, transform);
+            newCell.transform.position = position;
+            newCell.transform.rotation = rotation;
+        #else
+            GameObject newCell = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, position, rotation);
+        #endif
+        }
+        
+        return true;
+    }
+
+    private void Update()
+    {
+        bool collision = CheckCollision();
+        Debug.DrawRay(transform.position, transform.forward * 1f, collision ? Color.red :  Color.green);
     }
 }

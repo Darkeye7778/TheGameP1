@@ -17,10 +17,17 @@ MonoBehaviour:
   Type: 0
   ConnectionPoints:
   - Transform:
-      Position: {x: 0, y: -1}
-      Rotation: 2
-    Required: 1
-  - Transform:
-      Position: {x: 0, y: 1}
+      Position: {x: 0, y: 2}
       Rotation: 0
     Required: 1
+    Odds: 0.5
+  - Transform:
+      Position: {x: 1, y: 1}
+      Rotation: 1
+    Required: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: -1, y: 1}
+      Rotation: 3
+    Required: 1
+    Odds: 0.25
