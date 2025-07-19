@@ -17,11 +17,6 @@ public class RoomProfile : MonoBehaviour
         
         collider.size = Properties.CollisionBox;
         collider.center = Properties.CollisionOffset;
-        
-        if(CheckCollision())
-            Destroy(gameObject);
-        else
-            MapGenerator.Instance._params.Rooms.Add(this);
     }
 
     public bool CheckCollision()
@@ -35,34 +30,43 @@ public class RoomProfile : MonoBehaviour
         return hit;
     }
 
-    public bool GenerateLeafs(GenerationParams parameters)
+    public bool TryFit()
+    {
+        bool didFit = !CheckCollision();
+        
+        if(!didFit)
+            Destroy(gameObject);
+        else
+        {
+            MapGenerator.Instance.Parameters.Rooms.Add(this);
+            
+            if(Properties.Type != RoomType.Hallway)
+                MapGenerator.Instance.Parameters.RemainingRooms--;
+        }
+
+        return didFit;
+    }
+
+    public void GenerateLeafs()
     {
         AlreadyGenerated = true;
-        
-        if(Properties.Type != RoomType.Hallway)
-            parameters.RemainingRooms--;
 
         foreach (Connection connection in Properties.ConnectionPoints)
         {
-            if (parameters.RemainingRooms <= 0)
-                break;
 
-            if (!connection.Required && Random.Range(0f, 1f) > connection.Odds) 
-                continue;
-            
-            Vector3 position = transform.position + transform.rotation * connection.Transform.WorldPosition;
-            Quaternion rotation = transform.rotation * Direction.ToQuaternion(connection.Transform.Rotation);
+            if (connection.Required || Random.Range(0f, 1f) < connection.Odds || MapGenerator.Instance.Parameters.RemainingRooms > 0)
+            {
+                Vector3 position = transform.position + transform.rotation * connection.Transform.WorldPosition;
+                Quaternion rotation = transform.rotation * Direction.ToQuaternion(connection.Transform.Rotation);
 
-        #if ROOM_KEEP_PARENT
-            GameObject newCell = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, transform);
-            newCell.transform.position = position;
-            newCell.transform.rotation = rotation;
-        #else
-            GameObject newCell = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, position, rotation);
-        #endif
+                for (uint i = 0; i < MapGenerator.Instance.MaxLeafRetry; i++)
+                {
+                    GameObject leaf = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, position, rotation);
+                    if (leaf.GetComponent<RoomProfile>().TryFit()) // If it fits, let it be. Otherwise, try again.
+                        break;
+                }
+            }
         }
-        
-        return true;
     }
 
     private void Update()

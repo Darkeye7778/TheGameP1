@@ -1,66 +1,76 @@
+using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class GenerationParams
 {
     // Number of rooms created.
-    public uint RemainingRooms;
-    // Chance to stop generating rooms.
-    public float StopOdds;
+    public int RemainingRooms;
+    
     public List<RoomProfile> Rooms, RoomsBackbuffer;
-
-    public void Iterate()
-    {
-        RoomsBackbuffer.Clear();
-        Utils.Swap(ref Rooms, ref RoomsBackbuffer);
-        
-        foreach (RoomProfile room in RoomsBackbuffer)
-        {
-            room.GenerateLeafs(this);
-        }
-        
-        RoomsBackbuffer.Clear();
-    }
 }
 
 public class MapGenerator : MonoBehaviour
 {
-    [field: SerializeField] public MapType Type { get; private set; }
-    [field: SerializeField] public Vector3Int MapSize { get; private set; }
-
     public static MapGenerator Instance;
-    public uint RoomCount = 10;
-    public float StopOdds = 0.05f;
+    
+    [field: SerializeField] public MapType Type { get; private set; }
+    
+    public uint TargetRooms = 10;
+    public uint MaxIterations = 20;
+    public uint MaxLeafRetry = 3;
+    public int Seed = 0;
+    
     public const int GRID_SIZE = 5;
 
-    public GenerationParams _params;
+    public GenerationParams Parameters { get; private set; }
     
     void Awake()
     {
         Instance = this;
 
-        _params = new GenerationParams
+        Parameters = new GenerationParams
         {
-            RemainingRooms = RoomCount,
-            StopOdds = StopOdds,
+            RemainingRooms = (int) TargetRooms,
             Rooms = new List<RoomProfile>(),
             RoomsBackbuffer = new List<RoomProfile>()
         };
+        
+        if (Seed == 0)
+            Seed = Random.Range(int.MinValue, int.MaxValue);
+        Random.InitState(Seed);
 
         GameObject newCell = Instantiate(PickRandomCell().Prefab);
-        _params.Rooms.Add(newCell.GetComponent<RoomProfile>());
+        Parameters.Rooms.Add(newCell.GetComponent<RoomProfile>());
+        
+        for(uint i = 0; Parameters.RemainingRooms > 0 && i < MaxIterations; i++)
+            Iterate();
+        
+        Debug.Log($"Remaining rooms: {Parameters.RemainingRooms}");
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
-            _params.Iterate();
+            Iterate();
     }
 
     public RoomProperties PickRandomCell()
     {
         return Type.Cells[Random.Range(0, Type.Cells.Length)];
+    }
+    
+    public void Iterate()
+    {
+        Parameters.RoomsBackbuffer.Clear();
+        Utils.Swap(ref Parameters.Rooms, ref Parameters.RoomsBackbuffer);
+        
+        foreach (RoomProfile room in Parameters.RoomsBackbuffer) 
+            room.GenerateLeafs();
+        
+        Parameters.RoomsBackbuffer.Clear();
     }
 }
 
