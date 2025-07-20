@@ -569,6 +569,7 @@ GameObject:
   - component: {fileID: 1416847813152604410}
   - component: {fileID: 4312813636988301016}
   - component: {fileID: 5903794352544702648}
+  - component: {fileID: 1185411268763175168}
   m_Layer: 0
   m_Name: Weapon
   m_TagString: Untagged
@@ -646,6 +647,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1185411268763175168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4303587978960419591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f048f42903c99024ba9d6644aeb5e588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pc: {fileID: 5196501353832197646}
+  swayIntensity: -0.2
+  zMaxAngle: 10
+  xMaxAngle: 10
+  yMaxAngle: 10
+  rotSpeed: 10
+  zeroSpeed: 10
+  recoilIntensity: 3
 --- !u!1 &8678175753631285267
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,6 +769,9 @@ MonoBehaviour:
   GroundMask:
     serializedVersion: 2
     m_Bits: 1
+  ToggleLeaning: 1
+  LeanAngle: 30
+  LeanTransitionSpeed: 1.2
   MaximumStamina: 6
   StaminaRecoveryTime: 0.75
   StandingRecoveryRate: 3
