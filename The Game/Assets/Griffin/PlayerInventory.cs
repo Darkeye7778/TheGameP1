@@ -24,15 +24,17 @@ public class PlayerInventory : MonoBehaviour
     private bool _useSecondary;
     private float _equipTime;
     private InventoryState _state;
-    
+    private PlayerController _player;
+    private WeaponMovement _weaponMovement;
     void Start()
     {
         _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
         _viewmodelRenderer = Viewmodel.GetComponent<Renderer>();
-        
-        if(Primary.Valid) Primary.Reset();
+        _weaponMovement = Viewmodel.GetComponent<WeaponMovement>();
+        if (Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
         
+        _player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
         SetCurrentWeapon(Primary);
     }
     
@@ -133,7 +135,9 @@ public class PlayerInventory : MonoBehaviour
     {
         if (!CurrentWeapon.Shoot())
             return;
-        
+
+        _player.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
+        _weaponMovement.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
         _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
         
@@ -142,6 +146,7 @@ public class PlayerInventory : MonoBehaviour
 
         if (!hit.collider.TryGetComponent(out IDamagable dmg))
             return;
+
 
         dmg.OnTakeDamage(new DamageSource{ Name = name, Object = gameObject }, CurrentWeapon.Weapon.Damage);
     }

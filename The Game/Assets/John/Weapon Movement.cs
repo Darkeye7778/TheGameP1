@@ -12,8 +12,7 @@ public class WeaponMovement : MonoBehaviour
     public float yMaxAngle = 30f;
     public float rotSpeed = 5f;
     public float zeroSpeed = 1f;
-    [Header("Recoil Settings")]
-    public float recoilIntensity = 1.5f;
+    
     
 
     
@@ -23,11 +22,7 @@ public class WeaponMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //handle recoil input for testing purposes
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            AddRecoil(new Vector3(Random.Range(-recoilIntensity, 0), Random.Range(-recoilIntensity, recoilIntensity), Random.Range(-recoilIntensity, recoilIntensity)));
-        }
+ 
         // Smoothly interpolate the weapon's rotation towards the target rotation
         transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(targetRot), Time.deltaTime * rotSpeed);
         targetRot = Vector3.Lerp(targetRot, Vector3.zero, Time.deltaTime * zeroSpeed);
@@ -50,14 +45,9 @@ public class WeaponMovement : MonoBehaviour
         targetRot.y = Mathf.Clamp(targetRot.y, -yMaxAngle, yMaxAngle);
     }
 
-    public void AddRecoil(Vector3 recoilRot)
+    public void AddRecoil(float recoilIntensity)
     {
-        // Add recoil to the target rotation
-        targetRot.x += recoilRot.x;
-        targetRot.y += recoilRot.y;
-        targetRot.z += recoilRot.z;
-        targetRot.z = Mathf.Clamp(targetRot.z, -zMaxAngle, zMaxAngle);
+        targetRot += new Vector3(Random.Range(-recoilIntensity, 0), Random.Range(-recoilIntensity, recoilIntensity), Random.Range(-recoilIntensity, recoilIntensity));
     }
-
 
 }

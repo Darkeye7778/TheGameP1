@@ -3,11 +3,9 @@
 
 using System;
 using JetBrains.Annotations;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
-
+using Random = UnityEngine.Random;
 [Serializable]
 public struct GroundState
 {
@@ -70,6 +68,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float Deacceleration = 15.0f;
     public Vector3 RealVelocity { get; private set; }
 
+    public float RecoilIntensity = 1.2f;
+    public float RecoilResetSpeed = 2.0f;
     public GameObject CurrentInteractable { get; private set; }
     
     private bool _moving => _ground.NearGround && RealVelocity.sqrMagnitude > 0.01;
@@ -86,6 +86,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _standingTimer, _footstepOffset;
     private float _leaningAngle, _leaningTarget;
     
+    private float _recoilOffsetX, _recoilOffsetY;
+
     private Vector3 _cameraOrigin, _cameraTarget;
 
     [Header("Audio")]
@@ -118,8 +120,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         CalculateVelocity();
         CalculateRotation();
         CalculateLeaning();
+        CameraRecoilReset();
         _stamina += GetStaminaRecoveryRate() * Time.deltaTime;
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
+
+  
 
         float originalHeight = _controller.height;
         float targetHeight = _crouch ? CrouchingHeight : StandingHeight;
@@ -212,7 +217,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _rotationY = Mathf.Clamp(_rotationY + y * MouseSensitivity, RotationClamp.x, RotationClamp.y);
         
         transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
-        Camera.transform.localRotation = Quaternion.Euler(-_rotationY, 0.0f, _leaningAngle);
+        Camera.transform.localRotation = Quaternion.Euler(-(_rotationY + _recoilOffsetX), _recoilOffsetY, _leaningAngle);
     }
     
     void CalculateLeaning()
@@ -365,6 +370,17 @@ public class PlayerController : MonoBehaviour, IDamagable
         return result;
     }
     
+    private void CameraRecoilReset()
+    {
+        _recoilOffsetX = Mathf.Lerp(_recoilOffsetX, 0f, Time.deltaTime * RecoilResetSpeed);
+        _recoilOffsetY = Mathf.Lerp(_recoilOffsetY, 0f, Time.deltaTime * RecoilResetSpeed);
+    }
+
+    public void AddRecoil(float recoilIntensity)
+    {
+        _recoilOffsetX +=  recoilIntensity;
+        _recoilOffsetY += Random.Range(-1.1f,1.1f);
+    }
     private bool ShouldCrouch()
     {
         if (Input.GetKey(KeyCode.C))
