@@ -33,9 +33,9 @@ public class gameManager : MonoBehaviour
     public GameObject TrapPrefab;
 
     [SerializeField] TextMeshProUGUI GunName;
-    [SerializeField] TextMeshProUGUI TerroristCountTxt;
     [SerializeField] TextMeshProUGUI TimerTxt;
     [SerializeField] TextMeshProUGUI HostageTxt;
+    [SerializeField] TextMeshProUGUI CurrentAmmoTxt;
     [SerializeField] TextMeshProUGUI AmmoReserveTxt;
     [SerializeField] TextMeshProUGUI GunModeTxt;
 
@@ -83,7 +83,6 @@ public class gameManager : MonoBehaviour
                 Instantiate(TrapPrefab, trapLocations.transform.GetChild(i));
                 trapsSpawned--;
             }
-
         _timer = StartingTime;
     }
 
@@ -103,20 +102,20 @@ public class gameManager : MonoBehaviour
                 menuActive.SetActive(false);
             }
         }
+        instance.GunAmmoBar.fillAmount = (float) inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
+        instance.GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
+        instance.CurrentAmmoTxt.text = inventoryScript.CurrentWeapon.LoadedAmmo.ToString("F0");
+        instance.AmmoReserveTxt.text = $"{inventoryScript.CurrentWeapon.LoadedAmmo}/{inventoryScript.CurrentWeapon.ReserveAmmo}";
+        instance.GunModeTxt.text = inventoryScript.CurrentWeapon.Mode.ToString();
 
+        instance.PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
+
+        _timer -= Time.deltaTime;
+        instance.TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
+ 
         if (playerScript.IsDead)
             youLose();
 
-        GunAmmoBar.fillAmount = (float) inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
-        GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
-        AmmoReserveTxt.text = $"{inventoryScript.CurrentWeapon.LoadedAmmo}/{inventoryScript.CurrentWeapon.ReserveAmmo}";
-        GunModeTxt.text = inventoryScript.CurrentWeapon.Mode.ToString();
-
-        PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
-        PlayerHealthBar.fillAmount = playerScript.HealthRelative;
-
-        _timer -= Time.deltaTime;
-        TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
 
         if(_timer <= 0.0f)
             youLose();
@@ -156,7 +155,6 @@ public class gameManager : MonoBehaviour
     public void updateTerroristCount(int amount)
     {
         gameTerroristCount += amount;
-        TerroristCountTxt.text = gameTerroristCount.ToString("F0");
     }
 
     public void updateHostagesSaved(int amount)
