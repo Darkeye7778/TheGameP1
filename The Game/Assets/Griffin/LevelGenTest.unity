@@ -286,9 +286,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Type>k__BackingField: {fileID: 11400000, guid: 0b19577c302041549b51c68a8db90889, type: 2}
-  <MapSize>k__BackingField: {x: 10, y: 1, z: 10}
-  RoomCount: 10
-  StopOdds: 0.1
+  <ExitPrefab>k__BackingField: {fileID: 3095021996766176241, guid: fd54308955165174395008ced6cb85d2, type: 3}
+  TargetRooms: 5
+  MaxIterations: 20
+  MaxLeafRetry: 3
+  Seed: 0
 --- !u!4 &529517292
 Transform:
   m_ObjectHideFlags: 0

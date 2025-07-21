@@ -1,6 +1,7 @@
 using System;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum RoomType
 {
@@ -95,7 +96,7 @@ public struct GridTransform
 public struct Connection
 {
     public GridTransform Transform;
-    public bool Required;
+    public bool Required, HasDoor, IsEntrance;
     public float Odds;
 }
 
@@ -106,6 +107,7 @@ public class RoomProperties : ScriptableObject
     public Vector2Int Size;
     public RoomType Type;
 
+    [FormerlySerializedAs("EntranceDoor")] public bool HasEntranceDoor = false;
     public Connection[] ConnectionPoints;
     
     public Vector3 CollisionBox => new Vector3(Size.x, 1f / MapGenerator.GRID_SIZE, Size.y) * MapGenerator.GRID_SIZE * 2f;
