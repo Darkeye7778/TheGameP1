@@ -115,6 +115,8 @@ public class MapGenerator : MonoBehaviour
 
         _generatedDoors = true;
         
+        // Weird ass bug that requires the first update tick to occur before creating doors.
+        
         foreach (ConnectionProfile connection in Parameters.Connections) 
             connection.Generate();
     }
