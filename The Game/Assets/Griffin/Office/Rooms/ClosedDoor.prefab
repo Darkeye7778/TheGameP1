@@ -9,10 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1291889091459870293}
-  - component: {fileID: 3550929772812098876}
-  - component: {fileID: 4134096543002279553}
+  - component: {fileID: 2971652209290305814}
+  - component: {fileID: 6971170206595898005}
+  - component: {fileID: 8412718145750705709}
   m_Layer: 0
-  m_Name: OpenDoor
+  m_Name: ClosedDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +34,15 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &3550929772812098876
+--- !u!33 &2971652209290305814
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8653454377755932052}
+  m_Mesh: {fileID: -7375960818186813708, guid: e0e5b07b3a754184eb4e78561cb9ed49, type: 3}
+--- !u!23 &6971170206595898005
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,11 +87,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &4134096543002279553
-MeshFilter:
+--- !u!64 &8412718145750705709
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8653454377755932052}
-  m_Mesh: {fileID: -7597595356746136591, guid: e0e5b07b3a754184eb4e78561cb9ed49, type: 3}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -7375960818186813708, guid: e0e5b07b3a754184eb4e78561cb9ed49, type: 3}

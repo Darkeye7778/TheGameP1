@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 0
+  m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
@@ -494,9 +494,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
-  field of view: 56
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -570,7 +570,7 @@ GameObject:
   - component: {fileID: 4312813636988301016}
   - component: {fileID: 5903794352544702648}
   - component: {fileID: 1185411268763175168}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -666,7 +666,6 @@ MonoBehaviour:
   yMaxAngle: 10
   rotSpeed: 10
   zeroSpeed: 10
-  recoilIntensity: 3
 --- !u!1 &8678175753631285267
 GameObject:
   m_ObjectHideFlags: 0
@@ -770,24 +769,26 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   ToggleLeaning: 1
-  LeanAngle: 30
-  LeanTransitionSpeed: 1.2
-  MaximumStamina: 6
+  LeanAngle: 15
+  LeanTransitionSpeed: 0.5
+  MaximumStamina: 7
   StaminaRecoveryTime: 0.75
-  StandingRecoveryRate: 3
-  WalkingSpeed: 1
+  StandingRecoveryRate: 4
+  WalkingSpeed: 2
   WalkingRecoveryMultiplier: 0.5
   StandingHeight: 2
   FootstepOffset: 1.25
-  RunningSpeed: 3
+  RunningSpeed: 4
   RunningDepletionRate: 1
   CrouchingSpeed: 0.5
   CrouchingRecoveryRate: 2
   GroundSnapTime: 0.1
   CrouchTime: 0.2
   CrouchingHeight: 1
-  Acceleration: 20
-  Deacceleration: 20
+  Acceleration: 30
+  Deacceleration: 30
+  RecoilIntensity: 1.2
+  RecoilResetSpeed: 2
   _footstepAudioSource: {fileID: 6931429584044393076}
 --- !u!114 &13453393890525378
 MonoBehaviour:

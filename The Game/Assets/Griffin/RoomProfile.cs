@@ -75,7 +75,7 @@ public class RoomProfile : MonoBehaviour
                 transform.position + transform.rotation * Properties.CollisionOffset, 
                 Properties.CollisionBox * 0.45f, 
                 Quaternion.identity,
-                ~MapGenerator.Instance.GridLayer
+                MapGenerator.Instance.GridMask
             );
         collider.enabled = true;
         

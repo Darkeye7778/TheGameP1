@@ -24,6 +24,7 @@ public class MapGenerator : MonoBehaviour
     public int GridLayer { get; private set; }
     public int ExitLayer { get; private set; }
 
+    public LayerMask GridMask => 1 << GridLayer;
     public LayerMask ExitMask => 1 << ExitLayer;
 
     public uint TargetRooms = 10;
