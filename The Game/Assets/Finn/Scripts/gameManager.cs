@@ -182,6 +182,24 @@ public class gameManager : MonoBehaviour
         }
     }
 
+    public void SetGunModeText(FireMode fireMode)
+    {
+        switch(fireMode)
+        {
+            case FireMode.Single:
+                GunModeTxt.text = "Single";
+                break;
+            case FireMode.ThreeRoundBurst:
+                GunModeTxt.text = "Burst";
+                break;
+            case FireMode.Auto:
+                GunModeTxt.text = "Auto";
+                break;
+            default:
+                GunModeTxt.text = "Error";
+                break;
+        }
+    }
     public void youWin()
     {
         statePause();

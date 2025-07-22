@@ -116,5 +116,6 @@ public class WeaponInstance
             // Rotates bits.
             Mode = (FireMode)(((uint) Mode << 1) | (uint) Mode >> (32 - 1));
         } while ((Weapon.FireModes & Mode) != Mode);
+        gameManager.instance.SetGunModeText(Mode);
     }
 }
