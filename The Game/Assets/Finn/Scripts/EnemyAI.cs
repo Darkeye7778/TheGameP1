@@ -137,6 +137,8 @@ public class enemyAI : MonoBehaviour, IDamagable
         else
         {
             StartCoroutine(flashRed());
+            agent.stoppingDistance = stoppingDistOrig;
+            agent.SetDestination(source.Object.transform.position);
         }
     }
 
@@ -145,11 +147,6 @@ public class enemyAI : MonoBehaviour, IDamagable
         return gameObject;
     }
     
-    public void OnDeath()
-    {
-        gameManager.instance.updateTerroristCount(-1);
-        Destroy(gameObject);
-    }
     IEnumerator flashRed()
     {
         model.material.color = Color.red;

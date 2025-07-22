@@ -29,8 +29,8 @@ public class Doors : MonoBehaviour, Interactable
     }
     public void OnInteract(GameObject interactor)
     {
-        float newAngle = Vector3.Dot(interactor.transform.forward, transform.forward) * -1;
-        swingAngle *= newAngle > 0 ? 1 : -1;
+        float newAngle = Vector3.Dot(interactor.transform.forward, transform.forward);
+        swingAngle *= newAngle > 0 ? -1 : 1;
         Open();
     }
 

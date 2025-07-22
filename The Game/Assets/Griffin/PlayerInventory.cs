@@ -8,64 +8,63 @@ public class PlayerInventory : MonoBehaviour
         Reloading,
         Ready
     }
-
+    
     public LayerMask EnemyMask;
     public Transform Eye;
     public GameObject Viewmodel;
     public WeaponInstance Primary, Secondary;
     public WeaponInstance CurrentWeapon => _useSecondary ? Secondary : Primary;
     public Vector3 UnequippedOffset;
-
+    
     [Header("Audio")]
     [SerializeField] private AudioSource _audioSource;
-
+    
     private MeshFilter _viewmodelMesh;
     private Renderer _viewmodelRenderer;
     private bool _useSecondary;
     private float _equipTime;
     private InventoryState _state;
-
+    private PlayerController _player;
+    private WeaponMovement _weaponMovement;
     void Start()
     {
         _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
         _viewmodelRenderer = Viewmodel.GetComponent<Renderer>();
-
-        if(Primary.Valid) Primary.Reset();
+        _weaponMovement = Viewmodel.GetComponent<WeaponMovement>();
+        if (Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
-
+        
+        _player = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
         SetCurrentWeapon(Primary);
-        gameManager.instance.SetAmmoTxt(CurrentWeapon.LoadedAmmo, CurrentWeapon.ReserveAmmo);
-        gameManager.instance.SetGunModeText(CurrentWeapon.Mode);
     }
-
+    
     void Update()
     {
+        if (Time.timeScale == 0.0f)
+            return;
+        
         Primary.Update();
         Secondary.Update();
-
+        
         if (Input.GetKeyDown(KeyCode.Alpha1) && _useSecondary)
         {
             _useSecondary = false;
             SetCurrentWeapon(CurrentWeapon);
-            gameManager.instance.GunToggle(_useSecondary);
-            gameManager.instance.SetGunModeText(CurrentWeapon.Mode);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) && !_useSecondary)
         {
             _useSecondary = true;
             SetCurrentWeapon(CurrentWeapon);
-            gameManager.instance.GunToggle(_useSecondary);
-            gameManager.instance.SetGunModeText(CurrentWeapon.Mode);
         }
-
-        if (Input.GetKeyDown(KeyCode.B))
+        
+        if(Input.GetKeyDown(KeyCode.B))
             CurrentWeapon.CycleFireMode();
-
+        
         if(_state != InventoryState.Ready)
-        {
+        { 
             _equipTime += Time.deltaTime;
             InterpolateWeapon();
-
+            
             if(_state == InventoryState.Reloading && CurrentWeapon.IsEmpty && !_audioSource.isPlaying)
             {
                 _audioSource.clip = CurrentWeapon.Weapon.EquipSound;
@@ -75,13 +74,13 @@ public class PlayerInventory : MonoBehaviour
             if (_equipTime < GetInterpolateTime())
                 return;
 
-            if(_state == InventoryState.Reloading)
+            if(_state == InventoryState.Reloading) 
                 CurrentWeapon.Reload();
-
+            
             _state = InventoryState.Ready;
             _equipTime = 0.0f;
         }
-
+        
         Debug.DrawRay(Eye.position, Eye.forward * CurrentWeapon.Weapon.MaxRange, Color.red);
 
         bool attemptShot = Input.GetButtonDown("Fire1");
@@ -91,7 +90,7 @@ public class PlayerInventory : MonoBehaviour
             _audioSource.clip = CurrentWeapon.Weapon.EmptySound;
             _audioSource.Play();
         }
-
+            
         if (CurrentWeapon.Mode == FireMode.Auto)
         {
             if (Input.GetButton("Fire1"))
@@ -116,10 +115,10 @@ public class PlayerInventory : MonoBehaviour
         _viewmodelRenderer.materials = weapon.Weapon.Materials;
         _viewmodelMesh.transform.localScale = weapon.Weapon.Scale;
         _viewmodelMesh.transform.localRotation = weapon.Weapon.Rotation;
-
+        
         _audioSource.clip = weapon.Weapon.EquipSound;
         _audioSource.Play();
-
+        
         _equipTime = 0.0f;
         _state = InventoryState.Equipping;
     }
@@ -137,14 +136,17 @@ public class PlayerInventory : MonoBehaviour
         if (!CurrentWeapon.Shoot())
             return;
 
+        _player.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
+        _weaponMovement.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
         _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
-
+        
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;
 
         if (!hit.collider.TryGetComponent(out IDamagable dmg))
             return;
+
 
         dmg.OnTakeDamage(new DamageSource{ Name = name, Object = gameObject }, CurrentWeapon.Weapon.Damage);
     }

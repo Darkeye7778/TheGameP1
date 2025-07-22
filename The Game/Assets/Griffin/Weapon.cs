@@ -39,10 +39,12 @@ public class Weapon : ScriptableObject
     public float ReloadTime;
     public float EquipTime;
     public float MaxRange;
+    public float RecoilIntensity;
 
     public uint FinalCapacity => Capacity + (OpenBolt ? 0u : 1u);
     public float FireDelta => 60.0f / FireRate;
 
+    
     public FireMode GetDefaultFireMode()
     {
         if (FireModes == 0)
