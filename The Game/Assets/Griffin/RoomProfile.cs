@@ -8,8 +8,10 @@ public class RoomProfile : MonoBehaviour
 { 
     [field: SerializeField]
     public RoomProperties Properties { get; private set; }
-    public RoomProfile Parent;
-    public bool HasRoomLeaf = false;
+    
+    [NonSerialized] public RoomProfile Parent;
+    [NonSerialized] public bool HasRoomLeaf = false;
+    [NonSerialized] public bool IsLeaf = true;
 
     private void Awake()
     {
@@ -37,6 +39,8 @@ public class RoomProfile : MonoBehaviour
                 RoomProfile roomProfile = leaf.GetComponent<RoomProfile>();
                     
                 roomProfile.Parent = this;
+                IsLeaf = false;
+                
                 if (roomProfile.TryFit()) // If it fits, let it be. Otherwise, try again.
                     break;
             }
