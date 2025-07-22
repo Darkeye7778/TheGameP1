@@ -669,9 +669,9 @@ GameObject:
   - component: {fileID: 6961125509972187573}
   - component: {fileID: 228885365660149218}
   - component: {fileID: 3841046718756865102}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Enemy_Poison
-  m_TagString: Untagged
+  m_TagString: EnemyLocation
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -685,9 +685,9 @@ Transform:
   m_GameObject: {fileID: 5971824022757822716}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.29, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
-  m_ConstrainProportionsScale: 1
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5971179163211682158}
   - {fileID: 6228043581218490954}
@@ -710,13 +710,13 @@ MonoBehaviour:
   shootPos: {fileID: 3133328320788133352}
   headPos: {fileID: 2276920370087730712}
   anim: {fileID: 228885365660149218}
-  HP: 30
+  HP: 100
   fov: 85
   faceTargetSpeed: 10
   roamDist: 15
   roamPauseTime: 5
   bullet: {fileID: 2557113864499110275, guid: a73724e288317ac46a9a7ce32136941d, type: 3}
-  shootRate: 0.5
+  shootRate: 0.1
 --- !u!136 &4446913140598879750
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -796,7 +796,7 @@ NavMeshAgent:
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 180
   m_StoppingDistance: 10
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
