@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-public class HostageDropOff : MonoBehaviour
+public class DropOff : MonoBehaviour
 {
     [SerializeField] private Sprite helicopterSprite;
     [SerializeField] private string noHostagesMessage;
@@ -15,7 +14,7 @@ public class HostageDropOff : MonoBehaviour
         {
             isPlayerInside = true;
 
-            int hostages = gameManager.instance.gameHostageSaved;
+            int hostages = gameManager.instance.gameHostageSaved; 
 
             if (hostages > 0)
             {
@@ -24,8 +23,6 @@ public class HostageDropOff : MonoBehaviour
                     "Ground Control",
                     hostagesCollectedMessage
                 );
-                gameManager.instance.updateGameGoal(0 - gameManager.instance.gameHostageSaved);
-                gameManager.instance.updateHostagesSaved(0 - gameManager.instance.gameHostageSaved);
             }
             else
             {
@@ -37,6 +34,7 @@ public class HostageDropOff : MonoBehaviour
             }
         }
     }
+
     private void OnTriggerExit(Collider other)
     {
         if (isPlayerInside && other.CompareTag("Player"))

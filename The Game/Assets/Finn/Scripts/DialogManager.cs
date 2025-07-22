@@ -41,5 +41,6 @@ public class DialogManager : MonoBehaviour
     {
         dialogPanel.SetActive(false);
         dialogActive = false;
+        gameManager.instance.stateUnpause();
     }
 }
