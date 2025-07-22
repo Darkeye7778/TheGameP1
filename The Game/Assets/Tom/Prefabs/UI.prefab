@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f6bfb8d433ca777408abae736cc2bd52, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -544,7 +544,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 1
+  m_FillAmount: 0.423
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -2400,9 +2400,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'New tex
-
-'
+  m_text: Hey!! How are you seeing this?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2676,7 +2674,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '05 : 00'
+  m_text: '01 : 00'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2709,7 +2707,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 4
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -3100,7 +3098,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: ecc58cde6c9e7434c9824f3c50b17c4e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3350,7 +3348,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Next Level
+  m_text: 'Respawn
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4265,7 +4265,7 @@ GameObject:
   - component: {fileID: 7886447606178387556}
   - component: {fileID: 1270189848287414240}
   m_Layer: 5
-  m_Name: GunNameBack
+  m_Name: GunNameBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4470,7 +4470,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: cddd5f66c28e86349bc78116fd063fdf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4688,7 +4688,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 1
+  m_FillAmount: 0.367
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -4763,7 +4763,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.95
+  m_FillAmount: 0.452
   m_FillClockwise: 1
   m_FillOrigin: 1
   m_UseSpriteMesh: 0
@@ -5116,18 +5116,25 @@ MonoBehaviour:
   TrapSpawnAmount: 4
   HostageSpawnAmount: 2
   PlayerDamagedFlash: {fileID: 8793773454289087570}
-  HostagePrefab: {fileID: 0}
-  EnemyPrefabs: []
-  TrapPrefab: {fileID: 0}
-  GunName: {fileID: 0}
-  TerroristCountTxt: {fileID: 0}
-  TimerTxt: {fileID: 0}
-  HostageTxt: {fileID: 0}
-  AmmoReserveTxt: {fileID: 0}
+  HostagePrefab: {fileID: 4815319118299908974, guid: eb497eb5e6a49e948ac67753d3fc0f15, type: 3}
+  EnemyPrefabs:
+  - {fileID: 1888929536689706082, guid: 3d8ff2f56dcaa604493b45e1c5add4a8, type: 3}
+  - {fileID: 3085698826229475078, guid: baaabd613d5d7ec43b51c9fe28b1f300, type: 3}
+  - {fileID: 5971824022757822716, guid: ea9e6c03e1af2094f8b68c6e6a03b842, type: 3}
+  TrapPrefab: {fileID: 8080341053289785211, guid: 01de1f7707022054c87ae169c904e1e0, type: 3}
+  GunName: {fileID: 2563754892173918154}
+  TimerTxt: {fileID: 307636736554268873}
+  HostageTxt: {fileID: 1873862976800530067}
+  CurrentAmmoTxt: {fileID: 6979641796278134832}
+  AmmoReserveTxt: {fileID: 537559480056151859}
   GunModeTxt: {fileID: 4177752963010170660}
   PlayerHealthBar: {fileID: 3989256036093210151}
   PlayerSprintBar: {fileID: 1270371047724714684}
+  PrimaryGun: {fileID: 1969205081178182296}
+  SecondaryGun: {fileID: 4193125707158098724}
   GunAmmoBar: {fileID: 492353653333670579}
+  _primaryGunSprite: {fileID: 21300000, guid: ecc58cde6c9e7434c9824f3c50b17c4e, type: 3}
+  _secondaryGunSprite: {fileID: 21300000, guid: cddd5f66c28e86349bc78116fd063fdf, type: 3}
   StartingTime: 120
 --- !u!114 &7054970248743840688
 MonoBehaviour:
@@ -6000,14 +6007,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.43529412, b: 0, a: 1}
+  m_Color: {r: 0.09967949, g: 0.70440245, b: 0.09967949, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 1d72d2a3733c0944185b2589c94357a4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6082,7 +6089,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Commander
+  m_text: The 4th Wall
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -87,7 +87,9 @@ public class gameManager : MonoBehaviour
                 Instantiate(TrapPrefab, trapLocations.transform.GetChild(i));
                 trapsSpawned--;
             }
+        Debug.Log("setting timer to 120");
         _timer = StartingTime;
+        Debug.Log("Timer should be set");
         this._primaryGunSprite = this.PrimaryGun.sprite;
         this._secondaryGunSprite = this.SecondaryGun.sprite;
     }
@@ -117,7 +119,7 @@ public class gameManager : MonoBehaviour
         instance.PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
 
         _timer -= Time.deltaTime;
-        instance.TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
+        instance.TimerTxt.text = $"{((int)_timer / 60).ToString("00")}:{((int)_timer % 60).ToString("00")}";
 
         if (playerScript.IsDead)
             youLose();
