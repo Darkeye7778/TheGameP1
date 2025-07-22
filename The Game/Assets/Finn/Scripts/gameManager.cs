@@ -36,7 +36,6 @@ public class gameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI TimerTxt;
     [SerializeField] TextMeshProUGUI HostageTxt;
     [SerializeField] TextMeshProUGUI CurrentAmmoTxt;
-    [SerializeField] TextMeshProUGUI AmmoReserveTxt;
     [SerializeField] TextMeshProUGUI GunModeTxt;
 
     public Image PlayerHealthBar;
@@ -49,8 +48,6 @@ public class gameManager : MonoBehaviour
     [SerializeField] private float timerFlashThreshold;
     [SerializeField] private float flashSpeed;
 
-    public Sprite _primaryGunSprite;
-    public Sprite _secondaryGunSprite;
     public float StartingTime = 120;
     private float _timer;
 
@@ -104,8 +101,6 @@ public class gameManager : MonoBehaviour
         {
             timerColorOrig = TimerTxt.color;
         }
-        this._primaryGunSprite = this.PrimaryGun.sprite;
-        this._secondaryGunSprite = this.SecondaryGun.sprite;
     }
 
     void Update()
@@ -124,35 +119,36 @@ public class gameManager : MonoBehaviour
                 menuActive.SetActive(false);
             }
         }
-        instance.GunAmmoBar.fillAmount = (float) inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
-        instance.GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
-        instance.CurrentAmmoTxt.text = inventoryScript.CurrentWeapon.LoadedAmmo.ToString("F0");
-        instance.AmmoReserveTxt.text = $"{inventoryScript.CurrentWeapon.LoadedAmmo}/{inventoryScript.CurrentWeapon.ReserveAmmo}";
-        instance.GunModeTxt.text = inventoryScript.CurrentWeapon.Mode.ToString();
+        
+        SetGunModeText(inventoryScript.CurrentWeapon.Mode);
+        SetAmmoTxt(inventoryScript.CurrentWeapon.LoadedAmmo, inventoryScript.CurrentWeapon.ReserveAmmo);
+        
+        GunAmmoBar.fillAmount = (float) inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
+        GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
+        PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
+        PlayerHealthBar.fillAmount = playerScript.HealthRelative;
 
-        instance.PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
+        PrimaryGun.sprite = inventoryScript.CurrentWeapon.Weapon.Image;
+        SecondaryGun.sprite = inventoryScript.HolsteredWeapon.Weapon.Image;
 
         _timer -= Time.deltaTime;
-        instance.TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
-        instance.TimerTxt.text = $"{((int)_timer / 60).ToString("00")}:{((int)_timer % 60).ToString("00")}";
+        instance.TimerTxt.text = $"{(int)_timer / 60:00}:{(int)_timer % 60:00}";
 
         if (playerScript.IsDead)
             youLose();
 
-        if (_timer > timerFlashThreshold && isFlashing)
+        if (_timer <= timerFlashThreshold)
         {
-            stopFlashing();
+            float t = Mathf.PingPong(Time.unscaledTime * flashSpeed, 1f);
+            TimerTxt.color = Color.Lerp(timerColorOrig, Color.red, t);
         }
+        else
+            TimerTxt.color = Color.white;
 
         if (_timer <= timerFlashThreshold && !hasTriggeredHelicopterMessage)
         {
             hasTriggeredHelicopterMessage = true;
-
-            if (!isFlashing)
-            {
-                Debug.Log("STarting flash");
-                startFlashing();
-            }
+            
             Time.timeScale = 0;
             isPaused = true;
 
@@ -165,29 +161,6 @@ public class gameManager : MonoBehaviour
 
         /*if (playerScript.TookDamage)
             StartCoroutine(PlayerHurtFlash());*/
-    }
-
-    private void startFlashing()
-    {
-        if (!isFlashing)
-        {
-            isFlashing = true;
-            flashRoutine = StartCoroutine(FlashTimerText());
-        }
-    }
-
-    private void stopFlashing()
-    {
-        if (isFlashing)
-        {
-            isFlashing = false;
-            if (flashRoutine != null)
-            {
-                StopCoroutine(flashRoutine);
-                flashRoutine = null;
-            }
-            TimerTxt.color = timerColorOrig;
-        }
     }
 
     public void statePause()
@@ -232,20 +205,6 @@ public class gameManager : MonoBehaviour
         gameHostageSaved += amount;
     }
 
-    public void GunToggle(bool isSecondary)
-    {
-        if (isSecondary)
-        {
-            this.PrimaryGun.sprite = _secondaryGunSprite;
-            this.SecondaryGun.sprite = _primaryGunSprite;
-        }
-        else
-        {
-            this.PrimaryGun.sprite = _primaryGunSprite;
-            this.SecondaryGun.sprite = _secondaryGunSprite;
-        }
-    }
-
     public void SetGunModeText(FireMode fireMode)
     {
         switch(fireMode)
@@ -265,10 +224,9 @@ public class gameManager : MonoBehaviour
         }
     }
 
-    public void SetAmmoTxt(uint currAmount, uint ReserveAmount)
+    public void SetAmmoTxt(uint currAmount, uint reserveAmount)
     {
-        this.CurrentAmmoTxt.text = currAmount.ToString("F0");
-        this.AmmoReserveTxt.text = ReserveAmount.ToString("F0");
+        CurrentAmmoTxt.text = $"{currAmount} | {reserveAmount}";
     }
 
     public void youWin()
@@ -284,17 +242,7 @@ public class gameManager : MonoBehaviour
         menuActive = menuLose;
         menuActive.SetActive(true);
     }
-
-    IEnumerator FlashTimerText()
-    {
-        while (true)
-        {
-            float t = Mathf.PingPong(Time.unscaledTime * flashSpeed, 1f);
-            TimerTxt.color = Color.Lerp(timerColorOrig, Color.red, t);
-            yield return null;
-            Debug.Log("Flash Running");
-        }
-    }
+    
     IEnumerator PlayerHurtFlash()
     {
         PlayerHurt.SetActive(true);

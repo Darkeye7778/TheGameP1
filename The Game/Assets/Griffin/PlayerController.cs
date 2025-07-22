@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     public bool Leaning => _leaningTarget != 0.0f;
     public bool LeaningLeft => _leaningTarget > 0.0f;
     public bool LeaningRight => _leaningTarget < 0.0f;
-    
 
     [Header("Stamina")]
     public float MaximumStamina = 1.0f;
@@ -67,7 +66,13 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float Acceleration = 7.0f;
     public float Deacceleration = 15.0f;
     public Vector3 RealVelocity { get; private set; }
+    
+    [Header("Audio")]
+    [SerializeField] private AudioSource _footstepAudioSource;
+    public SoundEmitterSettings DefaultSoundProfile;
 
+    // TODO: Attach to weapon.
+    [Header("Recoil")]
     public float RecoilIntensity = 1.2f;
     public float RecoilResetSpeed = 2.0f;
     public GameObject CurrentInteractable { get; private set; }
@@ -89,9 +94,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _recoilOffsetX, _recoilOffsetY;
 
     private Vector3 _cameraOrigin, _cameraTarget;
-
-    [Header("Audio")]
-    [SerializeField] private AudioSource _footstepAudioSource;
 
     void Start()
     {
@@ -138,11 +140,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         if (_moving && _footstepOffset >= FootstepOffset)
         {
-            if(_ground.SoundSettings is not null)
-            {
-                _footstepAudioSource.clip = _ground.SoundSettings.Footstep;
-                _footstepAudioSource.Play();
-            }
+            _footstepAudioSource.clip = _ground.SoundSettings != null ? _ground.SoundSettings.Footstep : DefaultSoundProfile.Footstep;
+            _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
         }
 
@@ -223,7 +222,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         //Leaning has the option to be toggled or held.
         if (ToggleLeaning)
         {
-            
             //leaning will reset when the same key is pressed again.
             if (Input.GetKeyDown(KeyCode.Q)) // Left
             {
@@ -332,7 +330,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         result.Distance = Mathf.Max(rayResult.distance - _controller.skinWidth, 0.0f);
         result.NearGround |= result.Distance < _controller.stepOffset;
         
-        GroundSoundProfile profile = rayResult.collider.GetComponent<GroundSoundProfile>();
+        SoundProfile profile = rayResult.collider.GetComponent<SoundProfile>();
         if (profile is not null)
             result.SoundSettings = profile.GetSettings();
         

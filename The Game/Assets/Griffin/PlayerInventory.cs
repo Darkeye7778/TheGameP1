@@ -14,6 +14,8 @@ public class PlayerInventory : MonoBehaviour
     public GameObject Viewmodel;
     public WeaponInstance Primary, Secondary;
     public WeaponInstance CurrentWeapon => _useSecondary ? Secondary : Primary;
+    public WeaponInstance HolsteredWeapon => _useSecondary ? Primary : Secondary;
+    
     public Vector3 UnequippedOffset;
     
     [Header("Audio")]

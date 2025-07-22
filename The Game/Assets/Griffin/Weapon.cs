@@ -14,6 +14,7 @@ public enum FireMode
 public class Weapon : ScriptableObject
 {
     public string Name;
+    public Sprite Image;
 
     [Header("Display")]
     public Mesh Mesh;
@@ -86,7 +87,6 @@ public class WeaponInstance
 
         ReserveAmmo -= amountToLoad;
         LoadedAmmo += amountToLoad;
-        gameManager.instance.SetAmmoTxt(LoadedAmmo, ReserveAmmo);
     }
 
     public void Reset()
@@ -94,8 +94,6 @@ public class WeaponInstance
         LoadedAmmo = Weapon.FinalCapacity;
         ReserveAmmo = Weapon.ReserveCapacity;
         Mode = Weapon.GetDefaultFireMode();
-        gameManager.instance.SetAmmoTxt(LoadedAmmo, ReserveAmmo);
-        gameManager.instance.SetGunModeText(Mode);
     }
 
     public void Update()
@@ -110,7 +108,6 @@ public class WeaponInstance
 
         _nextShot = 0.0f;
         --LoadedAmmo;
-        gameManager.instance.SetAmmoTxt(LoadedAmmo, ReserveAmmo);
         return true;
     }
 
@@ -121,6 +118,5 @@ public class WeaponInstance
             // Rotates bits.
             Mode = (FireMode)(((uint) Mode << 1) | (uint) Mode >> (32 - 1));
         } while ((Weapon.FireModes & Mode) != Mode);
-        gameManager.instance.SetGunModeText(Mode);
     }
 }
