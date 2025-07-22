@@ -34,6 +34,8 @@ public class PlayerInventory : MonoBehaviour
         if(Secondary.Valid) Secondary.Reset();
 
         SetCurrentWeapon(Primary);
+        gameManager.instance.SetAmmoTxt(CurrentWeapon.LoadedAmmo, CurrentWeapon.ReserveAmmo);
+        gameManager.instance.SetGunModeText(CurrentWeapon.Mode);
     }
 
     void Update()
@@ -46,12 +48,14 @@ public class PlayerInventory : MonoBehaviour
             _useSecondary = false;
             SetCurrentWeapon(CurrentWeapon);
             gameManager.instance.GunToggle(_useSecondary);
+            gameManager.instance.SetGunModeText(CurrentWeapon.Mode);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) && !_useSecondary)
         {
             _useSecondary = true;
             SetCurrentWeapon(CurrentWeapon);
             gameManager.instance.GunToggle(_useSecondary);
+            gameManager.instance.SetGunModeText(CurrentWeapon.Mode);
         }
 
         if (Input.GetKeyDown(KeyCode.B))

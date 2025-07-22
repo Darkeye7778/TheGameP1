@@ -200,6 +200,13 @@ public class gameManager : MonoBehaviour
                 break;
         }
     }
+
+    public void SetAmmoTxt(uint currAmount, uint ReserveAmount)
+    {
+        this.CurrentAmmoTxt.text = currAmount.ToString("F0");
+        this.AmmoReserveTxt.text = ReserveAmount.ToString("F0");
+    }
+
     public void youWin()
     {
         statePause();
