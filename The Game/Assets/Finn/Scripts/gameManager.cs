@@ -45,10 +45,21 @@ public class gameManager : MonoBehaviour
     public Image SecondaryGun;
     public Image GunAmmoBar;
 
+    [SerializeField] private float timerFlashThreshold;
+    [SerializeField] private float flashSpeed;
+
     public Sprite _primaryGunSprite;
     public Sprite _secondaryGunSprite;
     public float StartingTime = 120;
     private float _timer;
+
+    private Color timerColorOrig;
+    private bool isFlashing;
+    private Coroutine flashRoutine;
+
+    [SerializeField] private Sprite helicopterSprite;
+
+    private bool hasTriggeredHelicopterMessage;
 
     void Awake()
     {
@@ -88,6 +99,10 @@ public class gameManager : MonoBehaviour
                 trapsSpawned--;
             }
         _timer = StartingTime;
+        if (TimerTxt != null)
+        {
+            timerColorOrig = TimerTxt.color;
+        }
         this._primaryGunSprite = this.PrimaryGun.sprite;
         this._secondaryGunSprite = this.SecondaryGun.sprite;
     }
@@ -118,14 +133,59 @@ public class gameManager : MonoBehaviour
 
         _timer -= Time.deltaTime;
         instance.TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
+        instance.TimerTxt.text = $"{((int)_timer / 60).ToString("00")}:{((int)_timer % 60).ToString("00")}";
 
         if (playerScript.IsDead)
             youLose();
 
+        if (_timer > timerFlashThreshold && isFlashing)
+        {
+            stopFlashing();
+        }
 
-        if(_timer <= 0.0f)
+        if (_timer <= timerFlashThreshold && !hasTriggeredHelicopterMessage)
+        {
+            hasTriggeredHelicopterMessage = true;
+
+            if (!isFlashing)
+            {
+                Debug.Log("STarting flash");
+                startFlashing();
+            }
+            Time.timeScale = 0;
+            isPaused = true;
+
+            int secondsRemaining = Mathf.RoundToInt(timerFlashThreshold);
+            string unit = secondsRemaining == 1 ? "second" : "seconds";
+            DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have leave in {secondsRemaining} {unit}! Get those hostages and run!");
+        }
+        if (_timer <= 0.0f)
             youLose();
     }
+
+    private void startFlashing()
+    {
+        if (!isFlashing)
+        {
+            isFlashing = true;
+            flashRoutine = StartCoroutine(FlashTimerText());
+        }
+    }
+
+    private void stopFlashing()
+    {
+        if (isFlashing)
+        {
+            isFlashing = false;
+            if (flashRoutine != null)
+            {
+                StopCoroutine(flashRoutine);
+                flashRoutine = null;
+            }
+            TimerTxt.color = timerColorOrig;
+        }
+    }
+
     public void statePause()
     {
         isPaused = true;
@@ -219,5 +279,16 @@ public class gameManager : MonoBehaviour
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
+    }
+
+    IEnumerator FlashTimerText()
+    {
+        while (true)
+        {
+            float t = Mathf.PingPong(Time.unscaledTime * flashSpeed, 1f);
+            TimerTxt.color = Color.Lerp(timerColorOrig, Color.red, t);
+            yield return null;
+            Debug.Log("Flash Running");
+        }
     }
 }
