@@ -86,6 +86,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = MaximumHealth;
 
         _previousPosition = transform.position;
+        gameManager.instance.PlayerHealthBar.fillAmount = HealthRelative;
     }
 
     void Update()
@@ -104,6 +105,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         _stamina += GetStaminaRecoveryRate() * Time.deltaTime;
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
+        gameManager.instance.PlayerSprintBar.fillAmount = StaminaRelative;
         float originalHeight = _controller.height;
         float targetHeight = _crouch ? CrouchingHeight : StandingHeight;
 
@@ -221,6 +223,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health -= damage;
         StartCoroutine(DamageFlash());
         _health = Mathf.Clamp(_health, 0.0f, MaximumHealth);
+        gameManager.instance.PlayerHealthBar.fillAmount = HealthRelative;
     }
 
     public GameObject GameObject()

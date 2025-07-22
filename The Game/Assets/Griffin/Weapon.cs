@@ -14,7 +14,7 @@ public enum FireMode
 public class Weapon : ScriptableObject
 {
     public string Name;
-    
+
     [Header("Display")]
     public Mesh Mesh;
     public Material[] Materials;
@@ -22,20 +22,20 @@ public class Weapon : ScriptableObject
     public Vector3 Scale;
     public Quaternion Rotation;
 
-    [Header("Sounds")] 
+    [Header("Sounds")]
     public AudioClip EquipSound;
     public AudioClip FireSound;
     public AudioClip ReloadSound;
     public AudioClip EmptySound;
 
-    [Header("Statistics")] 
+    [Header("Statistics")]
     public uint Capacity;
     public uint ReserveCapacity;
     public uint FireRate;
     public int Damage; // Possible healing weapons?
     public FireMode FireModes;
     public bool OpenBolt;
-    
+
     public float ReloadTime;
     public float EquipTime;
     public float MaxRange;
@@ -62,7 +62,7 @@ public class WeaponInstance
 {
     public Weapon Weapon;
     public uint LoadedAmmo, ReserveAmmo;
-    
+
     public bool IsEmpty => LoadedAmmo == 0;
     public bool IsFull => LoadedAmmo >= Weapon.FinalCapacity;
     public bool HasReserve => ReserveAmmo != 0;
@@ -76,14 +76,15 @@ public class WeaponInstance
 
     public void Reload()
     {
-        if (!CanReload) 
+        if (!CanReload)
             return;
 
-        uint remainingCapacity = Weapon.FinalCapacity - LoadedAmmo; 
+        uint remainingCapacity = Weapon.FinalCapacity - LoadedAmmo;
         uint amountToLoad = Math.Min(ReserveAmmo, remainingCapacity);
 
         ReserveAmmo -= amountToLoad;
         LoadedAmmo += amountToLoad;
+        gameManager.instance.SetAmmoTxt(LoadedAmmo, ReserveAmmo);
     }
 
     public void Reset()
@@ -91,11 +92,13 @@ public class WeaponInstance
         LoadedAmmo = Weapon.FinalCapacity;
         ReserveAmmo = Weapon.ReserveCapacity;
         Mode = Weapon.GetDefaultFireMode();
+        gameManager.instance.SetAmmoTxt(LoadedAmmo, ReserveAmmo);
+        gameManager.instance.SetGunModeText(Mode);
     }
 
     public void Update()
     {
-        _nextShot += Time.deltaTime; 
+        _nextShot += Time.deltaTime;
     }
 
     public bool Shoot()
@@ -105,7 +108,7 @@ public class WeaponInstance
 
         _nextShot = 0.0f;
         --LoadedAmmo;
-
+        gameManager.instance.SetAmmoTxt(LoadedAmmo, ReserveAmmo);
         return true;
     }
 
@@ -116,5 +119,6 @@ public class WeaponInstance
             // Rotates bits.
             Mode = (FireMode)(((uint) Mode << 1) | (uint) Mode >> (32 - 1));
         } while ((Weapon.FireModes & Mode) != Mode);
+        gameManager.instance.SetGunModeText(Mode);
     }
 }
