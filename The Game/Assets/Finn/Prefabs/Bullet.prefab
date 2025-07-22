@@ -50,9 +50,11 @@ MonoBehaviour:
   type: 0
   rb: {fileID: -6567492172922615552}
   damageSource: {fileID: 7602721071215650339}
+  initialDamage: 0
   damageAmount: 10
   damageRate: 0
   speed: 24
+  statusDuration: 0
   destroyTime: 6
 --- !u!54 &-6567492172922615552
 Rigidbody:
@@ -80,7 +82,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &7796251441718024934
 SphereCollider:
   m_ObjectHideFlags: 0
