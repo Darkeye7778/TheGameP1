@@ -44,6 +44,7 @@ public class gameManager : MonoBehaviour
     public Image PrimaryGun;
     public Image SecondaryGun;
     public Image GunAmmoBar;
+    public GameObject PlayerHurt;
 
     [SerializeField] private float timerFlashThreshold;
     [SerializeField] private float flashSpeed;
@@ -161,6 +162,9 @@ public class gameManager : MonoBehaviour
         }
         if (_timer <= 0.0f)
             youLose();
+
+        /*if (playerScript.TookDamage)
+            StartCoroutine(PlayerHurtFlash());*/
     }
 
     private void startFlashing()
@@ -290,5 +294,11 @@ public class gameManager : MonoBehaviour
             yield return null;
             Debug.Log("Flash Running");
         }
+    }
+    IEnumerator PlayerHurtFlash()
+    {
+        PlayerHurt.SetActive(true);
+        yield return new WaitForSeconds(0.05f);
+        PlayerHurt.SetActive(false);
     }
 }
