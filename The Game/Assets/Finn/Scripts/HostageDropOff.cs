@@ -3,46 +3,31 @@ using System.Collections;
 
 public class HostageDropOff : MonoBehaviour
 {
-    [SerializeField] private Sprite helicopterSprite;
-    [SerializeField] private string noHostagesMessage;
-    [SerializeField] private string hostagesCollectedMessage;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
 
-    private bool isPlayerInside;
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!isPlayerInside && other.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            isPlayerInside = true;
-
-            int hostages = gameManager.instance.gameHostageSaved;
-
-            if (hostages > 0)
+            if (gameManager.instance.gameHostageSaved >= 1)
             {
-                DialogManager.Instance.ShowDialog(
-                    helicopterSprite,
-                    "Ground Control",
-                    hostagesCollectedMessage
-                );
                 gameManager.instance.updateGameGoal(0 - gameManager.instance.gameHostageSaved);
                 gameManager.instance.updateHostagesSaved(0 - gameManager.instance.gameHostageSaved);
             }
             else
             {
-                DialogManager.Instance.ShowDialog(
-                    helicopterSprite,
-                    "Ground Control",
-                    noHostagesMessage
-                );
+                Debug.Log("No Hostages, Go Go GO!");
             }
-        }
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (isPlayerInside && other.CompareTag("Player"))
-        {
-            isPlayerInside = false;
-            DialogManager.Instance.HideDialog();
         }
     }
 }
