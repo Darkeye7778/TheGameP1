@@ -65,13 +65,13 @@ public static class Direction
 [Serializable]
 public struct GridTransform
 {
-    public GridTransform(Vector2Int position, ExitDirection direction)
+    public GridTransform(Vector2 position, ExitDirection direction)
     {
         Position = position;
         Rotation = direction;
     }
     
-    public Vector2Int Position;
+    public Vector2 Position;
     public ExitDirection Rotation;
 
     public Vector3 WorldPosition => new Vector3(MapGenerator.GRID_SIZE * Position.x, 0, MapGenerator.GRID_SIZE * Position.y);
@@ -81,7 +81,7 @@ public struct GridTransform
         Vector3 rotated = Direction.ToQuaternion(a.Rotation) * new Vector3(b.Position.x, 0, b.Position.y);
         
         return new GridTransform(
-            a.Position + new Vector2Int((int) rotated.x, (int) rotated.z),
+            a.Position + new Vector2(rotated.x, rotated.z),
             Direction.AddDirection(a.Rotation, b.Rotation)
         );
     }
@@ -96,7 +96,8 @@ public struct GridTransform
 public struct Connection
 {
     public GridTransform Transform;
-    public bool Required, HasDoor, IsEntrance;
+    public bool Required, HasDoor;
+    [NonSerialized] public bool IsEntrance;
     public float Odds;
 }
 
@@ -105,11 +106,12 @@ public class RoomProperties : ScriptableObject
 {
     public GameObject Prefab;
     public Vector2Int Size;
+    public Vector2 Offset;
     public RoomType Type;
 
     [FormerlySerializedAs("EntranceDoor")] public bool HasEntranceDoor = false;
     public Connection[] ConnectionPoints;
     
     public Vector3 CollisionBox => new Vector3(Size.x, 1f / MapGenerator.GRID_SIZE, Size.y) * MapGenerator.GRID_SIZE * 2f;
-    public Vector3 CollisionOffset => new Vector3(0f, 0f, CollisionBox.z / 2f);
+    public Vector3 CollisionOffset => new Vector3(0f, 0f, CollisionBox.z / 2f) + new Vector3(Offset.x, 0f, Offset.y) * MapGenerator.GRID_SIZE;
 }

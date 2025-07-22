@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ConnectionProfile : MonoBehaviour
 {
@@ -18,9 +19,6 @@ public class ConnectionProfile : MonoBehaviour
 
     public void Generate()
     {
-        if (Generated)
-            return;
-        
         Collider collider = GetComponent<Collider>();
         collider.enabled = false;
         Connected = Physics.Raycast(transform.position + transform.forward * -0.1f, transform.forward, out RaycastHit hit, 1f, layer);
@@ -39,8 +37,16 @@ public class ConnectionProfile : MonoBehaviour
         
         Other.Generated = true;
         Other.Connected = true;
+
+        bool isEntrance = Connection.IsEntrance || Other.Connection.IsEntrance;
+        if (!isEntrance && Random.Range(0f, 1f) > MapGenerator.Instance.Type.ConnectRoomsOdds)
+        {
+            Other.Connected = false;
+            return;
+        }
         
-        if (Connection.HasDoor || Other.Connection.HasDoor)
+        bool isDoor = Connection.HasDoor || Other.Connection.HasDoor;
+        if (!Generated && isDoor)
             Instantiate(Utils.PickRandom(MapGenerator.Instance.Type.OpenDoors), transform);
     }
 

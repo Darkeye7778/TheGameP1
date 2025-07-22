@@ -1,3 +1,4 @@
+
 using UnityEditor;
 using UnityEngine;
 
@@ -11,5 +12,14 @@ public class MapGeneratorEditor : Editor
             return;
         if(GUILayout.Button("Iterate"))
             MapGenerator.Instance.Iterate();
+        
+        if(GUILayout.Button("Clean Up"))
+            MapGenerator.Instance.Cleanup();
+        
+        if(GUILayout.Button("Regenerate"))
+        {
+            MapGenerator.Instance.CustomSeed = 0;
+            MapGenerator.Instance.Generate();
+        }
     }
 }

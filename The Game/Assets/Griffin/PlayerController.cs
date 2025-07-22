@@ -123,9 +123,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         CameraRecoilReset();
         _stamina += GetStaminaRecoveryRate() * Time.deltaTime;
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
-
-  
-
+        
         float originalHeight = _controller.height;
         float targetHeight = _crouch ? CrouchingHeight : StandingHeight;
         
