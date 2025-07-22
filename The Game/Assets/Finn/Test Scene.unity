@@ -7223,6 +7223,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.09967949
       objectReference: {fileID: 0}
+    - target: {fileID: 1969205081178182296, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ecc58cde6c9e7434c9824f3c50b17c4e, type: 3}
     - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: GunName
       value: 
@@ -7236,6 +7240,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1261205270}
     - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: PrimaryGun
+      value: 
+      objectReference: {fileID: 1428335904}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: SecondaryGun
+      value: 
+      objectReference: {fileID: 1237945358}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: AmmoReserveTxt
       value: 
       objectReference: {fileID: 1009116648}
@@ -7248,13 +7260,25 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: _primaryGunSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ecc58cde6c9e7434c9824f3c50b17c4e, type: 3}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: gameTerroristCount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: _secondaryGunSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: cddd5f66c28e86349bc78116fd063fdf, type: 3}
     - target: {fileID: 3989256036093210151, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_FillAmount
       value: 0.423
       objectReference: {fileID: 0}
+    - target: {fileID: 4193125707158098724, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: cddd5f66c28e86349bc78116fd063fdf, type: 3}
     - target: {fileID: 4337389183314554861, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -9397,6 +9421,17 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!114 &1237945358 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4193125707158098724, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+  m_PrefabInstance: {fileID: 1089465300}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &1241720787
 Mesh:
   m_ObjectHideFlags: 0
@@ -10407,6 +10442,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1428335904 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1969205081178182296, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+  m_PrefabInstance: {fileID: 1089465300}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!43 &1519760333

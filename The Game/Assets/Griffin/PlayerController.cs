@@ -86,6 +86,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = MaximumHealth;
 
         _previousPosition = transform.position;
+        gameManager.instance.PlayerHealthBar.fillAmount = HealthRelative;
     }
 
     void Update()

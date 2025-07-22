@@ -41,8 +41,12 @@ public class gameManager : MonoBehaviour
 
     public Image PlayerHealthBar;
     public Image PlayerSprintBar;
+    public Image PrimaryGun;
+    public Image SecondaryGun;
     public Image GunAmmoBar;
 
+    public Sprite _primaryGunSprite;
+    public Sprite _secondaryGunSprite;
     public float StartingTime = 120;
     private float _timer;
 
@@ -84,6 +88,8 @@ public class gameManager : MonoBehaviour
                 trapsSpawned--;
             }
         _timer = StartingTime;
+        this._primaryGunSprite = this.PrimaryGun.sprite;
+        this._secondaryGunSprite = this.SecondaryGun.sprite;
     }
 
     void Update()
@@ -112,7 +118,7 @@ public class gameManager : MonoBehaviour
 
         _timer -= Time.deltaTime;
         instance.TimerTxt.text = $"{(int)_timer / 60}:{Mathf.Max(_timer % 60, 0.0f):F0}";
- 
+
         if (playerScript.IsDead)
             youLose();
 
@@ -160,6 +166,27 @@ public class gameManager : MonoBehaviour
     public void updateHostagesSaved(int amount)
     {
         gameHostageSaved += amount;
+    }
+
+    public void GunToggle(bool isSecondary)
+    {
+        if (isSecondary)
+        {
+            this.PrimaryGun.sprite = _secondaryGunSprite;
+            this.SecondaryGun.sprite = _primaryGunSprite;
+        }
+        else
+        {
+            this.PrimaryGun.sprite = _primaryGunSprite;
+            this.SecondaryGun.sprite = _secondaryGunSprite;
+        }
+    }
+
+    public void youWin()
+    {
+        statePause();
+        menuActive = menuWin;
+        menuActive.SetActive(true);
     }
 
     public void youLose()
