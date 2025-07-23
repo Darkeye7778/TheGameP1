@@ -294,6 +294,10 @@ public class PlayerController : MonoBehaviour, IDamagable
                 CurrentInteractable = null;
             }
         }
+        else
+        {
+            CurrentInteractable = null;
+        }
     }
 
     float GetSpeedDirectional()

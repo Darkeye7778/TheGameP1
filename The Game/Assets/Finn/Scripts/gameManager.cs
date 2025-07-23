@@ -47,7 +47,7 @@ public class gameManager : MonoBehaviour
     private Color timerColorOrig;
     private bool isFlashing;
     private Coroutine flashRoutine;
-
+    private bool loseMenuUp;
     [SerializeField] private Sprite helicopterSprite;
 
     private bool hasTriggeredHelicopterMessage;
@@ -56,7 +56,8 @@ public class gameManager : MonoBehaviour
     {
         menuActive = null;
         stateUnpause();
-
+        loseMenuUp = false;
+        menuLose.SetActive(false);
         instance = this;
         
         timeScaleOrig = Time.timeScale;
@@ -79,7 +80,7 @@ public class gameManager : MonoBehaviour
         playerScript = player.GetComponent<PlayerController>();
         inventoryScript = player.GetComponent<PlayerInventory>();
     }
-    
+
 
     void Update()
     {
@@ -96,11 +97,11 @@ public class gameManager : MonoBehaviour
                 stateUnpause();
             }
         }
-        
+
         SetGunModeText(inventoryScript.CurrentWeapon.Mode);
         SetAmmoTxt(inventoryScript.CurrentWeapon.LoadedAmmo, inventoryScript.CurrentWeapon.ReserveAmmo);
-        
-        GunAmmoBar.fillAmount = (float) inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
+
+        GunAmmoBar.fillAmount = (float)inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
         GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
         PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
         PlayerHealthBar.fillAmount = playerScript.HealthRelative;
@@ -111,8 +112,7 @@ public class gameManager : MonoBehaviour
         _timer -= Time.deltaTime;
         instance.TimerTxt.text = $"{(int)_timer / 60:00}:{(int)_timer % 60:00}";
 
-        if (playerScript.IsDead)
-            youLose();
+
 
         if (_timer <= timerFlashThreshold)
         {
@@ -133,12 +133,21 @@ public class gameManager : MonoBehaviour
         if (_timer <= 0.0f)
             youLose();
 
-        if (playerScript.CurrentInteractable != null && !InteractionPopup.activeSelf) 
+        if (playerScript.CurrentInteractable != null) 
             InteractionPopup.SetActive(true);
-        else if (InteractionPopup.activeSelf)
+        else
             InteractionPopup.SetActive(false);
+     
             /*if (playerScript.TookDamage)
                 StartCoroutine(PlayerHurtFlash());*/
+    }
+    private void LateUpdate()
+    {
+        if (playerScript.IsDead && !loseMenuUp)
+        {
+            loseMenuUp = true;
+            youLose();
+        }
     }
 
     public void statePause()

@@ -136,13 +136,14 @@ public class enemyAI : MonoBehaviour, IDamagable
         if (HP <= 0)
         {
             gameManager.instance.updateTerroristCount(-1);
-            Destroy(gameObject);
+            
             int dropItem = Random.Range(0, 100);
             if (dropItem < dropRate)
             {
                 int itemToDrop = Random.Range(0, Drops.Length);
-                Instantiate(Drops[itemToDrop], transform.position, transform.rotation);
+                Instantiate(Drops[itemToDrop], headPos.position, Quaternion.identity);
             }
+            Destroy(gameObject);
         }
         else
         {
