@@ -18,6 +18,10 @@ public class enemyAI : MonoBehaviour, IDamagable
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
 
+    [SerializeField] GameObject[] Drops;
+
+    public int dropRate;
+
     Color colorOrg;
 
     float shootTimer;
@@ -133,6 +137,12 @@ public class enemyAI : MonoBehaviour, IDamagable
         {
             gameManager.instance.updateTerroristCount(-1);
             Destroy(gameObject);
+            int dropItem = Random.Range(0, 100);
+            if (dropItem < dropRate)
+            {
+                int itemToDrop = Random.Range(0, Drops.Length);
+                Instantiate(Drops[itemToDrop], transform.position, transform.rotation);
+            }
         }
         else
         {
