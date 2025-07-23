@@ -12,6 +12,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject InteractionPopup;
 
     public bool isPaused;
     public GameObject player;
@@ -132,13 +133,18 @@ public class gameManager : MonoBehaviour
         if (_timer <= 0.0f)
             youLose();
 
-        /*if (playerScript.TookDamage)
-            StartCoroutine(PlayerHurtFlash());*/
+        if (playerScript.CurrentInteractable != null && !InteractionPopup.activeSelf) 
+            InteractionPopup.SetActive(true);
+        else if (InteractionPopup.activeSelf)
+            InteractionPopup.SetActive(false);
+            /*if (playerScript.TookDamage)
+                StartCoroutine(PlayerHurtFlash());*/
     }
 
     public void statePause()
     {
         isPaused = true;
+        InteractionPopup.SetActive(false);
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;

@@ -7,9 +7,19 @@ public class ButtonFunctions : MonoBehaviour
         gameManager.instance.stateUnpause();
     }
 
+    public void Respawn()
+    {
+        gameManager.instance.stateUnpause();
+        MapGenerator.Instance.GenerateSame();
+    }
+
+    public void NextLevel()
+    {
+        MapGenerator.Instance.TargetRooms += 2;
+
+    }
     public void Restart()
     {
-        Time.timeScale = 1.0f;
         gameManager.instance.stateUnpause();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
