@@ -21,5 +21,11 @@ public class MapGeneratorEditor : Editor
             MapGenerator.Instance.CustomSeed = 0;
             MapGenerator.Instance.Generate();
         }
+        
+        if(GUILayout.Button("Regenerate (Same Seed)"))
+        {
+            MapGenerator.Instance.CustomSeed = MapGenerator.Instance.Seed;
+            MapGenerator.Instance.Generate();
+        }
     }
 }

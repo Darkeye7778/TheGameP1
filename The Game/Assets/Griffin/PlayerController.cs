@@ -1,5 +1,6 @@
 #define PLAYERCONTROLLER_INERTIA
 #define PLAYERCONTROLLER_DIRECTIONAL_SPEED
+#define PLAYERCONTROLLER_AUTOCROUCH
 
 using System;
 using JetBrains.Annotations;
@@ -66,6 +67,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float Acceleration = 7.0f;
     public float Deacceleration = 15.0f;
     public Vector3 RealVelocity { get; private set; }
+    public Vector3 LocalRealVelocity { get; private set; }
     
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
@@ -102,7 +104,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         _stamina = MaximumStamina;
         _health = _previousHealth = MaximumHealth;
 
-        _cameraOrigin = Camera.transform.localPosition;
+        _controller.height = StandingHeight;
+
+        //_cameraOrigin = Camera.transform.localPosition;
         _previousPosition = transform.position;
     }
     
@@ -112,6 +116,8 @@ public class PlayerController : MonoBehaviour, IDamagable
             return;
 
         _previousHealth = _health;
+
+        _cameraOrigin = _controller.height / 2 * Vector3.up;
         
         GetRealVelocity();
         _ground = GetGround();
@@ -384,7 +390,11 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         float heightDifference = StandingHeight - _controller.height / 2.0f - _controller.radius;
         // I cannot get Physics.CheckCapsule to work.
+    #if PLAYERCONTROLLER_AUTOCROUCH
         return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference);
+    #else
+        return false;
+    #endif
     }
 
     private void GetStandingTime()
@@ -397,6 +407,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void GetRealVelocity()
     {
         RealVelocity = (transform.position - _previousPosition) / Time.deltaTime;
+        LocalRealVelocity = transform.worldToLocalMatrix * RealVelocity;
         _previousPosition = transform.position;
     }
 }

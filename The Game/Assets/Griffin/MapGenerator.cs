@@ -38,8 +38,6 @@ public class MapGenerator : MonoBehaviour
     public const int GRID_SIZE = 5;
 
     public GenerationParams Parameters { get; private set; }
-
-    private bool _generatedDoors = false;
     
     void Awake()
     {
@@ -54,9 +52,12 @@ public class MapGenerator : MonoBehaviour
     public void Generate()
     {
         Cleanup();
-        
+
         if (CustomSeed == 0)
             Seed = Random.Range(int.MinValue, int.MaxValue);
+        else
+            Seed = CustomSeed;
+        
         Random.InitState(Seed);
 
         GameObject newCell = Instantiate(Utils.PickRandom(Type.StartingRooms).Prefab);
@@ -82,6 +83,11 @@ public class MapGenerator : MonoBehaviour
         
         foreach (RoomProfile room in Parameters.Rooms)
             room.GenerateConnections();
+        
+        Physics.SyncTransforms();
+        
+        foreach (ConnectionProfile connection in Parameters.Connections) 
+            connection.Generate();
         
         // Degenerate seed
         if (Parameters.RemainingRooms <= 0)
@@ -109,8 +115,6 @@ public class MapGenerator : MonoBehaviour
             IterationBackbuffer = new List<RoomProfile>(),
             Connections = new List<ConnectionProfile>()
         };
-
-        _generatedDoors = false;
     }
 
     private static bool RemoveRoomlessLeafs(RoomProfile room)
@@ -139,19 +143,6 @@ public class MapGenerator : MonoBehaviour
             room.GenerateLeafs();
         
         Parameters.IterationBackbuffer.Clear();
-    }
-
-    public void Update()
-    {
-        if(_generatedDoors)
-            return;
-
-        _generatedDoors = true;
-        
-        // Weird ass bug that requires the first update tick to occur before creating doors.
-        
-        foreach (ConnectionProfile connection in Parameters.Connections) 
-            connection.Generate();
     }
 }
 
