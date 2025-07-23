@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public Vector2 RotationClamp = new(-90.0f, 90.0f);
     public int MaximumHealth = 100;
     public LayerMask GroundMask;
-    
+    public LayerMask InteractSkip;
     public int Health => (int) _health;
     public bool TookDamage => Health != _previousHealth;
     public bool IsDead => Health == 0;
@@ -279,7 +279,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     void CheckInteract()
     {
-        if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out RaycastHit hit, 3.0f, ~(1 << gameObject.layer)))
+        if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out RaycastHit hit, 3.0f, ~InteractSkip))
         {
             if (hit.collider.TryGetComponent(out Interactable interactable))
             {
