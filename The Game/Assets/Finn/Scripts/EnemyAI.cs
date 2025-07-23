@@ -170,4 +170,5 @@ public class enemyAI : MonoBehaviour, IDamagable
 
         Instantiate(bullet, shootPos.position, transform.rotation);
     }
+
 }
