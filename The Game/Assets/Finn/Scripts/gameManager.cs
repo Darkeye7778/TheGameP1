@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -22,15 +23,6 @@ public class gameManager : MonoBehaviour
     public int gameTerroristCount;
     public int gameHostageCount;
     public int gameHostageSaved;
-
-    public int EnemySpawnAmount = 4;
-    public int TrapSpawnAmount = 4;
-    public int HostageSpawnAmount = 2;
-
-    public GameObject PlayerDamagedFlash;
-    public GameObject HostagePrefab;
-    public GameObject[] EnemyPrefabs;
-    public GameObject TrapPrefab;
 
     [SerializeField] TextMeshProUGUI GunName;
     [SerializeField] TextMeshProUGUI TimerTxt;
@@ -65,43 +57,28 @@ public class gameManager : MonoBehaviour
         stateUnpause();
 
         instance = this;
-
-        player = GameObject.FindWithTag("Player");
-        playerScript = player.GetComponent<PlayerController>();
-        inventoryScript = player.GetComponent<PlayerInventory>();
+        
         timeScaleOrig = Time.timeScale;
-        int hostageSpawned = HostageSpawnAmount;
-        GameObject hostageLocations = GameObject.FindWithTag("HostageLocation");
-        for (int i = 0; i < hostageLocations.transform.childCount; i++)
-            if (Random.Range(0.0f, 1.0f) <= (float) hostageSpawned / (hostageLocations.transform.childCount - i))
-            {
-                Instantiate(HostagePrefab, hostageLocations.transform.GetChild(i));
-                hostageSpawned--;
-            }
-
-        int enemySpawned = EnemySpawnAmount;
-        GameObject enemyLocations = GameObject.FindWithTag("EnemyLocation");
-        for (int i = 0; i < enemyLocations.transform.childCount; i++)
-            if (Random.Range(0.0f, 1.0f) <= (float)enemySpawned / (enemyLocations.transform.childCount - i))
-            {
-                Instantiate(EnemyPrefabs[Random.Range(0, EnemyPrefabs.Length)], enemyLocations.transform.GetChild(i));
-                enemySpawned--;
-            }
-
-        int trapsSpawned = TrapSpawnAmount;
-        GameObject trapLocations = GameObject.FindWithTag("Trap");
-        for (int i = 0; i < trapLocations.transform.childCount; i++)
-            if (Random.Range(0.0f, 1.0f) <= (float) trapsSpawned / (trapLocations.transform.childCount - i))
-            {
-                Instantiate(TrapPrefab, trapLocations.transform.GetChild(i));
-                trapsSpawned--;
-            }
+        
         _timer = StartingTime;
         if (TimerTxt != null)
         {
             timerColorOrig = TimerTxt.color;
         }
     }
+
+    private void Start()
+    {
+        MapGenerator.Instance.Generate();
+    }
+
+    public void SetPlayer(GameObject _player)
+    {
+        player = _player;
+        playerScript = player.GetComponent<PlayerController>();
+        inventoryScript = player.GetComponent<PlayerInventory>();
+    }
+    
 
     void Update()
     {
@@ -116,7 +93,6 @@ public class gameManager : MonoBehaviour
             else if (menuActive == menuPause)
             {
                 stateUnpause();
-                menuActive.SetActive(false);
             }
         }
         
@@ -149,9 +125,6 @@ public class gameManager : MonoBehaviour
         {
             hasTriggeredHelicopterMessage = true;
             
-            Time.timeScale = 0;
-            isPaused = true;
-
             int secondsRemaining = Mathf.RoundToInt(timerFlashThreshold);
             string unit = secondsRemaining == 1 ? "second" : "seconds";
             DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have leave in {secondsRemaining} {unit}! Get those hostages and run!");

@@ -13,6 +13,10 @@ public class GenerationParams
     public List<RoomProfile> IterationRooms, IterationBackbuffer;
     public List<RoomProfile> Rooms;
     public List<ConnectionProfile> Connections;
+    public List<HostageSpawnPoint> HostageSpawnPoints;
+    public List<PlayerSpawnPoint> PlayerSpawnPoints;
+    public List<EnemySpawnPoint> EnemySpawnPoints;
+    public List<TrapSpawnPoint> TrapSpawnPoints;
 }
 
 public class MapGenerator : MonoBehaviour
@@ -28,10 +32,18 @@ public class MapGenerator : MonoBehaviour
     public LayerMask GridMask => 1 << GridLayer;
     public LayerMask ExitMask => 1 << ExitLayer;
 
-    public uint TargetRooms = 10;
-    public uint MaxIterations = 20;
-    public uint MaxLeafRetry = 3; 
+    [Tooltip("Leave 0 to randomly generate a new seed.")]
     public int CustomSeed = 0;
+    
+    [Header("Parameters")]
+    public uint TargetRooms = 10;
+    public int EnemySpawnAmount = 4;
+    public int TrapSpawnAmount = 4;
+    public int HostageSpawnAmount = 2;
+    
+    [Header("Generation Settings")]
+    public uint MaxIterations = 20;
+    public uint MaxLeafRetry = 3;
     
     public int Seed { get; private set; }
     
@@ -45,8 +57,6 @@ public class MapGenerator : MonoBehaviour
         
         GridLayer = LayerMask.NameToLayer("Map Generator Grid");
         ExitLayer = LayerMask.NameToLayer("Map Generator Connection");
-        
-        Generate();
     }
     
     public void Generate()
@@ -89,6 +99,8 @@ public class MapGenerator : MonoBehaviour
         foreach (ConnectionProfile connection in Parameters.Connections) 
             connection.Generate();
         
+        SpawnAll();
+        
         // Degenerate seed
         if (Parameters.RemainingRooms <= 0)
             return;
@@ -99,12 +111,45 @@ public class MapGenerator : MonoBehaviour
         Generate();
     }
 
+    public void SpawnAll()
+    {
+        GameObject player = Instantiate(Type.Player, Utils.PickRandom(Parameters.PlayerSpawnPoints).transform);
+        gameManager.instance.SetPlayer(player);
+
+        Spawn(ref Parameters.EnemySpawnPoints, ref Type.Enemies, EnemySpawnAmount);
+        Spawn(ref Parameters.HostageSpawnPoints, ref Type.Hostages, HostageSpawnAmount);
+        Spawn(ref Parameters.TrapSpawnPoints, ref Type.Traps, TrapSpawnAmount);
+    }
+
+    private void Spawn<T>(ref List<T> positions, ref GameObject[] spawns, int targetCount) where T : MonoBehaviour
+    {
+        int remaining = targetCount;
+        for (int i = 0; i < positions.Count; i++)
+            if (Random.Range(0.0f, 1.0f) <= (float)remaining / (positions.Count - i))
+            {
+                Instantiate(Utils.PickRandom(spawns), positions[i].transform);
+                remaining--;
+            }
+    }
+
     public void Cleanup()
     {
         if (Parameters != null)
         {
             foreach (RoomProfile room in Parameters.Rooms)
                 DestroyImmediate(room.gameObject);
+
+            foreach (EnemySpawnPoint spawn in Parameters.EnemySpawnPoints)
+                DestroyImmediate(spawn);
+            
+            foreach (TrapSpawnPoint spawn in Parameters.TrapSpawnPoints)
+                DestroyImmediate(spawn);
+            
+            foreach (HostageSpawnPoint spawn in Parameters.HostageSpawnPoints)
+                DestroyImmediate(spawn);
+            
+            foreach (PlayerSpawnPoint spawn in Parameters.PlayerSpawnPoints)
+                DestroyImmediate(spawn);
         }
         
         Parameters = new GenerationParams
@@ -113,7 +158,11 @@ public class MapGenerator : MonoBehaviour
             Rooms = new List<RoomProfile>(),
             IterationRooms = new List<RoomProfile>(),
             IterationBackbuffer = new List<RoomProfile>(),
-            Connections = new List<ConnectionProfile>()
+            Connections = new List<ConnectionProfile>(),
+            PlayerSpawnPoints = new List<PlayerSpawnPoint>(),
+            EnemySpawnPoints = new List<EnemySpawnPoint>(),
+            HostageSpawnPoints = new List<HostageSpawnPoint>(),
+            TrapSpawnPoints = new List<TrapSpawnPoint>()
         };
     }
 
@@ -161,5 +210,9 @@ public static class Utils
     public static T PickRandom<T>(T[] arr)
     {
         return arr[Random.Range(0, arr.Length)];
+    }
+    public static T PickRandom<T>(List<T> arr)
+    {
+        return arr[Random.Range(0, arr.Count)];
     }
 }

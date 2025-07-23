@@ -23,7 +23,10 @@ public class WeaponMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
- 
+        if (float.IsNaN(targetRot.x)) targetRot.x = 0;
+        if (float.IsNaN(targetRot.y)) targetRot.y = 0;
+        if (float.IsNaN(targetRot.z)) targetRot.z = 0;
+        
         // Smoothly interpolate the weapon's rotation towards the target rotation
         _currentRotation = Quaternion.Lerp(_currentRotation, Quaternion.Euler(targetRot), Time.deltaTime * rotSpeed);
         targetRot = Vector3.Lerp(targetRot, Vector3.zero, Time.deltaTime * zeroSpeed);

@@ -279,7 +279,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     void CheckInteract()
     {
-        if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out RaycastHit hit, 3.0f, ~(1 << gameObject.layer)))
+        if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out RaycastHit hit, 3.0f))
         {
             if (hit.collider.TryGetComponent(out Interactable interactable))
             {
