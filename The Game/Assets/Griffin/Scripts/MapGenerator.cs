@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -50,6 +51,8 @@ public class MapGenerator : MonoBehaviour
     public const int GRID_SIZE = 5;
 
     public GenerationParams Parameters { get; private set; }
+
+    private NavMeshSurface _navMeshSurface;
     
     void Awake()
     {
@@ -57,6 +60,8 @@ public class MapGenerator : MonoBehaviour
         
         GridLayer = LayerMask.NameToLayer("Map Generator Grid");
         ExitLayer = LayerMask.NameToLayer("Map Generator Connection");
+
+        _navMeshSurface = GetComponent<NavMeshSurface>();
     }
     
     public void Generate()
@@ -99,6 +104,10 @@ public class MapGenerator : MonoBehaviour
         foreach (ConnectionProfile connection in Parameters.Connections) 
             connection.Generate();
         
+        _navMeshSurface.BuildNavMesh();
+        
+        // Makes enemies always random.
+        Random.InitState(Random.Range(int.MinValue, int.MaxValue));
         SpawnAll();
         
         // Degenerate seed
@@ -192,6 +201,12 @@ public class MapGenerator : MonoBehaviour
             room.GenerateLeafs();
         
         Parameters.IterationBackbuffer.Clear();
+    }
+
+    public void GenerateSame()
+    {
+        CustomSeed = Instance.Seed;
+        Generate();
     }
 }
 
