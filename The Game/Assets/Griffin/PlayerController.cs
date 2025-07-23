@@ -1,5 +1,6 @@
 #define PLAYERCONTROLLER_INERTIA
 #define PLAYERCONTROLLER_DIRECTIONAL_SPEED
+#define PLAYERCONTROLLER_AUTOCROUCH
 
 using System;
 using JetBrains.Annotations;
@@ -37,7 +38,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     public bool Leaning => _leaningTarget != 0.0f;
     public bool LeaningLeft => _leaningTarget > 0.0f;
     public bool LeaningRight => _leaningTarget < 0.0f;
-    
 
     [Header("Stamina")]
     public float MaximumStamina = 1.0f;
@@ -67,7 +67,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float Acceleration = 7.0f;
     public float Deacceleration = 15.0f;
     public Vector3 RealVelocity { get; private set; }
+    public Vector3 LocalRealVelocity { get; private set; }
+    
+    [Header("Audio")]
+    [SerializeField] private AudioSource _footstepAudioSource;
+    public SoundEmitterSettings DefaultSoundProfile;
 
+    // TODO: Attach to weapon.
+    [Header("Recoil")]
     public float RecoilIntensity = 1.2f;
     public float RecoilResetSpeed = 2.0f;
     public GameObject CurrentInteractable { get; private set; }
@@ -90,9 +97,6 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private Vector3 _cameraOrigin, _cameraTarget;
 
-    [Header("Audio")]
-    [SerializeField] private AudioSource _footstepAudioSource;
-
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -100,7 +104,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         _stamina = MaximumStamina;
         _health = _previousHealth = MaximumHealth;
 
-        _cameraOrigin = Camera.transform.localPosition;
+        _controller.height = StandingHeight;
+
+        //_cameraOrigin = Camera.transform.localPosition;
         _previousPosition = transform.position;
     }
     
@@ -110,6 +116,8 @@ public class PlayerController : MonoBehaviour, IDamagable
             return;
 
         _previousHealth = _health;
+
+        _cameraOrigin = _controller.height / 2 * Vector3.up;
         
         GetRealVelocity();
         _ground = GetGround();
@@ -123,9 +131,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         CameraRecoilReset();
         _stamina += GetStaminaRecoveryRate() * Time.deltaTime;
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
-
-  
-
+        
         float originalHeight = _controller.height;
         float targetHeight = _crouch ? CrouchingHeight : StandingHeight;
         
@@ -140,11 +146,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         if (_moving && _footstepOffset >= FootstepOffset)
         {
-            if(_ground.SoundSettings is not null)
-            {
-                _footstepAudioSource.clip = _ground.SoundSettings.Footstep;
-                _footstepAudioSource.Play();
-            }
+            _footstepAudioSource.clip = _ground.SoundSettings != null ? _ground.SoundSettings.Footstep : DefaultSoundProfile.Footstep;
+            _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
         }
 
@@ -225,7 +228,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         //Leaning has the option to be toggled or held.
         if (ToggleLeaning)
         {
-            
             //leaning will reset when the same key is pressed again.
             if (Input.GetKeyDown(KeyCode.Q)) // Left
             {
@@ -277,7 +279,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     void CheckInteract()
     {
-        if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out RaycastHit hit, 3.0f))
+        if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out RaycastHit hit, 3.0f, ~(1 << gameObject.layer)))
         {
             if (hit.collider.TryGetComponent(out Interactable interactable))
             {
@@ -334,7 +336,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         result.Distance = Mathf.Max(rayResult.distance - _controller.skinWidth, 0.0f);
         result.NearGround |= result.Distance < _controller.stepOffset;
         
-        GroundSoundProfile profile = rayResult.collider.GetComponent<GroundSoundProfile>();
+        SoundProfile profile = rayResult.collider.GetComponent<SoundProfile>();
         if (profile is not null)
             result.SoundSettings = profile.GetSettings();
         
@@ -388,7 +390,11 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         float heightDifference = StandingHeight - _controller.height / 2.0f - _controller.radius;
         // I cannot get Physics.CheckCapsule to work.
+    #if PLAYERCONTROLLER_AUTOCROUCH
         return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference);
+    #else
+        return false;
+    #endif
     }
 
     private void GetStandingTime()
@@ -401,6 +407,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void GetRealVelocity()
     {
         RealVelocity = (transform.position - _previousPosition) / Time.deltaTime;
+        LocalRealVelocity = transform.worldToLocalMatrix * RealVelocity;
         _previousPosition = transform.position;
     }
 }

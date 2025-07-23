@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Doors : MonoBehaviour, Interactable
 {
-    
+    public AudioClip sound;
     public float swingAngle = 90f;
     public float openSpeed = 5f;
     public bool isOpen = false;
@@ -10,20 +10,20 @@ public class Doors : MonoBehaviour, Interactable
     Vector3 openRot;
     Vector3 targetRot;
 
-
-
+    private AudioSource _audioSource;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         origRot = transform.eulerAngles;
         openRot = origRot + new Vector3(0, swingAngle, 0);
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.clip = sound;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
         targetRot = isOpen ? openRot : origRot;
         transform.rotation = Quaternion.Lerp(Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(targetRot), Time.deltaTime * openSpeed);
     }
@@ -31,6 +31,7 @@ public class Doors : MonoBehaviour, Interactable
     {
         float newAngle = Vector3.Dot(interactor.transform.forward, transform.forward);
         swingAngle *= newAngle > 0 ? -1 : 1;
+        _audioSource.Play();
         Open();
     }
 

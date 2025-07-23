@@ -10,10 +10,17 @@ public class PlayerInventory : MonoBehaviour
     }
     
     public LayerMask EnemyMask;
-    public Transform Eye;
-    public GameObject Viewmodel;
-    public WeaponInstance Primary, Secondary;
+    
+    [field:SerializeField] public Transform Eye { get; private set; }
+    [field:SerializeField] public GameObject Viewmodel { get; private set; }
+
+    [Header("Weapons")] 
+    public WeaponInstance Primary;
+    public WeaponInstance Secondary;
+    
     public WeaponInstance CurrentWeapon => _useSecondary ? Secondary : Primary;
+    public WeaponInstance HolsteredWeapon => _useSecondary ? Primary : Secondary;
+    
     public Vector3 UnequippedOffset;
     
     [Header("Audio")]
@@ -26,6 +33,7 @@ public class PlayerInventory : MonoBehaviour
     private InventoryState _state;
     private PlayerController _player;
     private WeaponMovement _weaponMovement;
+    
     void Start()
     {
         _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
@@ -146,7 +154,6 @@ public class PlayerInventory : MonoBehaviour
 
         if (!hit.collider.TryGetComponent(out IDamagable dmg))
             return;
-
 
         dmg.OnTakeDamage(new DamageSource{ Name = name, Object = gameObject }, CurrentWeapon.Weapon.Damage);
     }

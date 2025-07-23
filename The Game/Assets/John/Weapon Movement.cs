@@ -4,18 +4,19 @@ public class WeaponMovement : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public PlayerController pc;
+    public PlayerInventory Inventory;
     [Header("Weapon Movement Settings")]
-    public float swayIntensity = 0.5f;
+    public float LookSwayIntensity = 0.5f;
+    public float MoveSwayIntensity = 0.5f;
     [Header("Weapon Rotation Limits")]
     public float zMaxAngle = 30f;
     public float xMaxAngle = 30f;
     public float yMaxAngle = 30f;
     public float rotSpeed = 5f;
     public float zeroSpeed = 1f;
-    
-    
 
-    
+
+    private Quaternion _currentRotation;
     Vector3 targetRot;
     
 
@@ -24,19 +25,27 @@ public class WeaponMovement : MonoBehaviour
     {
  
         // Smoothly interpolate the weapon's rotation towards the target rotation
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(targetRot), Time.deltaTime * rotSpeed);
+        _currentRotation = Quaternion.Lerp(_currentRotation, Quaternion.Euler(targetRot), Time.deltaTime * rotSpeed);
         targetRot = Vector3.Lerp(targetRot, Vector3.zero, Time.deltaTime * zeroSpeed);
         Sway();
+
+        transform.localRotation = _currentRotation * Inventory.CurrentWeapon.Weapon.Rotation;
     }
 
     void Sway()
     {
         // Calculate the target rotation based on mouse input and player velocity
         targetRot += new Vector3(
-            -Input.GetAxis("Mouse Y") * swayIntensity,
-            Input.GetAxis("Mouse X") * swayIntensity,
-            -pc.RealVelocity.normalized.x * swayIntensity
-        );
+            Input.GetAxis("Mouse Y"),
+            -Input.GetAxis("Mouse X") ,
+            0f
+        ) * LookSwayIntensity;
+
+        targetRot += new Vector3(
+            pc.LocalRealVelocity.y + -pc.LocalRealVelocity.z,
+            0f,
+            pc.LocalRealVelocity.x
+        ) * MoveSwayIntensity;
 
 
         // Clamp the target rotation to prevent excessive rotation

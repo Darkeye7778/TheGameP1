@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class GenerationParams
@@ -29,14 +30,14 @@ public class MapGenerator : MonoBehaviour
 
     public uint TargetRooms = 10;
     public uint MaxIterations = 20;
-    public uint MaxLeafRetry = 3;
-    public int Seed = 0;
+    public uint MaxLeafRetry = 3; 
+    public int CustomSeed = 0;
+    
+    public int Seed { get; private set; }
     
     public const int GRID_SIZE = 5;
 
     public GenerationParams Parameters { get; private set; }
-
-    private bool _generatedDoors = false;
     
     void Awake()
     {
@@ -44,18 +45,19 @@ public class MapGenerator : MonoBehaviour
         
         GridLayer = LayerMask.NameToLayer("Map Generator Grid");
         ExitLayer = LayerMask.NameToLayer("Map Generator Connection");
-
-        Parameters = new GenerationParams
-        {
-            RemainingRooms = (int) TargetRooms,
-            Rooms = new List<RoomProfile>(),
-            IterationRooms = new List<RoomProfile>(),
-            IterationBackbuffer = new List<RoomProfile>(),
-            Connections = new List<ConnectionProfile>()
-        };
         
-        if (Seed == 0)
+        Generate();
+    }
+    
+    public void Generate()
+    {
+        Cleanup();
+
+        if (CustomSeed == 0)
             Seed = Random.Range(int.MinValue, int.MaxValue);
+        else
+            Seed = CustomSeed;
+        
         Random.InitState(Seed);
 
         GameObject newCell = Instantiate(Utils.PickRandom(Type.StartingRooms).Prefab);
@@ -81,6 +83,38 @@ public class MapGenerator : MonoBehaviour
         
         foreach (RoomProfile room in Parameters.Rooms)
             room.GenerateConnections();
+        
+        Physics.SyncTransforms();
+        
+        foreach (ConnectionProfile connection in Parameters.Connections) 
+            connection.Generate();
+        
+        // Degenerate seed
+        if (Parameters.RemainingRooms <= 0)
+            return;
+        
+        Debug.Log("Regenerating degenerate seed.");
+        
+        CustomSeed = 0;
+        Generate();
+    }
+
+    public void Cleanup()
+    {
+        if (Parameters != null)
+        {
+            foreach (RoomProfile room in Parameters.Rooms)
+                DestroyImmediate(room.gameObject);
+        }
+        
+        Parameters = new GenerationParams
+        {
+            RemainingRooms = (int) TargetRooms,
+            Rooms = new List<RoomProfile>(),
+            IterationRooms = new List<RoomProfile>(),
+            IterationBackbuffer = new List<RoomProfile>(),
+            Connections = new List<ConnectionProfile>()
+        };
     }
 
     private static bool RemoveRoomlessLeafs(RoomProfile room)
@@ -95,7 +129,9 @@ public class MapGenerator : MonoBehaviour
 
     public RoomProperties PickRandomCell()
     {
-        return Utils.PickRandom(Type.Cells);
+        if(Random.Range(0f, 1f) < Type.RoomOdds)
+            return Utils.PickRandom(Type.Rooms);
+        return Utils.PickRandom(Type.Hallways);
     }
     
     public void Iterate()
@@ -107,19 +143,6 @@ public class MapGenerator : MonoBehaviour
             room.GenerateLeafs();
         
         Parameters.IterationBackbuffer.Clear();
-    }
-
-    public void Update()
-    {
-        if(_generatedDoors)
-            return;
-
-        _generatedDoors = true;
-        
-        // Weird ass bug that requires the first update tick to occur before creating doors.
-        
-        foreach (ConnectionProfile connection in Parameters.Connections) 
-            connection.Generate();
     }
 }
 

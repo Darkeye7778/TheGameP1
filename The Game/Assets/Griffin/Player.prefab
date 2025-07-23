@@ -660,7 +660,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pc: {fileID: 5196501353832197646}
-  swayIntensity: -0.2
+  Inventory: {fileID: 13453393890525378}
+  LookSwayIntensity: 0.5
+  MoveSwayIntensity: 0.01
   zMaxAngle: 10
   xMaxAngle: 10
   yMaxAngle: 10
@@ -776,7 +778,7 @@ MonoBehaviour:
   StandingRecoveryRate: 4
   WalkingSpeed: 2
   WalkingRecoveryMultiplier: 0.5
-  StandingHeight: 2
+  StandingHeight: 3
   FootstepOffset: 1.25
   RunningSpeed: 4
   RunningDepletionRate: 1
@@ -784,12 +786,13 @@ MonoBehaviour:
   CrouchingRecoveryRate: 2
   GroundSnapTime: 0.1
   CrouchTime: 0.2
-  CrouchingHeight: 1
+  CrouchingHeight: 2
   Acceleration: 30
   Deacceleration: 30
+  _footstepAudioSource: {fileID: 6931429584044393076}
+  DefaultSoundProfile: {fileID: 11400000, guid: 5883801b99b892449ad812de47f956ec, type: 2}
   RecoilIntensity: 1.2
   RecoilResetSpeed: 2
-  _footstepAudioSource: {fileID: 6931429584044393076}
 --- !u!114 &13453393890525378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -805,8 +808,8 @@ MonoBehaviour:
   EnemyMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  Eye: {fileID: 118387666064388299}
-  Viewmodel: {fileID: 4303587978960419591}
+  <Eye>k__BackingField: {fileID: 1060491938467310747}
+  <Viewmodel>k__BackingField: {fileID: 4303587978960419591}
   Primary:
     Weapon: {fileID: 11400000, guid: 9bf917107a52c5849bb07c9d7f1c0dfe, type: 2}
     LoadedAmmo: 0

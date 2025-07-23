@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class GroundSoundProfile : MonoBehaviour
+public class SoundProfile : MonoBehaviour
 {
     [SerializeField]
     private SoundEmitterSettings _soundProfile;
