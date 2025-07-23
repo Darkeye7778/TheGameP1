@@ -15,7 +15,8 @@ public class ButtonFunctions : MonoBehaviour
 
     public void NextLevel()
     {
-        MapGenerator.Instance.TargetRooms += 2;
+        Restart();
+        gameManager.instance.NextLevel();
 
     }
     public void Restart()

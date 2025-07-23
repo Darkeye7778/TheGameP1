@@ -59,9 +59,9 @@ public class gameManager : MonoBehaviour
         loseMenuUp = false;
         menuLose.SetActive(false);
         instance = this;
-        
+
         timeScaleOrig = Time.timeScale;
-        
+
         _timer = StartingTime;
         if (TimerTxt != null)
         {
@@ -125,7 +125,7 @@ public class gameManager : MonoBehaviour
         if (_timer <= timerFlashThreshold && !hasTriggeredHelicopterMessage)
         {
             hasTriggeredHelicopterMessage = true;
-            
+
             int secondsRemaining = Mathf.RoundToInt(timerFlashThreshold);
             string unit = secondsRemaining == 1 ? "second" : "seconds";
             DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have leave in {secondsRemaining} {unit}! Get those hostages and run!");
@@ -133,11 +133,11 @@ public class gameManager : MonoBehaviour
         if (_timer <= 0.0f)
             youLose();
 
-        if (playerScript.CurrentInteractable != null) 
+        if (playerScript.CurrentInteractable != null)
             InteractionPopup.SetActive(true);
         else
             InteractionPopup.SetActive(false);
-     
+
             /*if (playerScript.TookDamage)
                 StartCoroutine(PlayerHurtFlash());*/
     }
@@ -211,7 +211,6 @@ public class gameManager : MonoBehaviour
                 break;
         }
     }
-
     public void SetAmmoTxt(uint currAmount, uint reserveAmount)
     {
         CurrentAmmoTxt.text = $"{currAmount} | {reserveAmount}";
@@ -224,13 +223,20 @@ public class gameManager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
+    public void NextLevel()
+    {
+        MapGenerator.Instance.TargetRooms += 2;
+        MapGenerator.Instance.EnemySpawnAmount++;
+        stateUnpause();
+        MapGenerator.Instance.Generate();
+    }
     public void youLose()
     {
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
     }
-    
+
     IEnumerator PlayerHurtFlash()
     {
         PlayerHurt.SetActive(true);
