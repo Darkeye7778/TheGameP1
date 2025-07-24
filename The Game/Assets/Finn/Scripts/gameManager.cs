@@ -130,7 +130,7 @@ public class gameManager : MonoBehaviour
 
             int secondsRemaining = Mathf.RoundToInt(timerFlashThreshold);
             string unit = secondsRemaining == 1 ? "second" : "seconds";
-            DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have leave in {secondsRemaining} {unit}! Get those hostages and run!");
+            DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have to leave in {secondsRemaining} {unit}! Get those hostages and run!");
         }
         if (_timer <= 0.0f)
             youLose();
