@@ -20,6 +20,10 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     [SerializeField] GameObject[] Drops;
 
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip[] footsteps;
+    [SerializeField] AudioClip[] shootSounds;
+    bool playingStep;
     public int dropRate;
 
     Color colorOrg;
@@ -59,6 +63,12 @@ public class enemyAI : MonoBehaviour, IDamagable
         {
             roamCheck();
         }
+
+        if (agent.velocity.magnitude > 0.1f && !playingStep)
+        {
+            StartCoroutine(playFootstep());
+        }
+
     }
     void roamCheck()
     {
@@ -170,6 +180,21 @@ public class enemyAI : MonoBehaviour, IDamagable
         shootTimer = 0;
 
         Instantiate(bullet, shootPos.position, transform.rotation);
+
+        audioSource.clip = shootSounds[Random.Range(0, shootSounds.Length)];
+        audioSource.Play();
+    }
+
+    IEnumerator playFootstep()
+    {
+        if (playingStep)
+            yield break;
+        playingStep = true;
+        audioSource.clip = footsteps[Random.Range(0, footsteps.Length)];
+        audioSource.pitch = Random.Range(0.8f, 1.2f);
+        audioSource.Play();
+        yield return new WaitForSeconds(audioSource.clip.length);
+        playingStep = false;
     }
 
 }
