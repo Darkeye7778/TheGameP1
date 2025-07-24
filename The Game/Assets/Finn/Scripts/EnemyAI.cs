@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
+using UnityEngine.ProBuilder.Shapes;
+
 public class enemyAI : MonoBehaviour, IDamagable
 {
     [SerializeField] Renderer model;
@@ -124,26 +126,14 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     void CheckDoor()
     {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
 
-        RaycastHit hit;
-        if (Physics.SphereCast(transform.position, 5f, playerDir, out hit))
+        foreach (var collider in colliders)
         {
-
-            Doors door = hit.collider.GetComponent<Doors>();
-            if (door != null)
-            {
-                if (!door.isOpen)
-                {
-                    door.OnInteract(gameObject);
-                   
-                   
-                }
-
-            }
-
+            Doors door = collider.GetComponent<Doors>();
+            if(door != null && !door.isOpen)
+                door.OnInteract(gameObject);
         }
-   
-
     }
 
     void faceTarget()

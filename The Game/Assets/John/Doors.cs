@@ -40,13 +40,4 @@ public class Doors : MonoBehaviour, Interactable
         isOpen = !isOpen;
         openRot = origRot + new Vector3(0, swingAngle, 0);
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        enemyAI enemyAI = other.GetComponent<enemyAI>();
-        if (enemyAI != null)
-        {
-            Open();
-        }
-    }
 }

@@ -106,8 +106,6 @@ public class MapGenerator : MonoBehaviour
         
         _navMeshSurface.BuildNavMesh();
         
-        // Makes enemies always random.
-        Random.InitState(Random.Range(int.MinValue, int.MaxValue));
         SpawnAll();
         
         // Degenerate seed
