@@ -28,6 +28,7 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     Color colorOrg;
 
+  
     float shootTimer;
     float roamTimer;
     float angleToPlayer;
@@ -68,7 +69,7 @@ public class enemyAI : MonoBehaviour, IDamagable
         {
             StartCoroutine(playFootstep());
         }
-
+        CheckDoor();
     }
     void roamCheck()
     {
@@ -120,6 +121,31 @@ public class enemyAI : MonoBehaviour, IDamagable
         agent.stoppingDistance = 0;
         return false;
     }
+
+    void CheckDoor()
+    {
+
+        RaycastHit hit;
+        if (Physics.SphereCast(transform.position, 5f, playerDir, out hit))
+        {
+
+            Doors door = hit.collider.GetComponent<Doors>();
+            if (door != null)
+            {
+                if (!door.isOpen)
+                {
+                    door.OnInteract(gameObject);
+                   
+                   
+                }
+
+            }
+
+        }
+   
+
+    }
+
     void faceTarget()
     {
         Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, transform.position.y, playerDir.z));
@@ -146,7 +172,7 @@ public class enemyAI : MonoBehaviour, IDamagable
         if (HP <= 0)
         {
             gameManager.instance.updateTerroristCount(-1);
-            
+
             int dropItem = Random.Range(0, 100);
             if (dropItem < dropRate)
             {
@@ -167,7 +193,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     {
         return gameObject;
     }
-    
+
     IEnumerator flashRed()
     {
         model.material.color = Color.red;
@@ -196,5 +222,4 @@ public class enemyAI : MonoBehaviour, IDamagable
         yield return new WaitForSeconds(audioSource.clip.length);
         playingStep = false;
     }
-
 }

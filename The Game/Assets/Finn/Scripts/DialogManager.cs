@@ -10,7 +10,7 @@ public class DialogManager : MonoBehaviour
     public Image speakerImage;
     public TMP_Text speakerNameText;
     public TMP_Text dialogText;
-
+    public AudioClip dialogHideSound;
     private bool dialogActive = false;
 
     private void Awake()
@@ -39,8 +39,11 @@ public class DialogManager : MonoBehaviour
 
     public void HideDialog()
     {
+        if (dialogHideSound != null)
+        {
+            AudioSource.PlayClipAtPoint(dialogHideSound, Camera.main.transform.position);
+        }
         dialogPanel.SetActive(false);
         dialogActive = false;
-        gameManager.instance.stateUnpause();
     }
 }
