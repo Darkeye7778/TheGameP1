@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEditor;
@@ -103,11 +104,11 @@ public class MapGenerator : MonoBehaviour
         
         foreach (ConnectionProfile connection in Parameters.Connections) 
             connection.Generate();
-        
+
         _navMeshSurface.BuildNavMesh();
         
         SpawnAll();
-        
+
         // Degenerate seed
         if (Parameters.RemainingRooms <= 0)
             return;

@@ -107,7 +107,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = _previousHealth = MaximumHealth;
         _controller.height = StandingHeight;
         _inventory = GetComponent<PlayerInventory>();
-        _spawnPoint = UnityEngine.GameObject.FindGameObjectWithTag("PlayerSpawn").GetComponent<PlayerSpawnPoint>();
+        PlayerSpawnPoint playerSpawnPoint = UnityEngine.GameObject.FindGameObjectWithTag("PlayerSpawn").GetComponent<PlayerSpawnPoint>();
+        _spawnPoint = playerSpawnPoint;
         //_cameraOrigin = Camera.transform.localPosition;
         _previousPosition = transform.position;
     }
