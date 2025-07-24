@@ -30,7 +30,8 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     Color colorOrg;
 
-  
+
+    private float _doorCooldown;
     float shootTimer;
     float roamTimer;
     float angleToPlayer;
@@ -52,7 +53,9 @@ public class enemyAI : MonoBehaviour, IDamagable
     // Update is called once per frame 
     void Update()
     {
-        anim.SetFloat("Speed", agent.velocity.normalized.magnitude);
+        _doorCooldown += Time.deltaTime;
+        
+        anim.SetFloat("Speed", agent.velocity.magnitude);
         if (agent.remainingDistance < 0.01f)
         {
             roamTimer += Time.deltaTime;
@@ -71,7 +74,9 @@ public class enemyAI : MonoBehaviour, IDamagable
         {
             StartCoroutine(playFootstep());
         }
-        CheckDoor();
+        
+        if(_doorCooldown > 1)
+            CheckDoor();
     }
     void roamCheck()
     {
@@ -132,7 +137,10 @@ public class enemyAI : MonoBehaviour, IDamagable
         {
             Doors door = collider.GetComponent<Doors>();
             if(door != null && !door.isOpen)
+            {
                 door.OnInteract(gameObject);
+                _doorCooldown = 0;
+            }
         }
     }
 

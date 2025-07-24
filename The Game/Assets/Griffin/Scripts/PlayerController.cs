@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+
 [Serializable]
 public struct GroundState
 {
@@ -98,7 +99,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     private Vector3 _cameraOrigin, _cameraTarget;
  
     private PlayerInventory _inventory;
-    private PlayerSpawnPoint _spawnPoint;
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -107,7 +107,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = _previousHealth = MaximumHealth;
         _controller.height = StandingHeight;
         _inventory = GetComponent<PlayerInventory>();
-        _spawnPoint = UnityEngine.GameObject.FindGameObjectWithTag("PlayerSpawn").GetComponent<PlayerSpawnPoint>();
         //_cameraOrigin = Camera.transform.localPosition;
         _previousPosition = transform.position;
     }
@@ -216,30 +215,15 @@ public class PlayerController : MonoBehaviour, IDamagable
     void CalculateRotation()
     {
         float x = Input.GetAxis("Mouse X"), // Left to Right
-              y = Input.GetAxis("Mouse Y"); // Down to Up
+            y = Input.GetAxis("Mouse Y"); // Down to Up
 
         _rotationX += x * MouseSensitivity;
         _rotationY = Mathf.Clamp(_rotationY + y * MouseSensitivity, RotationClamp.x, RotationClamp.y);
-        
-        transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
-        Camera.transform.localRotation = Quaternion.Euler(-(_rotationY + _recoilOffsetX), _recoilOffsetY, _leaningAngle);
-    }
-    
-    public void Respawn()
-    {
-        _health = MaximumHealth;
-        _stamina = MaximumStamina;
-        _crouch = false;
-        _running = false;
-        _velocity = Vector3.zero;
-        _rotationX = 0.0f;
-        _rotationY = 0.0f;
-        _leaningAngle = 0.0f;
-        _leaningTarget = 0.0f;
-        transform.position = _spawnPoint.transform.position;    
-        _inventory.ResetInventory();
-    }
 
+        transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
+        Camera.transform.localRotation =
+            Quaternion.Euler(-(_rotationY + _recoilOffsetX), _recoilOffsetY, _leaningAngle);
+    }
 
     void CalculateLeaning()
     {

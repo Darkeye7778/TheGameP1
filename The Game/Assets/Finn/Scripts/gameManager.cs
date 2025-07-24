@@ -140,8 +140,8 @@ public class gameManager : MonoBehaviour
         else
             InteractionPopup.SetActive(false);
 
-            /*if (playerScript.TookDamage)
-                StartCoroutine(PlayerHurtFlash());*/
+        if (playerScript.TookDamage)
+            StartCoroutine(PlayerHurtFlash());
     }
     private void LateUpdate()
     {
@@ -230,6 +230,7 @@ public class gameManager : MonoBehaviour
         MapGenerator.Instance.TargetRooms += 2;
         MapGenerator.Instance.EnemySpawnAmount++;
         MapGenerator.Instance.HostageSpawnAmount++;
+        MapGenerator.Instance.TrapSpawnAmount++;
         loseMenuUp = false;
         stateUnpause();
         MapGenerator.Instance.Generate();
