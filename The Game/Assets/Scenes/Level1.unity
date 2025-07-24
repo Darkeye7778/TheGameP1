@@ -294,17 +294,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1443775564 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 389328821058910558, guid: 3faf20b6de423584da1d206a50477441, type: 3}
-  m_PrefabInstance: {fileID: 1763699876}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1443775565 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4789615209414566896, guid: 3faf20b6de423584da1d206a50477441, type: 3}
   m_PrefabInstance: {fileID: 1763699876}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1443775564}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5953b59923e337a42b3155a336f82352, type: 3}
@@ -416,7 +411,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1206758716938329793, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Respawn
+      value: Retry
       objectReference: {fileID: 0}
     - target: {fileID: 1206758716938329793, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -446,6 +441,18 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 0.09803922
       objectReference: {fileID: 0}
+    - target: {fileID: 4337389183314554861, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5104195851456065282, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_text
+      value: New Run
+      objectReference: {fileID: 0}
+    - target: {fileID: 5675322962777448386, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_text
+      value: New Run
+      objectReference: {fileID: 0}
     - target: {fileID: 7475922216581026785, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_Color.g
       value: 0
@@ -469,10 +476,22 @@ PrefabInstance:
     - target: {fileID: 8888622127801056208, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1443775564}
+      objectReference: {fileID: 1443775565}
     - target: {fileID: 8888622127801056208, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8888622127801056208, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: NextLevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 8888622127801056208, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ButtonFunctions, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8888622127801056208, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

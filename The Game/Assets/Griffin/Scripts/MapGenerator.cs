@@ -160,7 +160,7 @@ public class MapGenerator : MonoBehaviour
             foreach (PlayerSpawnPoint spawn in Parameters.PlayerSpawnPoints)
                 DestroyImmediate(spawn);
         }
-        
+
         Parameters = new GenerationParams
         {
             RemainingRooms = (int) TargetRooms,

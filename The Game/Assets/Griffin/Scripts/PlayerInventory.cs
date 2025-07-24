@@ -117,6 +117,14 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public void ResetInventory()
+    {
+        Primary.Reset();
+        Secondary.Reset();
+        _useSecondary = false;
+
+    }
+
     private void SetCurrentWeapon(WeaponInstance weapon)
     {
         _viewmodelMesh.mesh = weapon.Weapon.Mesh;

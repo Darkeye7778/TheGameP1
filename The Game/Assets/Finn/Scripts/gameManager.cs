@@ -24,7 +24,6 @@ public class gameManager : MonoBehaviour
     public int gameTerroristCount;
     public int gameHostageCount;
     public int gameHostageSaved;
-
     [SerializeField] TextMeshProUGUI GunName;
     [SerializeField] TextMeshProUGUI TimerTxt;
     [SerializeField] TextMeshProUGUI HostageTxt;
@@ -72,6 +71,9 @@ public class gameManager : MonoBehaviour
     private void Start()
     {
         MapGenerator.Instance.Generate();
+        gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        gameHostageSaved = 0;
+        updateGameGoal(0);
     }
 
     public void SetPlayer(GameObject _player)
@@ -227,8 +229,26 @@ public class gameManager : MonoBehaviour
     {
         MapGenerator.Instance.TargetRooms += 2;
         MapGenerator.Instance.EnemySpawnAmount++;
+        MapGenerator.Instance.HostageSpawnAmount++;
+        loseMenuUp = false;
         stateUnpause();
         MapGenerator.Instance.Generate();
+        gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        gameHostageSaved = 0;
+        StartingTime += 30;
+        _timer = StartingTime;
+        updateGameGoal(0);
+    }
+    
+    public void Retry()
+    {
+        stateUnpause();
+        loseMenuUp = false;
+        MapGenerator.Instance.GenerateSame();
+        gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        gameHostageSaved = 0;
+        _timer = StartingTime;
+        updateGameGoal(0);
     }
     public void youLose()
     {

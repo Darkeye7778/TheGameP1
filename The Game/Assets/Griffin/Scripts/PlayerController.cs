@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public LayerMask InteractSkip;
     public int Health => (int) _health;
     public bool TookDamage => Health != _previousHealth;
-    public bool IsDead => Health == 0;
+    public bool IsDead => Health <= 0;
     public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
 
     [Header("Leaning")]
@@ -96,16 +96,18 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _recoilOffsetX, _recoilOffsetY;
 
     private Vector3 _cameraOrigin, _cameraTarget;
-
+ 
+    private PlayerInventory _inventory;
+    private PlayerSpawnPoint _spawnPoint;
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         _controller = GetComponent<CharacterController>();
         _stamina = MaximumStamina;
         _health = _previousHealth = MaximumHealth;
-
         _controller.height = StandingHeight;
-
+        _inventory = GetComponent<PlayerInventory>();
+        _spawnPoint = UnityEngine.GameObject.FindGameObjectWithTag("PlayerSpawn").GetComponent<PlayerSpawnPoint>();
         //_cameraOrigin = Camera.transform.localPosition;
         _previousPosition = transform.position;
     }
@@ -223,6 +225,22 @@ public class PlayerController : MonoBehaviour, IDamagable
         Camera.transform.localRotation = Quaternion.Euler(-(_rotationY + _recoilOffsetX), _recoilOffsetY, _leaningAngle);
     }
     
+    public void Respawn()
+    {
+        _health = MaximumHealth;
+        _stamina = MaximumStamina;
+        _crouch = false;
+        _running = false;
+        _velocity = Vector3.zero;
+        _rotationX = 0.0f;
+        _rotationY = 0.0f;
+        _leaningAngle = 0.0f;
+        _leaningTarget = 0.0f;
+        transform.position = _spawnPoint.transform.position;    
+        _inventory.ResetInventory();
+    }
+
+
     void CalculateLeaning()
     {
         //Leaning has the option to be toggled or held.

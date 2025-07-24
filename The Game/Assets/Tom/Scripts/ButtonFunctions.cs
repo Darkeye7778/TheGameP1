@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class ButtonFunctions : MonoBehaviour
 {
+    public GameObject player;
     public void Resume()
     {
         gameManager.instance.stateUnpause();
@@ -15,11 +16,17 @@ public class ButtonFunctions : MonoBehaviour
 
     public void NextLevel()
     {
-        Restart();
+        gameManager.instance.stateUnpause();
         gameManager.instance.NextLevel();
-
+        gameManager.instance.playerScript.Respawn();
+        
     }
-    public void Restart()
+
+    public void Retry()
+    {
+        gameManager.instance.Retry();
+    }
+public void Restart()
     {
         gameManager.instance.stateUnpause();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
