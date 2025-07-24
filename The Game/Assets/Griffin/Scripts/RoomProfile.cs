@@ -12,6 +12,7 @@ public class RoomProfile : MonoBehaviour
     [NonSerialized] public RoomProfile Parent;
     [NonSerialized] public bool HasRoomLeaf = false;
     [NonSerialized] public bool IsLeaf = true;
+    [NonSerialized] public bool IsEntry = false;
 
     private void Awake()
     {
@@ -49,13 +50,14 @@ public class RoomProfile : MonoBehaviour
 
     public void GenerateConnections()
     {
-        GenerateExit(new Connection
-        {
-            Transform = new GridTransform(Vector2Int.zero, ExitDirection.South),
-            Required = true,
-            IsEntrance = true,
-            HasDoor = Properties.HasEntranceDoor
-        });
+        if(!IsEntry)
+            GenerateExit(new Connection
+            {
+                Transform = new GridTransform(Vector2Int.zero, ExitDirection.South),
+                Required = true,
+                IsEntrance = true,
+                HasDoor = Properties.HasEntranceDoor
+            });
         
         foreach (Connection connection in Properties.ConnectionPoints)
             GenerateExit(connection);

@@ -76,8 +76,11 @@ public class MapGenerator : MonoBehaviour
         
         Random.InitState(Seed);
 
-        GameObject newCell = Instantiate(Utils.PickRandom(Type.StartingRooms).Prefab);
-        newCell.GetComponent<RoomProfile>().Initialize();
+        GameObject entry = Instantiate(Utils.PickRandom(Type.StartingRooms).Prefab);
+        RoomProfile entryProfile = entry.GetComponent<RoomProfile>();
+        
+        entryProfile.IsEntry = true;
+        entryProfile.Initialize();
         
         for(uint i = 0; Parameters.RemainingRooms > 0 && i < MaxIterations; i++)
             Iterate();
@@ -104,6 +107,8 @@ public class MapGenerator : MonoBehaviour
         
         foreach (ConnectionProfile connection in Parameters.Connections) 
             connection.Generate();
+        
+        Physics.SyncTransforms();
 
         _navMeshSurface.BuildNavMesh();
         
