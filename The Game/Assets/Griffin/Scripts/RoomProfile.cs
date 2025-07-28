@@ -13,6 +13,7 @@ public class RoomProfile : MonoBehaviour
     [NonSerialized] public bool HasRoomLeaf = false;
     [NonSerialized] public bool IsLeaf = true;
     [NonSerialized] public bool IsEntry = false;
+    [NonSerialized] public bool IsInEntryZone = false;
 
     private void Awake()
     {

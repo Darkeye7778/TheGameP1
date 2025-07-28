@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -36,7 +37,8 @@ public class MapGenerator : MonoBehaviour
 
     [Tooltip("Leave 0 to randomly generate a new seed.")]
     public int CustomSeed = 0;
-    
+    public int CustomSpawnSeed = 0;
+
     [Header("Parameters")]
     public uint TargetRooms = 10;
     public int EnemySpawnAmount = 4;
@@ -48,13 +50,16 @@ public class MapGenerator : MonoBehaviour
     public uint MaxLeafRetry = 3;
     
     public int Seed { get; private set; }
-    
+    public int SpawnSeed { get; private set; }
+
     public const int GRID_SIZE = 5;
 
     public GenerationParams Parameters { get; private set; }
 
     private NavMeshSurface _navMeshSurface;
-    
+
+    private List<GameObject> _spawnedEntities = new List<GameObject>();
+
     void Awake()
     {
         Instance = this;
@@ -76,10 +81,19 @@ public class MapGenerator : MonoBehaviour
         
         Random.InitState(Seed);
 
+        if (CustomSpawnSeed == 0)
+            SpawnSeed = Random.Range(int.MinValue, int.MaxValue);
+        else
+            SpawnSeed = CustomSpawnSeed;
+
         GameObject entry = Instantiate(Utils.PickRandom(Type.StartingRooms).Prefab);
         RoomProfile entryProfile = entry.GetComponent<RoomProfile>();
         
         entryProfile.IsEntry = true;
+        foreach (RoomProfile room in entry.GetComponentsInChildren<RoomProfile>())
+        {
+            room.IsInEntryZone = true;
+        }
         entryProfile.Initialize();
         
         for(uint i = 0; Parameters.RemainingRooms > 0 && i < MaxIterations; i++)
@@ -126,12 +140,53 @@ public class MapGenerator : MonoBehaviour
 
     public void SpawnAll()
     {
-        GameObject player = Instantiate(Type.Player, Utils.PickRandom(Parameters.PlayerSpawnPoints).transform);
+        System.Random spawnRng = new System.Random(SpawnSeed);
+
+        GameObject player = Instantiate(Type.Player, Utils.PickRandom(Parameters.PlayerSpawnPoints).transform.position, Quaternion.identity);
         gameManager.instance.SetPlayer(player);
 
-        Spawn(ref Parameters.EnemySpawnPoints, ref Type.Enemies, EnemySpawnAmount);
-        Spawn(ref Parameters.HostageSpawnPoints, ref Type.Hostages, HostageSpawnAmount);
-        Spawn(ref Parameters.TrapSpawnPoints, ref Type.Traps, TrapSpawnAmount);
+        SpawnOnNavMesh(Type.Enemies, EnemySpawnAmount, spawnRng);
+        SpawnOnNavMesh(Type.Hostages, HostageSpawnAmount, spawnRng);
+        SpawnOnNavMesh(Type.Traps, TrapSpawnAmount, spawnRng);
+    }
+
+    private void SpawnOnNavMesh(GameObject[] prefabPool, int count, System.Random spawnRng)
+    {
+        RoomProfile entryRoom = Parameters.Rooms.Find(room => room.IsEntry);
+        Debug.Log($"Entry room: {entryRoom.name} at {entryRoom.transform.position}");
+
+        List<RoomProfile> spawnableRooms = new List<RoomProfile>();
+        foreach (RoomProfile room in Parameters.Rooms)
+        {
+            if (!room.IsInEntryZone)
+                spawnableRooms.Add(room);
+        }
+
+        if (spawnableRooms.Count == 0)
+        {
+            Debug.LogWarning("No available rooms to spawn in (excluding entry room).");
+            return;
+        }
+
+        int totalSpawns = count;
+        int rooms = spawnableRooms.Count;
+        int basePerRoom = totalSpawns / rooms;
+        int remainder = totalSpawns % rooms;
+
+        foreach (RoomProfile room in spawnableRooms)
+        {
+            int spawnsThisRoom = basePerRoom + (remainder > 0 ? 1 : 0);
+            if (remainder > 0) remainder--;
+
+            for (int i = 0; i < spawnsThisRoom; i++)
+            {
+                Vector3 spawnPosition = GetRandomPointInRoom(room, spawnRng);
+                GameObject prefab = Utils.PickRandom(prefabPool, spawnRng);
+                Debug.Log($"Spawning {prefab.name} in room: {room.name} | IsInEntryZone: {room.IsInEntryZone}");
+                GameObject spawn = Instantiate(prefab, spawnPosition, Quaternion.identity);
+                _spawnedEntities.Add(spawn);
+            }
+        }
     }
 
     private void Spawn<T>(ref List<T> positions, ref GameObject[] spawns, int targetCount) where T : MonoBehaviour
@@ -147,6 +202,18 @@ public class MapGenerator : MonoBehaviour
 
     public void Cleanup()
     {
+        foreach (GameObject go in _spawnedEntities)
+        {
+            if (go != null)
+                DestroyImmediate(go);
+        }
+        _spawnedEntities.Clear();
+
+        if (_navMeshSurface != null)
+        {
+            _navMeshSurface.RemoveData();
+        }
+
         if (Parameters != null)
         {
             foreach (RoomProfile room in Parameters.Rooms)
@@ -212,6 +279,51 @@ public class MapGenerator : MonoBehaviour
         CustomSeed = Instance.Seed;
         Generate();
     }
+
+    Vector3 GetRandomPosition(Vector3 center, float range)
+    {
+
+        for (int i = 0; i < 30; i++) // Try 30 random points
+        {
+            Vector3 randomPoint = center + Random.insideUnitSphere * range;
+            randomPoint.y = center.y;
+
+            if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, 2.0f, NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+        }
+
+        Debug.LogWarning("Failed to find valid NavMesh position.");
+        return center;
+    }
+
+    Vector3 GetRandomPointInRoom(RoomProfile room, System.Random rng)
+    {
+        Collider floorCollider = room.GetComponent<Collider>();
+        if (!floorCollider)
+        {
+            Debug.LogWarning($"Room {room.name} has no collider.");
+            return room.transform.position;
+        }
+
+        Bounds bounds = floorCollider.bounds;
+
+        for (int i = 0; i < 30; i++)
+        {
+            float x = (float)(rng.NextDouble() * (bounds.max.x - bounds.min.x) + bounds.min.x);
+            float z = (float)(rng.NextDouble() * (bounds.max.z - bounds.min.z) + bounds.min.z);
+            float y = bounds.center.y;
+
+            Vector3 candidate = new Vector3(x, y, z);
+
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
+                return hit.position;
+        }
+
+        Debug.LogWarning($"Failed to find valid NavMesh point in room {room.name}");
+        return room.transform.position;
+    }
 }
 
 public static class Utils
@@ -233,5 +345,13 @@ public static class Utils
     public static T PickRandom<T>(List<T> arr)
     {
         return arr[Random.Range(0, arr.Count)];
+    }
+    public static T PickRandom<T>(List<T> arr, System.Random rng)
+    {
+        return arr[rng.Next(arr.Count)];
+    }
+    public static T PickRandom<T>(T[] arr, System.Random rng)
+    {
+        return arr[rng.Next(arr.Length)];
     }
 }
