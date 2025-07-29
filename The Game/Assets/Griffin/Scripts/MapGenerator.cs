@@ -82,7 +82,7 @@ public class MapGenerator : MonoBehaviour
         Random.InitState(Seed);
 
         if (CustomSpawnSeed == 0)
-            SpawnSeed = Random.Range(int.MinValue, int.MaxValue);
+            SpawnSeed = System.Guid.NewGuid().GetHashCode();
         else
             SpawnSeed = CustomSpawnSeed;
 
@@ -142,8 +142,23 @@ public class MapGenerator : MonoBehaviour
     {
         System.Random spawnRng = new System.Random(SpawnSeed);
 
-        GameObject player = Instantiate(Type.Player, Utils.PickRandom(Parameters.PlayerSpawnPoints).transform.position, Quaternion.identity);
-        gameManager.instance.SetPlayer(player);
+        Transform spawnPoint = Utils.PickRandom(Parameters.PlayerSpawnPoints).transform;
+
+        GameObject player = gameManager.instance.player;
+        if (player == null)
+        {
+            player = Instantiate(Type.Player, spawnPoint.position, Quaternion.identity);
+            gameManager.instance.SetPlayer(player);
+        }
+        else
+        {
+            player.transform.position = spawnPoint.position;
+
+            PlayerController pc = player.GetComponent<PlayerController>();
+
+            PlayerInventory inventory = player.GetComponent<PlayerInventory>();
+        }
+
 
         SpawnOnNavMesh(Type.Enemies, EnemySpawnAmount, spawnRng);
         SpawnOnNavMesh(Type.Hostages, HostageSpawnAmount, spawnRng);

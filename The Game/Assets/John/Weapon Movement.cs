@@ -23,10 +23,13 @@ public class WeaponMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Inventory == null || Inventory.CurrentWeapon == null || Inventory.CurrentWeapon.Weapon == null)
+            return;
+
         if (float.IsNaN(targetRot.x)) targetRot.x = 0;
         if (float.IsNaN(targetRot.y)) targetRot.y = 0;
         if (float.IsNaN(targetRot.z)) targetRot.z = 0;
-        
+
         // Smoothly interpolate the weapon's rotation towards the target rotation
         _currentRotation = Quaternion.Lerp(_currentRotation, Quaternion.Euler(targetRot), Time.deltaTime * rotSpeed);
         targetRot = Vector3.Lerp(targetRot, Vector3.zero, Time.deltaTime * zeroSpeed);
@@ -37,12 +40,15 @@ public class WeaponMovement : MonoBehaviour
 
     void Sway()
     {
+        if (pc == null)
+            return;
+
         // Calculate the target rotation based on mouse input and player velocity
         targetRot += new Vector3(
-            Input.GetAxis("Mouse Y"),
-            -Input.GetAxis("Mouse X") ,
-            0f
-        ) * LookSwayIntensity;
+        Input.GetAxis("Mouse Y"),
+        -Input.GetAxis("Mouse X"),
+        0f
+    ) * LookSwayIntensity;
 
         targetRot += new Vector3(
             pc.LocalRealVelocity.y + -pc.LocalRealVelocity.z,
