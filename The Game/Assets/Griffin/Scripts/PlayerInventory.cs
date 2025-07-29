@@ -124,6 +124,12 @@ public class PlayerInventory : MonoBehaviour
         _useSecondary = false;
 
     }
+    public void ResetWeapons()
+    {
+        CurrentWeapon?.Reset();
+        HolsteredWeapon?.Reset();
+    }
+
 
     private void SetCurrentWeapon(WeaponInstance weapon)
     {

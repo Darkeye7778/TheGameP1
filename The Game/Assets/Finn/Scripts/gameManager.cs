@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +37,8 @@ public class gameManager : MonoBehaviour
     public Image SecondaryGun;
     public Image GunAmmoBar;
     public GameObject PlayerHurt;
+
+    public List<GameObject> SpawnedEntities = new List<GameObject>();
 
     [SerializeField] private float timerFlashThreshold;
     [SerializeField] private float flashSpeed;
@@ -257,6 +260,12 @@ public class gameManager : MonoBehaviour
         menuActive = menuLose;
         menuActive.SetActive(true);
     }
+
+    public void RegisterEntity(GameObject obj)
+    {
+        SpawnedEntities.Add(obj);
+    }
+
 
     IEnumerator PlayerHurtFlash()
     {

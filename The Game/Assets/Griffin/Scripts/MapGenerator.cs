@@ -152,11 +152,25 @@ public class MapGenerator : MonoBehaviour
         }
         else
         {
-            player.transform.position = spawnPoint.position;
+            CharacterController controller = player.GetComponent<CharacterController>();
+            if (controller != null)
+            {
+                controller.enabled = false; // Prevent movement interference
+                controller.transform.position = spawnPoint.position;
+                controller.enabled = true;
+            }
+            else
+            {
+                player.transform.position = spawnPoint.position;
+            }
 
             PlayerController pc = player.GetComponent<PlayerController>();
+            if (pc != null)
+                pc.ResetState();
 
             PlayerInventory inventory = player.GetComponent<PlayerInventory>();
+            if (inventory != null)
+                inventory.ResetWeapons();
         }
 
 
@@ -199,7 +213,7 @@ public class MapGenerator : MonoBehaviour
                 GameObject prefab = Utils.PickRandom(prefabPool, spawnRng);
                 Debug.Log($"Spawning {prefab.name} in room: {room.name} | IsInEntryZone: {room.IsInEntryZone}");
                 GameObject spawn = Instantiate(prefab, spawnPosition, Quaternion.identity);
-                _spawnedEntities.Add(spawn);
+                gameManager.instance.RegisterEntity(spawn);
             }
         }
     }
@@ -217,12 +231,12 @@ public class MapGenerator : MonoBehaviour
 
     public void Cleanup()
     {
-        foreach (GameObject go in _spawnedEntities)
+        foreach (GameObject go in gameManager.instance.SpawnedEntities)
         {
             if (go != null)
                 DestroyImmediate(go);
         }
-        _spawnedEntities.Clear();
+        gameManager.instance.SpawnedEntities.Clear();
 
         if (_navMeshSurface != null)
         {

@@ -175,7 +175,8 @@ public class enemyAI : MonoBehaviour, IDamagable
             if (dropItem < dropRate)
             {
                 int itemToDrop = Random.Range(0, Drops.Length);
-                Instantiate(Drops[itemToDrop], headPos.position, Quaternion.identity);
+                GameObject drop = Instantiate(Drops[itemToDrop], headPos.position, Quaternion.identity);
+                gameManager.instance.RegisterEntity(drop);
             }
             Destroy(gameObject);
         }

@@ -318,6 +318,28 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = Mathf.Clamp(_health, 0.0f, MaximumHealth);
     }
 
+    public void ResetState()
+    {
+        _health = MaximumHealth;
+        _stamina = MaximumStamina;
+
+        _velocity = Vector3.zero;
+        _previousHealth = _health;
+        _fallingTime = 0;
+        _standingTimer = 0;
+        _footstepOffset = 0;
+        _leaningTarget = 0;
+        _leaningAngle = 0;
+        _running = false;
+        _crouch = false;
+
+        if (_controller == null)
+            _controller = GetComponent<CharacterController>();
+
+        _controller.height = StandingHeight;
+        _controller.Move(Vector3.zero); // clear movement force
+    }
+
     public GameObject GameObject()
     {
         return gameObject; 
