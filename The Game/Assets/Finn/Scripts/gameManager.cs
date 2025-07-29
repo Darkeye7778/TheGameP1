@@ -37,6 +37,7 @@ public class gameManager : MonoBehaviour
     public Image SecondaryGun;
     public Image GunAmmoBar;
     public GameObject PlayerHurt;
+    public GameObject HealthFlash;
 
     public List<GameObject> SpawnedEntities = new List<GameObject>();
 
@@ -145,7 +146,10 @@ public class gameManager : MonoBehaviour
 
         if (playerScript.TookDamage)
             StartCoroutine(PlayerHurtFlash());
+        if (playerScript.GainedHealth)
+            StartCoroutine(PlayerHealthFlash());
     }
+
     private void LateUpdate()
     {
         if (playerScript.IsDead && !loseMenuUp)
@@ -272,5 +276,12 @@ public class gameManager : MonoBehaviour
         PlayerHurt.SetActive(true);
         yield return new WaitForSeconds(0.05f);
         PlayerHurt.SetActive(false);
+    }
+
+    IEnumerator PlayerHealthFlash()
+    {
+        HealthFlash.SetActive(true);
+        yield return new WaitForSeconds(0.05f);
+        HealthFlash.SetActive(false);
     }
 }

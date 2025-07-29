@@ -28,7 +28,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     public LayerMask GroundMask;
     public LayerMask InteractSkip;
     public int Health => (int) _health;
-    public bool TookDamage => Health != _previousHealth;
+    public bool TookDamage => Health != _previousHealth && Health < _previousHealth;
+    public bool GainedHealth => Health != _previousHealth && Health > _previousHealth;
     public bool IsDead => Health <= 0;
     public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
 

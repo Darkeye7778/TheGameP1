@@ -21,6 +21,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     [SerializeField] float shootRate;
 
     [SerializeField] GameObject[] Drops;
+    [SerializeField] float[] DropWeights;
 
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip[] footsteps;
@@ -174,7 +175,7 @@ public class enemyAI : MonoBehaviour, IDamagable
             int dropItem = Random.Range(0, 100);
             if (dropItem < dropRate)
             {
-                int itemToDrop = Random.Range(0, Drops.Length);
+                int itemToDrop = GetWeightedDropIndex(DropWeights);
                 GameObject drop = Instantiate(Drops[itemToDrop], headPos.position, Quaternion.identity);
                 gameManager.instance.RegisterEntity(drop);
             }
@@ -208,6 +209,24 @@ public class enemyAI : MonoBehaviour, IDamagable
 
         audioSource.clip = shootSounds[Random.Range(0, shootSounds.Length)];
         audioSource.Play();
+    }
+
+    int GetWeightedDropIndex(float[] weights)
+    {
+        float totalWeight = 0f;
+        for (int i = 0; i < weights.Length; i++)
+            totalWeight += weights[i];
+
+        float randomWeight = Random.Range(0f, totalWeight);
+
+        for (int i = 0; i < weights.Length; i++)
+        {
+            if (randomWeight < weights[i])
+                return i;
+            randomWeight -= weights[i];
+        }
+
+        return weights.Length - 1; // fallback in case of rounding
     }
 
     IEnumerator playFootstep()
