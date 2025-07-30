@@ -176,7 +176,7 @@ public class MapGenerator : MonoBehaviour
 
         SpawnOnNavMesh(Type.Enemies, EnemySpawnAmount, spawnRng);
         SpawnOnNavMesh(Type.Hostages, HostageSpawnAmount, spawnRng);
-        SpawnOnNavMesh(Type.Traps, TrapSpawnAmount, spawnRng);
+        Spawn(ref Parameters.TrapSpawnPoints, ref Type.Traps, TrapSpawnAmount);
     }
 
     private void SpawnOnNavMesh(GameObject[] prefabPool, int count, System.Random spawnRng)
