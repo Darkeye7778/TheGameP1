@@ -20,6 +20,7 @@ public class Weapon : ScriptableObject
     public Mesh Mesh;
     public Material[] Materials;
     public Vector3 Position;
+    public Vector3 MuzzlePosition;
     public Vector3 Scale;
     public Quaternion Rotation;
 
@@ -36,12 +37,18 @@ public class Weapon : ScriptableObject
     public int Damage; // Possible healing weapons?
     public FireMode FireModes;
     public bool OpenBolt;
-
+    
+    
+    
+    
     public float ReloadTime;
     public float EquipTime;
     public float MaxRange;
     public float RecoilIntensity;
 
+    
+    [Header("Effects")]
+    public ParticleSystem MuzzleFlash;
     public uint FinalCapacity => Capacity + (OpenBolt ? 0u : 1u);
     public float FireDelta => 60.0f / FireRate;
 

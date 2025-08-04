@@ -12,6 +12,8 @@ public class SoundEmitterSettings : ScriptableObject
     public AudioClip Footstep;
     public AudioClip HeavyFootstep;
 
+    public GameObject HitEffect;
+
     AudioClip GetSound(SoundType type)
     {
         return type switch

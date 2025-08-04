@@ -163,13 +163,21 @@ public class PlayerInventory : MonoBehaviour
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
         _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
         
+        ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash,transform.position, Viewmodel.transform.rotation * CurrentWeapon.Weapon.Rotation);
+        flash.transform.parent = Viewmodel.transform;
+        flash.transform.localPosition =  Quaternion.Inverse(CurrentWeapon.Weapon.Rotation) * CurrentWeapon.Weapon.MuzzlePosition;
+        
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;
 
+        if (hit.collider.TryGetComponent(out SoundProfile profile)) 
+            Instantiate(profile.GetSettings().HitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+        
         if (!hit.collider.TryGetComponent(out IDamagable dmg))
             return;
 
         dmg.OnTakeDamage(new DamageSource{ Name = name, Object = gameObject }, CurrentWeapon.Weapon.Damage);
+        
     }
 
     private float GetInterpolateTime()

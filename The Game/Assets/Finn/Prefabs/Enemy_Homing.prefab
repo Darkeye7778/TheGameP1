@@ -368,6 +368,7 @@ GameObject:
   - component: {fileID: 1198160622376263750}
   - component: {fileID: 7713379801639768513}
   - component: {fileID: 5146021540686982372}
+  - component: {fileID: 8482941917235429178}
   m_Layer: 0
   m_Name: Enemy_Homing
   m_TagString: EnemyLocation
@@ -428,6 +429,11 @@ MonoBehaviour:
   shootSounds:
   - {fileID: 8300000, guid: 779ccb4b3a3ef4e45ac97f5c75b10d79, type: 3}
   dropRate: 30
+  isBomber: 0
+  chargeSpeed: 0
+  pauseTime: 0
+  explosionRange: 0
+  explosionDamage: 0
 --- !u!136 &977515800973603765
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -613,6 +619,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8482941917235429178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888929536689706082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1315cefc646bf1449fb5e757e5eb729, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _soundProfile: {fileID: 11400000, guid: a1789f7a6cb33f242a581d618dc19814, type: 2}
 --- !u!1 &2944110103171256926
 GameObject:
   m_ObjectHideFlags: 0

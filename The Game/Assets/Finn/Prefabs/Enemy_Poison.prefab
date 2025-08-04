@@ -670,6 +670,7 @@ GameObject:
   - component: {fileID: 228885365660149218}
   - component: {fileID: 3841046718756865102}
   - component: {fileID: -5394627589560400369}
+  - component: {fileID: -8260111502722040585}
   m_Layer: 0
   m_Name: Enemy_Poison
   m_TagString: EnemyLocation
@@ -730,6 +731,11 @@ MonoBehaviour:
   shootSounds:
   - {fileID: 8300000, guid: 779ccb4b3a3ef4e45ac97f5c75b10d79, type: 3}
   dropRate: 30
+  isBomber: 0
+  chargeSpeed: 0
+  pauseTime: 0
+  explosionRange: 0
+  explosionDamage: 0
 --- !u!136 &4446913140598879750
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -915,6 +921,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-8260111502722040585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5971824022757822716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1315cefc646bf1449fb5e757e5eb729, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _soundProfile: {fileID: 11400000, guid: a1789f7a6cb33f242a581d618dc19814, type: 2}
 --- !u!1 &6097441627303048163
 GameObject:
   m_ObjectHideFlags: 0
