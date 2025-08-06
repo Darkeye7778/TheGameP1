@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CameraRecoil : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class CameraRecoil : MonoBehaviour
 
     public void AddRecoil(Weapon weapon)
     {
-        Vector3 calcRecoil = new Vector3(-weapon.RecoilX, weapon.RecoilY, 0) * weapon.RecoilIntensity;
+        Vector3 calcRecoil = new Vector3(-weapon.RecoilX, weapon.RecoilY + Random.Range(-0.1f,0.1f), 0) * weapon.RecoilIntensity;
         _targetRotation += calcRecoil;
     }
 }
