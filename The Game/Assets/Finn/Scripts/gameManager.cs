@@ -247,7 +247,7 @@ public class gameManager : MonoBehaviour
         _timer = StartingTime;
         updateGameGoal(0);
     }
-    
+
     public void Retry()
     {
         stateUnpause();
