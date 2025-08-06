@@ -367,6 +367,8 @@ GameObject:
   - component: {fileID: 3135915569993272818}
   - component: {fileID: 1198160622376263750}
   - component: {fileID: 7713379801639768513}
+  - component: {fileID: 5146021540686982372}
+  - component: {fileID: 8482941917235429178}
   m_Layer: 0
   m_Name: Enemy_Homing
   m_TagString: EnemyLocation
@@ -384,8 +386,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.4, y: 1.4, z: 1.4}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8243998069510840389}
   - {fileID: 803700551464735549}
@@ -414,7 +416,24 @@ MonoBehaviour:
   roamDist: 15
   roamPauseTime: 5
   bullet: {fileID: 934316513229616762, guid: ba0a024b00a76d24d816519572f03044, type: 3}
-  shootRate: 0.1
+  shootRate: 0.4
+  Drops:
+  - {fileID: 7981549162008834492, guid: 6ff9fc98a75b8224b9171102f5a0ce10, type: 3}
+  - {fileID: 5197083879131849205, guid: 0d6e8e4e30b9ae742bc021ae631d642c, type: 3}
+  DropWeights:
+  - 50
+  - 70.65
+  audioSource: {fileID: 5146021540686982372}
+  footsteps:
+  - {fileID: 8300000, guid: 91d1231bdaba315439bc4629582ba00d, type: 3}
+  shootSounds:
+  - {fileID: 8300000, guid: 779ccb4b3a3ef4e45ac97f5c75b10d79, type: 3}
+  dropRate: 30
+  isBomber: 0
+  chargeSpeed: 0
+  pauseTime: 0
+  explosionRange: 0
+  explosionDamage: 0
 --- !u!136 &977515800973603765
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -503,6 +522,116 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!82 &5146021540686982372
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888929536689706082}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &8482941917235429178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888929536689706082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1315cefc646bf1449fb5e757e5eb729, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _soundProfile: {fileID: 11400000, guid: a1789f7a6cb33f242a581d618dc19814, type: 2}
 --- !u!1 &2944110103171256926
 GameObject:
   m_ObjectHideFlags: 0

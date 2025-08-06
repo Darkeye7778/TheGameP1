@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Glock 19
   m_EditorClassIdentifier: 
   Name: Glock 19
-  Image: {fileID: 21300000, guid: cddd5f66c28e86349bc78116fd063fdf, type: 3}
+  Image: {fileID: 21300000, guid: d7820b9855482e14296aa5d7cff2c7ae, type: 3}
   Mesh: {fileID: 7017884965191235337, guid: 1103415af87b36d40b14e7d6f30eb759, type: 3}
   Materials:
   - {fileID: 2100000, guid: 03002324182002740a7938a02c434338, type: 2}
   - {fileID: 2100000, guid: bd6c369eafd4ac142a9e6db4d6bf93d1, type: 2}
   Position: {x: 0.256, y: -0.15, z: 0.27}
+  MuzzlePosition: {x: 0, y: 0.03, z: 0.06}
   Scale: {x: 1, y: 1, z: 1}
   Rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
   EquipSound: {fileID: 8300000, guid: 1cdffcc5cb2fb9640997b65aa17962b4, type: 3}
@@ -34,4 +35,5 @@ MonoBehaviour:
   ReloadTime: 1
   EquipTime: 0.25
   MaxRange: 50
-  RecoilIntensity: 0
+  RecoilIntensity: 2.2
+  MuzzleFlash: {fileID: 19800004, guid: 234e5aa95353f0643b0181dc3872cda9, type: 3}

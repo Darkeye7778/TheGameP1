@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: MP5
   m_EditorClassIdentifier: 
   Name: HK MP5
-  Image: {fileID: 21300000, guid: ecc58cde6c9e7434c9824f3c50b17c4e, type: 3}
+  Image: {fileID: 21300000, guid: 2fb2f5deb7062bd4da17f64639013c11, type: 3}
   Mesh: {fileID: -5009023928823820679, guid: 2cf10fa706c7a4d42b5927d8e730f4e2, type: 3}
   Materials:
   - {fileID: 2100000, guid: 42ff7de5af3ca404cbf8813deacd8dbb, type: 2}
   Position: {x: 0.256, y: -0.18, z: 0.27}
+  MuzzlePosition: {x: 0, y: 0.51, z: 1.04}
   Scale: {x: 0.15, y: 0.15, z: 0.15}
   Rotation: {x: 0, y: 0, z: 0, w: 1}
   EquipSound: {fileID: 8300000, guid: 1cdffcc5cb2fb9640997b65aa17962b4, type: 3}
@@ -33,4 +34,7 @@ MonoBehaviour:
   ReloadTime: 1.5
   EquipTime: 0.5
   MaxRange: 50
-  RecoilIntensity: 1.2
+  RecoilIntensity: 2
+  RecoilX: 1
+  RecoilY: 0
+  MuzzleFlash: {fileID: 19800004, guid: 234e5aa95353f0643b0181dc3872cda9, type: 3}

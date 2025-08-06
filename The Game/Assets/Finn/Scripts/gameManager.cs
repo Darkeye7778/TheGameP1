@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +13,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject InteractionPopup;
 
     public bool isPaused;
     public GameObject player;
@@ -22,16 +25,6 @@ public class gameManager : MonoBehaviour
     public int gameTerroristCount;
     public int gameHostageCount;
     public int gameHostageSaved;
-
-    public int EnemySpawnAmount = 4;
-    public int TrapSpawnAmount = 4;
-    public int HostageSpawnAmount = 2;
-
-    public GameObject PlayerDamagedFlash;
-    public GameObject HostagePrefab;
-    public GameObject[] EnemyPrefabs;
-    public GameObject TrapPrefab;
-
     [SerializeField] TextMeshProUGUI GunName;
     [SerializeField] TextMeshProUGUI TimerTxt;
     [SerializeField] TextMeshProUGUI HostageTxt;
@@ -44,6 +37,9 @@ public class gameManager : MonoBehaviour
     public Image SecondaryGun;
     public Image GunAmmoBar;
     public GameObject PlayerHurt;
+    public GameObject HealthFlash;
+
+    public List<GameObject> SpawnedEntities = new List<GameObject>();
 
     [SerializeField] private float timerFlashThreshold;
     [SerializeField] private float flashSpeed;
@@ -54,7 +50,7 @@ public class gameManager : MonoBehaviour
     private Color timerColorOrig;
     private bool isFlashing;
     private Coroutine flashRoutine;
-
+    private bool loseMenuUp;
     [SerializeField] private Sprite helicopterSprite;
 
     private bool hasTriggeredHelicopterMessage;
@@ -63,45 +59,34 @@ public class gameManager : MonoBehaviour
     {
         menuActive = null;
         stateUnpause();
-
+        loseMenuUp = false;
+        menuLose.SetActive(false);
         instance = this;
 
-        player = GameObject.FindWithTag("Player");
-        playerScript = player.GetComponent<PlayerController>();
-        inventoryScript = player.GetComponent<PlayerInventory>();
         timeScaleOrig = Time.timeScale;
-        int hostageSpawned = HostageSpawnAmount;
-        GameObject hostageLocations = GameObject.FindWithTag("HostageLocation");
-        for (int i = 0; i < hostageLocations.transform.childCount; i++)
-            if (Random.Range(0.0f, 1.0f) <= (float) hostageSpawned / (hostageLocations.transform.childCount - i))
-            {
-                Instantiate(HostagePrefab, hostageLocations.transform.GetChild(i));
-                hostageSpawned--;
-            }
 
-        int enemySpawned = EnemySpawnAmount;
-        GameObject enemyLocations = GameObject.FindWithTag("EnemyLocation");
-        for (int i = 0; i < enemyLocations.transform.childCount; i++)
-            if (Random.Range(0.0f, 1.0f) <= (float)enemySpawned / (enemyLocations.transform.childCount - i))
-            {
-                Instantiate(EnemyPrefabs[Random.Range(0, EnemyPrefabs.Length)], enemyLocations.transform.GetChild(i));
-                enemySpawned--;
-            }
-
-        int trapsSpawned = TrapSpawnAmount;
-        GameObject trapLocations = GameObject.FindWithTag("Trap");
-        for (int i = 0; i < trapLocations.transform.childCount; i++)
-            if (Random.Range(0.0f, 1.0f) <= (float) trapsSpawned / (trapLocations.transform.childCount - i))
-            {
-                Instantiate(TrapPrefab, trapLocations.transform.GetChild(i));
-                trapsSpawned--;
-            }
         _timer = StartingTime;
         if (TimerTxt != null)
         {
             timerColorOrig = TimerTxt.color;
         }
     }
+
+    private void Start()
+    {
+        MapGenerator.Instance.Generate();
+        gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        gameHostageSaved = 0;
+        updateGameGoal(0);
+    }
+
+    public void SetPlayer(GameObject _player)
+    {
+        player = _player;
+        playerScript = player.GetComponent<PlayerController>();
+        inventoryScript = player.GetComponent<PlayerInventory>();
+    }
+
 
     void Update()
     {
@@ -116,14 +101,13 @@ public class gameManager : MonoBehaviour
             else if (menuActive == menuPause)
             {
                 stateUnpause();
-                menuActive.SetActive(false);
             }
         }
-        
+
         SetGunModeText(inventoryScript.CurrentWeapon.Mode);
         SetAmmoTxt(inventoryScript.CurrentWeapon.LoadedAmmo, inventoryScript.CurrentWeapon.ReserveAmmo);
-        
-        GunAmmoBar.fillAmount = (float) inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
+
+        GunAmmoBar.fillAmount = (float)inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
         GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
         PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
         PlayerHealthBar.fillAmount = playerScript.HealthRelative;
@@ -134,8 +118,7 @@ public class gameManager : MonoBehaviour
         _timer -= Time.deltaTime;
         instance.TimerTxt.text = $"{(int)_timer / 60:00}:{(int)_timer % 60:00}";
 
-        if (playerScript.IsDead)
-            youLose();
+
 
         if (_timer <= timerFlashThreshold)
         {
@@ -148,24 +131,38 @@ public class gameManager : MonoBehaviour
         if (_timer <= timerFlashThreshold && !hasTriggeredHelicopterMessage)
         {
             hasTriggeredHelicopterMessage = true;
-            
-            Time.timeScale = 0;
-            isPaused = true;
 
             int secondsRemaining = Mathf.RoundToInt(timerFlashThreshold);
             string unit = secondsRemaining == 1 ? "second" : "seconds";
-            DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have leave in {secondsRemaining} {unit}! Get those hostages and run!");
+            DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have to leave in {secondsRemaining} {unit}! Get those hostages and run!");
         }
         if (_timer <= 0.0f)
             youLose();
 
-        /*if (playerScript.TookDamage)
-            StartCoroutine(PlayerHurtFlash());*/
+        if (playerScript.CurrentInteractable != null)
+            InteractionPopup.SetActive(true);
+        else
+            InteractionPopup.SetActive(false);
+
+        if (playerScript.TookDamage)
+            StartCoroutine(PlayerHurtFlash());
+        if (playerScript.GainedHealth)
+            StartCoroutine(PlayerHealthFlash());
+    }
+
+    private void LateUpdate()
+    {
+        if (playerScript.IsDead && !loseMenuUp)
+        {
+            loseMenuUp = true;
+            youLose();
+        }
     }
 
     public void statePause()
     {
         isPaused = true;
+        InteractionPopup.SetActive(false);
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -223,7 +220,6 @@ public class gameManager : MonoBehaviour
                 break;
         }
     }
-
     public void SetAmmoTxt(uint currAmount, uint reserveAmount)
     {
         CurrentAmmoTxt.text = $"{currAmount} | {reserveAmount}";
@@ -236,17 +232,56 @@ public class gameManager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
+    public void NextLevel()
+    {
+        MapGenerator.Instance.TargetRooms += 2;
+        MapGenerator.Instance.EnemySpawnAmount++;
+        MapGenerator.Instance.HostageSpawnAmount++;
+        MapGenerator.Instance.TrapSpawnAmount++;
+        loseMenuUp = false;
+        stateUnpause();
+        MapGenerator.Instance.Generate();
+        gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        gameHostageSaved = 0;
+        StartingTime += 30;
+        _timer = StartingTime;
+        updateGameGoal(0);
+    }
+    
+    public void Retry()
+    {
+        stateUnpause();
+        loseMenuUp = false;
+        MapGenerator.Instance.GenerateSame();
+        gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        gameHostageSaved = 0;
+        _timer = StartingTime;
+        updateGameGoal(0);
+    }
     public void youLose()
     {
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
     }
-    
+
+    public void RegisterEntity(GameObject obj)
+    {
+        SpawnedEntities.Add(obj);
+    }
+
+
     IEnumerator PlayerHurtFlash()
     {
         PlayerHurt.SetActive(true);
         yield return new WaitForSeconds(0.05f);
         PlayerHurt.SetActive(false);
+    }
+
+    IEnumerator PlayerHealthFlash()
+    {
+        HealthFlash.SetActive(true);
+        yield return new WaitForSeconds(0.05f);
+        HealthFlash.SetActive(false);
     }
 }

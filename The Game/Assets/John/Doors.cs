@@ -6,6 +6,7 @@ public class Doors : MonoBehaviour, Interactable
     public float swingAngle = 90f;
     public float openSpeed = 5f;
     public bool isOpen = false;
+    private float targetSwing;
     Vector3 origRot;
     Vector3 openRot;
     Vector3 targetRot;
@@ -30,7 +31,7 @@ public class Doors : MonoBehaviour, Interactable
     public void OnInteract(GameObject interactor)
     {
         float newAngle = Vector3.Dot(interactor.transform.forward, transform.forward);
-        swingAngle *= newAngle > 0 ? -1 : 1;
+        targetSwing = swingAngle * (newAngle > 0 ? -1 : 1);
         _audioSource.Play();
         Open();
     }
@@ -38,7 +39,6 @@ public class Doors : MonoBehaviour, Interactable
     public void Open()
     {
         isOpen = !isOpen;
-        openRot = origRot + new Vector3(0, swingAngle, 0);
+        openRot = origRot + new Vector3(0, targetSwing, 0);
     }
-
 }

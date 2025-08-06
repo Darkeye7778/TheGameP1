@@ -19,10 +19,11 @@ public class HostageDropOff : MonoBehaviour
 
             if (hostages >= 1)
             {
-                DialogManager.Instance.ShowDialog(
-                    helicopterSprite,
-                    "Ground Control",
-                    hostagesCollectedMessage);
+                if(hostages != 1)
+                    DialogManager.Instance.ShowDialog(
+                        helicopterSprite,
+                        "Ground Control",
+                        hostagesCollectedMessage);
                 gameManager.instance.updateGameGoal(0 - hostages);
                 gameManager.instance.updateHostagesSaved(0 - hostages);
             }
