@@ -45,6 +45,8 @@ public class Weapon : ScriptableObject
     public float EquipTime;
     public float MaxRange;
     public float RecoilIntensity;
+   [Range(0,1)] public float RecoilX;
+   [Range(-1,1)] public float RecoilY;
 
     
     [Header("Effects")]

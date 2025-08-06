@@ -77,8 +77,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     // TODO: Attach to weapon.
     [Header("Recoil")]
-    public float RecoilIntensity = 1.2f;
-    public float RecoilResetSpeed = 2.0f;
+    public CameraRecoil RecoilObj;
     public GameObject CurrentInteractable { get; private set; }
     
     private bool _moving => _ground.NearGround && RealVelocity.sqrMagnitude > 0.01;
@@ -222,8 +221,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _rotationY = Mathf.Clamp(_rotationY + y * MouseSensitivity, RotationClamp.x, RotationClamp.y);
 
         transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
-        Camera.transform.localRotation =
-            Quaternion.Euler(-(_rotationY + _recoilOffsetX), _recoilOffsetY, _leaningAngle);
+        Camera.transform.localRotation = Quaternion.Euler(-_rotationY, 0, _leaningAngle);
     }
 
     void CalculateLeaning()
@@ -403,14 +401,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     private void CameraRecoilReset()
     {
-        _recoilOffsetX = Mathf.Lerp(_recoilOffsetX, 0f, Time.deltaTime * RecoilResetSpeed);
-        _recoilOffsetY = Mathf.Lerp(_recoilOffsetY, 0f, Time.deltaTime * RecoilResetSpeed);
+        RecoilObj.IsShooting = (Input.GetKey(KeyCode.Mouse0) && !_inventory.CurrentWeapon.IsEmpty);
     }
 
     public void AddRecoil(float recoilIntensity)
     {
-        _recoilOffsetX +=  recoilIntensity;
-        _recoilOffsetY += Random.Range(-1.1f,1.1f);
+        RecoilObj.AddRecoil(_inventory.CurrentWeapon.Weapon);
+        // _recoilOffsetX += recoilIntensity;
+        // _recoilOffsetY += Random.Range(-1.1f,1.1f);
     }
     private bool ShouldCrouch()
     {
