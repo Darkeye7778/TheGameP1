@@ -1,10 +1,13 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class ButtonFunctions : MonoBehaviour
 {
+
+    [SerializeField] string Level1;
     public void NewGame()
     {
-        SceneManager.LoadScene(SceneManager.GetSceneByName("Level1").name);
+        SceneManager.LoadScene(Level1);
     }
 
     public void Resume()
