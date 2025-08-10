@@ -54,18 +54,18 @@ public class PlayerInventory : MonoBehaviour
         Primary.Update();
         Secondary.Update();
         
-        if (Input.GetKeyDown(KeyCode.Alpha1) && _useSecondary)
+        if (Input.GetKeyDown(KeyCode.Alpha1) && _useSecondary && !CurrentWeapon.Locked)
         {
             _useSecondary = false;
             SetCurrentWeapon(CurrentWeapon);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && !_useSecondary)
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && !_useSecondary && !CurrentWeapon.Locked)
         {
             _useSecondary = true;
             SetCurrentWeapon(CurrentWeapon);
         }
         
-        if(Input.GetKeyDown(KeyCode.B))
+        if(Input.GetKeyDown(KeyCode.B) && !CurrentWeapon.Locked)
             CurrentWeapon.CycleFireMode();
         
         if(_state != InventoryState.Ready)
@@ -99,14 +99,22 @@ public class PlayerInventory : MonoBehaviour
             _audioSource.Play();
         }
             
-        if (CurrentWeapon.Mode == FireMode.Auto)
+        switch (CurrentWeapon.Mode)
         {
-            if (Input.GetButton("Fire1"))
-                TryShoot();
-        } else if (CurrentWeapon.Mode == FireMode.Single)
-        {
-            if (attemptShot)
-                TryShoot();
+            case FireMode.Auto:
+                if (Input.GetButton("Fire1"))
+                    TryShoot();
+                break;
+            case FireMode.Burst:
+                if (attemptShot)
+                    CurrentWeapon.InitiateBurst();
+                if(CurrentWeapon.ShouldBurst)
+                    TryShoot();
+                break;
+            case FireMode.Single:
+                if (attemptShot)
+                    TryShoot();
+                break;
         }
 
         if (Input.GetKeyDown(KeyCode.R) && CurrentWeapon.CanReload)
@@ -122,15 +130,13 @@ public class PlayerInventory : MonoBehaviour
         Primary.Reset();
         Secondary.Reset();
         _useSecondary = false;
-
     }
     public void ResetWeapons()
     {
         CurrentWeapon?.Reset();
         HolsteredWeapon?.Reset();
     }
-
-
+    
     private void SetCurrentWeapon(WeaponInstance weapon)
     {
         _viewmodelMesh.mesh = weapon.Weapon.Mesh;
@@ -165,7 +171,7 @@ public class PlayerInventory : MonoBehaviour
         
         ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash,transform.position, Viewmodel.transform.rotation * CurrentWeapon.Weapon.Rotation);
         flash.transform.parent = Viewmodel.transform;
-        flash.transform.localPosition =  Quaternion.Inverse(CurrentWeapon.Weapon.Rotation) * CurrentWeapon.Weapon.MuzzlePosition;
+        flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Rotation) * CurrentWeapon.Weapon.MuzzlePosition;
         
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;

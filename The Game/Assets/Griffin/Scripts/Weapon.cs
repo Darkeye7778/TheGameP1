@@ -1,13 +1,13 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
 [Flags]
-public enum FireMode
+public enum FireMode : uint
 {
     Single = 1,
-    ThreeRoundBurst = 1 << 1,
+    Burst = 1 << 1,
     Auto = 1 << 2,
+    DONOTUSE = 1u << 31
 }
 
 [CreateAssetMenu(fileName = "Weapon", menuName = "Scriptable Objects/Weapon")]
@@ -33,13 +33,16 @@ public class Weapon : ScriptableObject
     [Header("Statistics")]
     public uint Capacity;
     public uint ReserveCapacity;
+    
     public uint FireRate;
+    public uint BurstFireRate;
+    public float BurstCooldown;
+    
     public int Damage; // Possible healing weapons?
-    public FireMode FireModes;
+    public FireMode FireModes; 
+    public uint BurstFireCount;
+    
     public bool OpenBolt;
-    
-    
-    
     
     public float ReloadTime;
     public float EquipTime;
@@ -53,7 +56,7 @@ public class Weapon : ScriptableObject
     public ParticleSystem MuzzleFlash;
     public uint FinalCapacity => Capacity + (OpenBolt ? 0u : 1u);
     public float FireDelta => 60.0f / FireRate;
-
+    public float BurstFireDelta => 60.0f / BurstFireRate;
     
     public FireMode GetDefaultFireMode()
     {
@@ -80,11 +83,17 @@ public class WeaponInstance
     public bool HasReserve => ReserveAmmo != 0;
     public bool Valid => Weapon != null;
     public bool CanReload => !IsFull && HasReserve;
-    public bool CanShoot => !IsEmpty && _nextShot > Weapon.FireDelta;
+    public bool CanShoot => !IsEmpty && _nextShot > _currentFireDelta;
+    public bool CanBurst => _remainingBurst == 0 && Mode == FireMode.Burst && CanShoot;
+    public bool ShouldBurst => _remainingBurst != 0 && Mode == FireMode.Burst;
+
+    public bool Locked { get; private set; }
 
     public FireMode Mode;
 
     private float _nextShot;
+    private uint _remainingBurst;
+    private float _currentFireDelta;
 
     public void Reload()
     {
@@ -103,6 +112,7 @@ public class WeaponInstance
         LoadedAmmo = Weapon.FinalCapacity;
         ReserveAmmo = Weapon.ReserveCapacity;
         Mode = Weapon.GetDefaultFireMode();
+        Locked = false;
     }
 
     public void Update()
@@ -115,9 +125,29 @@ public class WeaponInstance
         if (!CanShoot)
             return false;
 
+        _currentFireDelta = Weapon.FireDelta;
+        if (Mode == FireMode.Burst)
+        {
+            _currentFireDelta = Weapon.BurstFireDelta;
+            _remainingBurst--;
+            if (_remainingBurst == 0)
+            {
+                _currentFireDelta = Weapon.BurstCooldown;
+                Locked = false;
+            }
+        }
+
         _nextShot = 0.0f;
         --LoadedAmmo;
         return true;
+    }
+
+    public void InitiateBurst()
+    {
+        if (!CanBurst)
+            return;
+        Locked = true;
+        _remainingBurst = Weapon.BurstFireCount;
     }
 
     public void CycleFireMode()
@@ -125,7 +155,8 @@ public class WeaponInstance
         do
         {
             // Rotates bits.
-            Mode = (FireMode)(((uint) Mode << 1) | (uint) Mode >> (32 - 1));
+            Mode = (FireMode)(((uint)Mode << 1) | ((uint)Mode >> 31));
         } while ((Weapon.FireModes & Mode) != Mode);
+        
     }
 }

@@ -209,7 +209,7 @@ public class gameManager : MonoBehaviour
             case FireMode.Single:
                 GunModeTxt.text = "Single";
                 break;
-            case FireMode.ThreeRoundBurst:
+            case FireMode.Burst:
                 GunModeTxt.text = "Burst";
                 break;
             case FireMode.Auto:
