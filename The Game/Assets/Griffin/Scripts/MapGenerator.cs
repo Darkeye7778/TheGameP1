@@ -69,7 +69,27 @@ public class MapGenerator : MonoBehaviour
 
         _navMeshSurface = GetComponent<NavMeshSurface>();
     }
-    
+
+    public void ApplyLevel(LevelDefinition def)
+    {
+        // MapType + counts
+        if (def.MapType != null) Type = def.MapType;
+        TargetRooms = def.TargetRooms;
+        EnemySpawnAmount = def.EnemySpawnAmount;
+        TrapSpawnAmount = def.TrapSpawnAmount;
+        HostageSpawnAmount = def.HostageSpawnAmount;
+
+        // Seeds
+        CustomSeed = def.UseFixedSeed ? def.FixedSeed : 0;
+        CustomSpawnSeed = def.UseFixedSpawnSeed ? def.FixedSpawnSeed : 0;
+    }
+
+    public void Generate(LevelDefinition def)
+    {
+        ApplyLevel(def);
+        Generate();
+    }
+
     public void Generate()
     {
         Cleanup();
@@ -125,8 +145,8 @@ public class MapGenerator : MonoBehaviour
         Physics.SyncTransforms();
 
         _navMeshSurface.BuildNavMesh();
-        
-        SpawnAll();
+
+        StartCoroutine(SpawnAllDeferred());
 
         // Degenerate seed
         if (Parameters.RemainingRooms <= 0)
@@ -142,7 +162,24 @@ public class MapGenerator : MonoBehaviour
     {
         System.Random spawnRng = new System.Random(SpawnSeed);
 
-        Transform spawnPoint = Utils.PickRandom(Parameters.PlayerSpawnPoints).transform;
+        Transform spawnPoint;
+        if (Parameters.PlayerSpawnPoints != null && Parameters.PlayerSpawnPoints.Count > 0)
+        {
+            spawnPoint = Utils.PickRandom(Parameters.PlayerSpawnPoints).transform;
+        }
+        else
+        {
+            var entryRoom = Parameters.Rooms.Find(r => r.IsEntry);
+            Vector3 pos = entryRoom ? entryRoom.transform.position + Vector3.up : Vector3.up;
+
+            var tmp = new GameObject("FallbackPlayerSpawn");
+            tmp.transform.position = pos;
+            gameManager.instance.RegisterEntity(tmp); // so Cleanup removes it next time
+
+            Debug.LogWarning("No PlayerSpawnPoint found; using fallback near entry.");
+            spawnPoint = tmp.transform;
+        }
+
 
         GameObject player = gameManager.instance.player;
         if (player == null)
@@ -179,17 +216,49 @@ public class MapGenerator : MonoBehaviour
         Spawn(ref Parameters.TrapSpawnPoints, ref Type.Traps, TrapSpawnAmount);
     }
 
+    private void CollectSpawnPointsFromRooms()
+    {
+        // Clear to avoid duplicates on regen
+        Parameters.PlayerSpawnPoints.Clear();
+        Parameters.EnemySpawnPoints.Clear();
+        Parameters.TrapSpawnPoints.Clear();
+        Parameters.HostageSpawnPoints.Clear();
+
+        // Sweep every generated room (entry + all leaves)
+        foreach (var room in Parameters.Rooms)
+        {
+            if (!room) continue;
+            Parameters.PlayerSpawnPoints.AddRange(room.GetComponentsInChildren<PlayerSpawnPoint>(true));
+            Parameters.EnemySpawnPoints.AddRange(room.GetComponentsInChildren<EnemySpawnPoint>(true));
+            Parameters.TrapSpawnPoints.AddRange(room.GetComponentsInChildren<TrapSpawnPoint>(true));
+            Parameters.HostageSpawnPoints.AddRange(room.GetComponentsInChildren<HostageSpawnPoint>(true));
+        }
+
+        Debug.Log($"Spawns — Player:{Parameters.PlayerSpawnPoints.Count} " +
+                  $"Enemy:{Parameters.EnemySpawnPoints.Count} Hostage:{Parameters.HostageSpawnPoints.Count} Trap:{Parameters.TrapSpawnPoints.Count}");
+    }
+
+
+
+
     private void SpawnOnNavMesh(GameObject[] prefabPool, int count, System.Random spawnRng)
     {
-        RoomProfile entryRoom = Parameters.Rooms.Find(room => room.IsEntry);
-        Debug.Log($"Entry room: {entryRoom.name} at {entryRoom.transform.position}");
+        // Nothing to spawn? Bail out safely (Hub case).
+        if (count <= 0 || prefabPool == null || prefabPool.Length == 0)
+            return;
 
+        RoomProfile entryRoom = Parameters.Rooms.Find(room => room.IsEntry);
+        if (entryRoom == null)
+        {
+            Debug.LogWarning("SpawnOnNavMesh: No entry room found.");
+            return;
+        }
+
+        // Non-entry rooms only
         List<RoomProfile> spawnableRooms = new List<RoomProfile>();
         foreach (RoomProfile room in Parameters.Rooms)
-        {
             if (!room.IsInEntryZone)
                 spawnableRooms.Add(room);
-        }
 
         if (spawnableRooms.Count == 0)
         {
@@ -211,23 +280,30 @@ public class MapGenerator : MonoBehaviour
             {
                 Vector3 spawnPosition = GetRandomPointInRoom(room, spawnRng);
                 GameObject prefab = Utils.PickRandom(prefabPool, spawnRng);
-                Debug.Log($"Spawning {prefab.name} in room: {room.name} | IsInEntryZone: {room.IsInEntryZone}");
                 GameObject spawn = Instantiate(prefab, spawnPosition, Quaternion.identity);
                 gameManager.instance.RegisterEntity(spawn);
             }
         }
     }
 
+
     private void Spawn<T>(ref List<T> positions, ref GameObject[] spawns, int targetCount) where T : MonoBehaviour
     {
+        if (targetCount <= 0 || positions == null || positions.Count == 0 || spawns == null || spawns.Length == 0)
+            return;
+
         int remaining = targetCount;
         for (int i = 0; i < positions.Count; i++)
-            if (Random.Range(0.0f, 1.0f) <= (float)remaining / (positions.Count - i))
+        {
+            if (UnityEngine.Random.Range(0.0f, 1.0f) <= (float)remaining / (positions.Count - i))
             {
                 Instantiate(Utils.PickRandom(spawns), positions[i].transform);
                 remaining--;
+                if (remaining <= 0) break;
             }
+        }
     }
+
 
     public void Cleanup()
     {
@@ -277,13 +353,18 @@ public class MapGenerator : MonoBehaviour
 
     private static bool RemoveRoomlessLeafs(RoomProfile room)
     {
+        // NEVER remove the entry room
+        if (room.IsEntry)
+            return false;
+
         bool remove = !room.HasRoomLeaf;
 
-        if(remove)
+        if (remove)
             DestroyImmediate(room.gameObject);
-        
+
         return remove;
     }
+
 
     public RoomProperties PickRandomCell()
     {
@@ -352,6 +433,14 @@ public class MapGenerator : MonoBehaviour
 
         Debug.LogWarning($"Failed to find valid NavMesh point in room {room.name}");
         return room.transform.position;
+    }
+
+    private IEnumerator SpawnAllDeferred()
+    {
+        // let all newly-instantiated components run Start()
+        yield return null;
+        CollectSpawnPointsFromRooms(); // see below
+        SpawnAll();
     }
 }
 

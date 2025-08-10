@@ -25,9 +25,9 @@ public class gameManager : MonoBehaviour
     public int gameTerroristCount;
     public int gameHostageCount;
     public int gameHostageSaved;
+    [SerializeField] public TextMeshProUGUI TimerTxt;
+    [SerializeField] public TextMeshProUGUI HostageTxt;
     [SerializeField] TextMeshProUGUI GunName;
-    [SerializeField] TextMeshProUGUI TimerTxt;
-    [SerializeField] TextMeshProUGUI HostageTxt;
     [SerializeField] TextMeshProUGUI CurrentAmmoTxt;
     [SerializeField] TextMeshProUGUI GunModeTxt;
 
@@ -55,6 +55,9 @@ public class gameManager : MonoBehaviour
 
     private bool hasTriggeredHelicopterMessage;
 
+    private bool PlayerReady =>
+    playerScript != null && inventoryScript != null;
+
     void Awake()
     {
         menuActive = null;
@@ -74,10 +77,13 @@ public class gameManager : MonoBehaviour
 
     private void Start()
     {
-        MapGenerator.Instance.Generate();
-        gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
-        gameHostageSaved = 0;
-        updateGameGoal(0);
+        if (LevelManager.Instance == null)
+        {
+            MapGenerator.Instance.Generate();
+            gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+            gameHostageSaved = 0;
+            updateGameGoal(0);
+        }
     }
 
     public void SetPlayer(GameObject _player)
@@ -92,16 +98,26 @@ public class gameManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Cancel"))
         {
-            if (menuActive == null)
-            {
-                statePause();
-                menuActive = menuPause;
-                menuActive.SetActive(true);
-            }
-            else if (menuActive == menuPause)
-            {
-                stateUnpause();
-            }
+            if (menuActive == null) { statePause(); menuActive = menuPause; menuActive.SetActive(true); }
+            else if (menuActive == menuPause) { stateUnpause(); }
+        }
+
+        
+        _timer -= Time.deltaTime;
+        if (TimerTxt) TimerTxt.text = $"{(int)_timer / 60:00}:{(int)_timer % 60:00}";
+        if (_timer <= timerFlashThreshold)
+        {
+            float t = Mathf.PingPong(Time.unscaledTime * flashSpeed, 1f);
+            if (TimerTxt) TimerTxt.color = Color.Lerp(timerColorOrig, Color.red, t);
+        }
+        else if (TimerTxt) TimerTxt.color = Color.white;
+
+        if (_timer <= 0.0f) youLose();
+
+        if (!PlayerReady)
+        {
+            if (InteractionPopup) InteractionPopup.SetActive(false);
+            return;
         }
 
         SetGunModeText(inventoryScript.CurrentWeapon.Mode);
@@ -115,43 +131,18 @@ public class gameManager : MonoBehaviour
         PrimaryGun.sprite = inventoryScript.CurrentWeapon.Weapon.Image;
         SecondaryGun.sprite = inventoryScript.HolsteredWeapon.Weapon.Image;
 
-        _timer -= Time.deltaTime;
-        instance.TimerTxt.text = $"{(int)_timer / 60:00}:{(int)_timer % 60:00}";
-
-
-
-        if (_timer <= timerFlashThreshold)
-        {
-            float t = Mathf.PingPong(Time.unscaledTime * flashSpeed, 1f);
-            TimerTxt.color = Color.Lerp(timerColorOrig, Color.red, t);
-        }
-        else
-            TimerTxt.color = Color.white;
-
-        if (_timer <= timerFlashThreshold && !hasTriggeredHelicopterMessage)
-        {
-            hasTriggeredHelicopterMessage = true;
-
-            int secondsRemaining = Mathf.RoundToInt(timerFlashThreshold);
-            string unit = secondsRemaining == 1 ? "second" : "seconds";
-            DialogManager.Instance.ShowDialog(helicopterSprite, "Ground Control", $"We're running out of time! We have to leave in {secondsRemaining} {unit}! Get those hostages and run!");
-        }
-        if (_timer <= 0.0f)
-            youLose();
-
         if (playerScript.CurrentInteractable != null)
             InteractionPopup.SetActive(true);
         else
             InteractionPopup.SetActive(false);
 
-        if (playerScript.TookDamage)
-            StartCoroutine(PlayerHurtFlash());
-        if (playerScript.GainedHealth)
-            StartCoroutine(PlayerHealthFlash());
+        if (playerScript.TookDamage) StartCoroutine(PlayerHurtFlash());
+        if (playerScript.GainedHealth) StartCoroutine(PlayerHealthFlash());
     }
 
     private void LateUpdate()
     {
+        if (!PlayerReady) return;                   
         if (playerScript.IsDead && !loseMenuUp)
         {
             loseMenuUp = true;
