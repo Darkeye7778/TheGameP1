@@ -163,7 +163,7 @@ public class gameManager : MonoBehaviour
     {
         isPaused = true;
         InteractionPopup.SetActive(false);
-        Time.timeScale = 0;
+        Time.timeScale = 0.0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
