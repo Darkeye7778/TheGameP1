@@ -174,7 +174,7 @@ public class MapGenerator : MonoBehaviour
 
             var tmp = new GameObject("FallbackPlayerSpawn");
             tmp.transform.position = pos;
-            gameManager.instance.RegisterEntity(tmp); // so Cleanup removes it next time
+            gameManager.instance.RegisterEntity(tmp); 
 
             Debug.LogWarning("No PlayerSpawnPoint found; using fallback near entry.");
             spawnPoint = tmp.transform;
@@ -186,28 +186,40 @@ public class MapGenerator : MonoBehaviour
         {
             player = Instantiate(Type.Player, spawnPoint.position, Quaternion.identity);
             gameManager.instance.SetPlayer(player);
+
+            var pc = player.GetComponent<PlayerController>();
+            Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
+            if (pc != null)
+            {
+                pc.ResetState();
+                pc.GrantTemporaryInvulnerability(1.0f);
+                Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
+            }
+            Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
         }
         else
         {
-            CharacterController controller = player.GetComponent<CharacterController>();
+            var controller = player.GetComponent<CharacterController>();
             if (controller != null)
             {
-                controller.enabled = false; // Prevent movement interference
+                controller.enabled = false;
                 controller.transform.position = spawnPoint.position;
                 controller.enabled = true;
             }
-            else
+            else player.transform.position = spawnPoint.position;
+
+            var pc = player.GetComponent<PlayerController>();
+            Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
+
+            if (pc != null)
             {
-                player.transform.position = spawnPoint.position;
+                pc.ResetState();
+                pc.GrantTemporaryInvulnerability(1.0f);
+                Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
             }
 
-            PlayerController pc = player.GetComponent<PlayerController>();
-            if (pc != null)
-                pc.ResetState();
-
-            PlayerInventory inventory = player.GetComponent<PlayerInventory>();
-            if (inventory != null)
-                inventory.ResetWeapons();
+            var inventory = player.GetComponent<PlayerInventory>();
+            if (inventory != null) inventory.ResetWeapons();
         }
 
 

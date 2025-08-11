@@ -85,3 +85,4 @@ public class WeaponMovement : MonoBehaviour
     }
     static Quaternion Safe(Quaternion q) => IsInvalid(q) ? Quaternion.identity : q;
 }
+  

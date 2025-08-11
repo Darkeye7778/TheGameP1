@@ -89,12 +89,14 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _fallingTime;
     private float _stamina, _staminaRecoveryTimer;
     private bool _running, _crouch;
-    private float _health, _previousHealth;
+    private float _health = 1;
+    private float _previousHealth;
     
     private float _standingTimer, _footstepOffset;
     private float _leaningAngle, _leaningTarget;
     
     private float _recoilOffsetX, _recoilOffsetY;
+    private float _invulnUntilUnscaled = 0f;
 
     private Vector3 _cameraOrigin, _cameraTarget;
  
@@ -313,8 +315,8 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void OnTakeDamage(DamageSource source, float damage)
     {
-        _health -= damage;
-        _health = Mathf.Clamp(_health, 0.0f, MaximumHealth);
+        if (Time.unscaledTime < _invulnUntilUnscaled) return; 
+        _health = Mathf.Clamp(_health - damage, 0f, MaximumHealth);
     }
 
     public void ResetState()
@@ -437,4 +439,12 @@ public class PlayerController : MonoBehaviour, IDamagable
         LocalRealVelocity = transform.worldToLocalMatrix * RealVelocity;
         _previousPosition = transform.position;
     }
+
+    public void GrantTemporaryInvulnerability(float seconds)
+    {
+        _invulnUntilUnscaled = Mathf.Max(_invulnUntilUnscaled, Time.unscaledTime + Mathf.Max(0f, seconds));
+    }
+
+
+
 }

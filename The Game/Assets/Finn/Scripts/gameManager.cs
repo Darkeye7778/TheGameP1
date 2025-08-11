@@ -145,6 +145,7 @@ public class gameManager : MonoBehaviour
         if (!PlayerReady) return;                   
         if (playerScript.IsDead && !loseMenuUp)
         {
+            Debug.LogError($"[Lose] Player died. Health={playerScript.Health}, Max={playerScript.MaximumHealth}");
             loseMenuUp = true;
             youLose();
         }
@@ -251,6 +252,7 @@ public class gameManager : MonoBehaviour
     }
     public void youLose()
     {
+        Debug.LogError($"[Lose] Player died. Health={playerScript.Health}, Max={playerScript.MaximumHealth}");
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
