@@ -76,7 +76,7 @@ public class gameManager : MonoBehaviour
 
     private void Start()
     {
-        if (LevelManager.Instance == null)
+        if (LevelManager.Instance != null)
         {
             MapGenerator.Instance.Generate();
             gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
