@@ -119,6 +119,33 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &1135829865 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9091317095543972501, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+  m_PrefabInstance: {fileID: 1763699876}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3647c7a7c38ae8e4bbda85019bc85528, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1318850292 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2313191884546953758, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+  m_PrefabInstance: {fileID: 1763699876}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1545420957 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7119539140213057331, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+  m_PrefabInstance: {fileID: 1763699876}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3647c7a7c38ae8e4bbda85019bc85528, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1763699876
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -207,6 +234,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: loadoutsScreen
+      value: 
+      objectReference: {fileID: 1318850292}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: loadoutLoaders.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: 'loadoutLoaders.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1135829865}
+    - target: {fileID: 2033247035089989488, guid: 3faf20b6de423584da1d206a50477441, type: 3}
+      propertyPath: 'loadoutLoaders.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1545420957}
     - target: {fileID: 7976873999747838052, guid: 3faf20b6de423584da1d206a50477441, type: 3}
       propertyPath: m_Name
       value: UI

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class gameManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject loadoutsScreen;
     [SerializeField] GameObject InteractionPopup;
     [SerializeField] GameObject playerUI;
     public bool isPaused;
@@ -30,7 +32,8 @@ public class gameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI GunName;
     [SerializeField] TextMeshProUGUI CurrentAmmoTxt;
     [SerializeField] TextMeshProUGUI GunModeTxt;
-
+    [SerializeField] Loadout[] loadouts;
+    [SerializeField] LoadoutLoader[]  loadoutLoaders;
     public Image PlayerHealthBar;
     public Image PlayerSprintBar;
     public Image PrimaryGun;
@@ -83,7 +86,9 @@ public class gameManager : MonoBehaviour
             gameHostageSaved = 0;
             updateGameGoal(0);
         }
+        
     }
+
 
     public void SetPlayer(GameObject _player)
     {
@@ -148,7 +153,8 @@ public class gameManager : MonoBehaviour
         if (playerScript.TookDamage) StartCoroutine(PlayerHurtFlash());
         if (playerScript.GainedHealth) StartCoroutine(PlayerHealthFlash());
     }
-
+    
+    
     private void LateUpdate()
     {
         if (!PlayerReady) return;                   
@@ -170,6 +176,22 @@ public class gameManager : MonoBehaviour
         playerUI.SetActive(false);
     }
 
+    public void ShowLoadouts()
+    {
+        menuActive = loadoutsScreen;
+        menuActive.SetActive(true);
+        LoadLoadouts();
+        statePause();
+    }
+    void LoadLoadouts()
+    {
+        foreach (LoadoutLoader loader in loadoutLoaders)
+        {
+            loader.gameObject.SetActive(true);
+            loader.Load(loadouts[Random.Range(0, loadouts.Length)]);
+        }
+        statePause();
+    }
     public void stateUnpause()
     {
         isPaused = false;

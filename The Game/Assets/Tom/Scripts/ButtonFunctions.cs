@@ -33,6 +33,21 @@ public void Restart()
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void SetLoadout(LoadoutLoader loader)
+    {
+        Loadout loadout = loader.loadoutRef;
+        gameManager.instance.stateUnpause();
+        PlayerInventory inv = gameManager.instance.player.GetComponent<PlayerInventory>();
+        PlayerController player = gameManager.instance.playerScript;
+        inv.Primary.Weapon = loadout.Primary;
+        inv.Secondary.Weapon = loadout.Secondary;
+        player.MaximumHealth = (int)loadout.Health;
+        player.MaximumStamina = (int)loadout.Stamina;
+        player.WalkingSpeed *= loadout.SpeedMult;
+        player.RunningSpeed *= loadout.SpeedMult;
+        inv.ResetInventory();
+        player.ResetState();
+    }
     public void Quit()
     {
 #if UNITY_EDITOR
