@@ -3458,19 +3458,34 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 938826830}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: 1cc0d9a3b83166f45a85a6434510cb2b, type: 3}
   m_Controller: {fileID: 9100000, guid: 41f89b0535e80a546907aceb2463bc52, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
+  m_AnimatePhysics: 1
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &938826834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938826830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447b4d1b8a428bb4eb375a9fb81a954f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TargetPosition: {x: 0, y: 0, z: 0}
+  TargetRotation: {x: 0, y: 0, z: 0, w: 0}
+  Weight: 1
 --- !u!43 &991207414
 Mesh:
   m_ObjectHideFlags: 0
@@ -5276,6 +5291,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1cc0d9a3b83166f45a85a6434510cb2b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 938826833}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1cc0d9a3b83166f45a85a6434510cb2b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 938826834}
     - targetCorrespondingSourceObject: {fileID: 1082271958561512970, guid: 1cc0d9a3b83166f45a85a6434510cb2b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 880169545}
@@ -6239,7 +6257,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 360
-  m_StoppingDistance: 10
+  m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -6404,6 +6422,8 @@ MonoBehaviour:
   UnequippedOffset: {x: 0, y: 0, z: 0}
   _audioSource: {fileID: 6221620587187904560}
   Animator: {fileID: 938826833}
+  IK: {fileID: 938826834}
+  <Health>k__BackingField: 100
 --- !u!114 &8943440726786146286
 MonoBehaviour:
   m_ObjectHideFlags: 0

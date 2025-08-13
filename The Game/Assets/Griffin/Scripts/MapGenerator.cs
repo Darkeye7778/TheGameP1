@@ -246,13 +246,10 @@ public class MapGenerator : MonoBehaviour
             Parameters.HostageSpawnPoints.AddRange(room.GetComponentsInChildren<HostageSpawnPoint>(true));
         }
 
-        Debug.Log($"Spawns — Player:{Parameters.PlayerSpawnPoints.Count} " +
+        Debug.Log($"Spawns ï¿½ Player:{Parameters.PlayerSpawnPoints.Count} " +
                   $"Enemy:{Parameters.EnemySpawnPoints.Count} Hostage:{Parameters.HostageSpawnPoints.Count} Trap:{Parameters.TrapSpawnPoints.Count}");
     }
-
-
-
-
+    
     private void SpawnOnNavMesh(GameObject[] prefabPool, int count, System.Random spawnRng)
     {
         // Nothing to spawn? Bail out safely (Hub case).

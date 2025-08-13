@@ -189,8 +189,8 @@ public class Inventory : MonoBehaviour
     {
         _viewmodelMesh.mesh = weapon.Weapon.Mesh;
         _viewmodelRenderer.materials = weapon.Weapon.Materials;
-        _viewmodelMesh.transform.localScale = weapon.Weapon.Scale;
-        _viewmodelMesh.transform.localRotation = weapon.Weapon.Rotation;
+        _viewmodelMesh.transform.localScale = weapon.Weapon.Transform.Scale;
+        _viewmodelMesh.transform.localRotation = weapon.Weapon.Transform.Rotation;
         
         _audioSource.clip = weapon.Weapon.EquipSound;
         _audioSource.Play();
@@ -202,7 +202,7 @@ public class Inventory : MonoBehaviour
     private void InterpolateWeapon()
     {
         float fac = _equipTime / GetInterpolateTime();
-        Vector3 target = CurrentWeapon.Weapon.Position;
+        Vector3 target = CurrentWeapon.Weapon.Transform.Position;
 
         Viewmodel.transform.localPosition = Vector3.Slerp(target + UnequippedOffset, target, fac);
     }
@@ -219,9 +219,9 @@ public class Inventory : MonoBehaviour
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
         _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
         
-        ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash,transform.position, Viewmodel.transform.rotation * CurrentWeapon.Weapon.Rotation);
+        ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash,transform.position, Viewmodel.transform.rotation * CurrentWeapon.Weapon.Transform.Rotation);
         flash.transform.parent = Viewmodel.transform;
-        flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Rotation) * CurrentWeapon.Weapon.MuzzlePosition;
+        flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Transform.Rotation) * CurrentWeapon.Weapon.Muzzle.Position;
         
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;
