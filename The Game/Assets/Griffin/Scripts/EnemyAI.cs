@@ -63,7 +63,8 @@ public class EnemyAI : Inventory, IDamagable
 
         if (!IsDead)
             return;
-        
+
+        _agent.enabled = false;
         Animator.SetTrigger("Death");
         
         if(!wasDead)

@@ -189,15 +189,18 @@ public class WeaponInstance
         {
             _currentFireDelta = Weapon.BurstFireDelta;
             _remainingBurst--;
-            if (_remainingBurst == 0)
+            
+            if (_remainingBurst == 0 || LoadedAmmo == 1)
             {
                 _currentFireDelta = Weapon.BurstCooldown;
                 Locked = false;
             }
+            
         }
 
         _nextShot = 0.0f;
         --LoadedAmmo;
+        
         return true;
     }
 

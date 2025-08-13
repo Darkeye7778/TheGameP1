@@ -6,7 +6,7 @@ public class Hitbox : SoundProfile, IDamagable
     public float Multiplier = 1f;
 
     private IDamagable _baseDamagable;
-    public SoundProfile _baseSoundProfile;
+    private SoundProfile _baseSoundProfile;
 
     private void Start()
     {
