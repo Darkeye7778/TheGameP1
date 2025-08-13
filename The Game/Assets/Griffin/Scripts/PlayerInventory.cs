@@ -1,8 +1,8 @@
 using UnityEngine;
 
 public class PlayerInventory : Inventory
-{ 
-    void Update()
+{
+    new void Update()
     {
         if (Time.timeScale == 0.0f)
             return;

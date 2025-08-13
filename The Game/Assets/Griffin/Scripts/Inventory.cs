@@ -52,12 +52,12 @@ public class Inventory : MonoBehaviour
     private InventoryState _state;
     private PlayerController _player;
     
-    void Start()
+    protected void Start()
     {
         _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
         _viewmodelRenderer = Viewmodel.GetComponent<Renderer>();
         _weaponMovement = Viewmodel.GetComponent<WeaponMovement>();
-        if (Primary.Valid) Primary.Reset();
+        if(Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
         
         SetCurrentWeapon(Primary);
