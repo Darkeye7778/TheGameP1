@@ -14,7 +14,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
     [SerializeField] GameObject InteractionPopup;
-
+    [SerializeField] GameObject playerUI;
     public bool isPaused;
     public GameObject player;
     public PlayerController playerScript;
@@ -65,7 +65,6 @@ public class gameManager : MonoBehaviour
         loseMenuUp = false;
         menuLose.SetActive(false);
         instance = this;
-
         timeScaleOrig = Time.timeScale;
 
         _timer = StartingTime;
@@ -98,8 +97,18 @@ public class gameManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Cancel"))
         {
-            if (menuActive == null) { statePause(); menuActive = menuPause; menuActive.SetActive(true); }
-            else if (menuActive == menuPause) { stateUnpause(); }
+            if (menuActive == null)
+            {
+                statePause(); 
+                menuActive = menuPause; 
+                menuActive.SetActive(true);
+                playerUI.SetActive(false);
+            }
+            else if (menuActive == menuPause)
+            {
+                stateUnpause();
+                playerUI.SetActive(true);
+            }
         }
 
         
@@ -214,7 +223,7 @@ public class gameManager : MonoBehaviour
     }
     public void SetAmmoTxt(uint currAmount, uint reserveAmount)
     {
-        CurrentAmmoTxt.text = $"{currAmount} | {reserveAmount}";
+        CurrentAmmoTxt.text = $"<size=150%>{currAmount} | </size>{reserveAmount}";
     }
 
     public void youWin()
