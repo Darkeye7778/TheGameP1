@@ -102,12 +102,12 @@ public class gameManager : MonoBehaviour
                 statePause(); 
                 menuActive = menuPause; 
                 menuActive.SetActive(true);
-                playerUI.SetActive(false);
+                
             }
             else if (menuActive == menuPause)
             {
                 stateUnpause();
-                playerUI.SetActive(true);
+                
             }
         }
 
@@ -167,6 +167,7 @@ public class gameManager : MonoBehaviour
         Time.timeScale = 0.0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        playerUI.SetActive(false);
     }
 
     public void stateUnpause()
@@ -178,6 +179,7 @@ public class gameManager : MonoBehaviour
         if(menuActive != null)
             menuActive.SetActive(false);
         menuActive = null;
+        playerUI.SetActive(true);
     }
 
     public void updateGameGoal(int amount)
