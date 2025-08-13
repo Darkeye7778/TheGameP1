@@ -74,10 +74,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
     public SoundEmitterSettings DefaultSoundProfile;
-
-    // TODO: Attach to weapon.
-    [Header("Recoil")]
-    public CameraRecoil RecoilObj;
+    
     public GameObject CurrentInteractable { get; private set; }
     
     private bool _moving => _ground.NearGround && RealVelocity.sqrMagnitude > 0.01;
@@ -131,7 +128,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         CalculateVelocity();
         CalculateRotation();
         CalculateLeaning();
-        CameraRecoilReset();
+        
         _stamina += GetStaminaRecoveryRate() * Time.deltaTime;
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
         
@@ -401,17 +398,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         return result;
     }
     
-    private void CameraRecoilReset()
-    {
-        RecoilObj.IsShooting = (Input.GetKey(KeyCode.Mouse0) && !_inventory.CurrentWeapon.IsEmpty);
-    }
-
-    public void AddRecoil(float recoilIntensity)
-    {
-        RecoilObj.AddRecoil(_inventory.CurrentWeapon.Weapon);
-        // _recoilOffsetX += recoilIntensity;
-        // _recoilOffsetY += Random.Range(-1.1f,1.1f);
-    }
     private bool ShouldCrouch()
     {
         if (Input.GetKey(KeyCode.C))

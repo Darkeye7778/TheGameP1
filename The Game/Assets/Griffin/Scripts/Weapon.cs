@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [Flags]
@@ -10,6 +11,64 @@ public enum FireMode : uint
     DONOTUSE = 1u << 31
 }
 
+[Serializable]
+public class TransformData
+{
+    public Vector3 Position = Vector3.zero;
+    public Quaternion Rotation = Quaternion.identity;
+    public Vector3 Scale = Vector3.one;
+
+    TransformData(Matrix4x4 transform)
+    {
+        Position = transform.GetPosition();
+        Rotation = transform.rotation;
+        Scale = transform.lossyScale;
+    }
+
+    TransformData(Vector3 position, Quaternion rotation, Vector3 scale)
+    {
+        Position = position;
+        Rotation = rotation;
+        Scale = scale;
+    }
+    
+    public static implicit operator Matrix4x4(TransformData t)
+    {
+        return Matrix4x4.TRS(t.Position, t.Rotation, t.Scale);
+    }
+
+    public static TransformData FromLocal(Transform transform)
+    {
+        return new TransformData
+        (
+            transform.localPosition,
+            transform.localRotation,
+            transform.localScale
+        );
+    }
+    
+    public static TransformData FromGlobal(Transform transform)
+    {
+        return new TransformData
+        (
+            transform.position,
+            transform.rotation,
+            transform.lossyScale
+        );
+    }
+
+    public static TransformData operator *(TransformData a, TransformData b)
+    {
+        Matrix4x4 global = (Matrix4x4) a * (Matrix4x4) b;
+        return new TransformData
+        (
+            global.GetPosition(),
+            global.rotation,
+            global.lossyScale
+        );
+    }
+}
+
 [CreateAssetMenu(fileName = "Weapon", menuName = "Scriptable Objects/Weapon")]
 public class Weapon : ScriptableObject
 {
@@ -19,10 +78,10 @@ public class Weapon : ScriptableObject
     [Header("Display")]
     public Mesh Mesh;
     public Material[] Materials;
-    public Vector3 Position;
-    public Vector3 MuzzlePosition;
-    public Vector3 Scale;
-    public Quaternion Rotation;
+    public TransformData Transform;
+
+    public TransformData Grip;
+    public TransformData Muzzle;
 
     [Header("Sounds")]
     public AudioClip EquipSound;

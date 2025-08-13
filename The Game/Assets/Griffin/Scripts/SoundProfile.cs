@@ -6,7 +6,7 @@ public class SoundProfile : MonoBehaviour
     [SerializeField]
     private SoundEmitterSettings _soundProfile;
 
-    public SoundEmitterSettings GetSettings()
+    virtual public SoundEmitterSettings GetSettings()
     {
         return _soundProfile; 
     }

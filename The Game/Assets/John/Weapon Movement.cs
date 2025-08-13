@@ -46,7 +46,7 @@ public class WeaponMovement : MonoBehaviour
         Sway();
 
         // Sanitize weapon rotation before applying
-        var weaponRot = Safe(Inventory.CurrentWeapon.Weapon.Rotation);
+        var weaponRot = Safe(Inventory.CurrentWeapon.Weapon.Transform.Rotation);
         transform.localRotation = _currentRotation * weaponRot;
     }
 
