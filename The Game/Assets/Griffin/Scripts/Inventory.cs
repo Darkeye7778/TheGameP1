@@ -96,8 +96,8 @@ public class Inventory : MonoBehaviour
             InputCycleFireMode();
         if(InputFlags.HasFlag(InputState.Reload)) 
             InputReload();
-        if(InputFlags.HasFlag(InputState.Firing))
-            InputShoot(InputFlags.HasFlag(InputState.FiringFirst));
+        
+        InputShoot();
         
         Debug.DrawRay(Eye.position, Eye.forward * CurrentWeapon.Weapon.MaxRange, Color.red);
     }
@@ -130,8 +130,11 @@ public class Inventory : MonoBehaviour
         _state = InventoryState.Reloading;
     }
 
-    void InputShoot(bool first)
+    void InputShoot()
     {
+        bool shooting = InputFlags.HasFlag(InputState.Firing);
+        bool first = InputFlags.HasFlag(InputState.FiringFirst);
+        
         if (first && CurrentWeapon.IsEmpty)
         {
             _audioSource.clip = CurrentWeapon.Weapon.EmptySound;
@@ -141,7 +144,7 @@ public class Inventory : MonoBehaviour
         switch (CurrentWeapon.Mode)
         {
             case FireMode.Auto:
-                    TryShoot();
+                    if(shooting) TryShoot();
                 break;
             case FireMode.Burst:
                 if (first)
