@@ -8,7 +8,8 @@ public class RoomProfile : MonoBehaviour
 { 
     [field: SerializeField]
     public RoomProperties Properties { get; private set; }
-    
+    public RoomCategory Category = RoomCategory.None;
+
     [NonSerialized] public RoomProfile Parent;
     [NonSerialized] public bool HasRoomLeaf = false;
     [NonSerialized] public bool IsLeaf = true;

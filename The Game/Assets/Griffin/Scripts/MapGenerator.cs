@@ -60,6 +60,8 @@ public class MapGenerator : MonoBehaviour
 
     private List<GameObject> _spawnedEntities = new List<GameObject>();
 
+    public LevelDefinition CurrentLevelDefinition { get; private set; }
+
     void Awake()
     {
         Instance = this;
@@ -72,6 +74,7 @@ public class MapGenerator : MonoBehaviour
 
     public void ApplyLevel(LevelDefinition def)
     {
+        CurrentLevelDefinition = def;
         // MapType + counts
         if (def.MapType != null) Type = def.MapType;
         TargetRooms = def.TargetRooms;
@@ -145,6 +148,12 @@ public class MapGenerator : MonoBehaviour
         Physics.SyncTransforms();
 
         _navMeshSurface.BuildNavMesh();
+
+        if (CurrentLevelDefinition != null && CurrentLevelDefinition.Theme != null)
+        {
+            var rng = new System.Random(SpawnSeed);
+            PropDresser.DressRooms(Parameters.Rooms, CurrentLevelDefinition.Theme, rng);
+        }
 
         StartCoroutine(SpawnAllDeferred());
 

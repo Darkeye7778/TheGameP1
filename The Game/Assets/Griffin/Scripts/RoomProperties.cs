@@ -6,9 +6,12 @@ using UnityEngine.Serialization;
 public enum RoomType
 {
     Hallway,
-    Room,
+    Room
 }
-
+public enum RoomArchetype { 
+    Hallway, 
+    SmallRoom, 
+    DoubleRoom }
 public enum ExitDirection
 {
     ZPositive,
@@ -114,4 +117,6 @@ public class RoomProperties : ScriptableObject
     
     public Vector3 CollisionBox => new Vector3(Size.x, 1f / MapGenerator.GRID_SIZE, Size.y) * MapGenerator.GRID_SIZE * 2f;
     public Vector3 CollisionOffset => new Vector3(0f, 0f, CollisionBox.z / 2f) + new Vector3(Offset.x, 0f, Offset.y) * MapGenerator.GRID_SIZE;
+
+    public RoomArchetype Archetype = RoomArchetype.SmallRoom;
 }
