@@ -86,6 +86,7 @@ public class gameManager : MonoBehaviour
             gameHostageSaved = 0;
             updateGameGoal(0);
         }
+        Invoke(nameof(ShowLoadouts), 1.5f);
         
     }
 

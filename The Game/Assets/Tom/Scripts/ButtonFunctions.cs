@@ -25,6 +25,7 @@ public class ButtonFunctions : MonoBehaviour
     {
         gameManager.instance.stateUnpause();
         gameManager.instance.NextLevel();
+        gameManager.instance.Invoke("ShowLoadouts", 1.5f);
     }
 
 public void Restart()
@@ -43,8 +44,8 @@ public void Restart()
         inv.Secondary.Weapon = loadout.Secondary;
         player.MaximumHealth = (int)loadout.Health;
         player.MaximumStamina = (int)loadout.Stamina;
-        player.WalkingSpeed *= loadout.SpeedMult;
-        player.RunningSpeed *= loadout.SpeedMult;
+        player.WalkingSpeed = 2 * loadout.SpeedMult; // this should change
+        player.RunningSpeed = 4 * loadout.SpeedMult; // this should change
         inv.ResetInventory();
         player.ResetState();
     }
