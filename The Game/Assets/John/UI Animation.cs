@@ -44,7 +44,15 @@ public class UIAnimation : MonoBehaviour
         if (Vector2.Distance(rectTransform.anchoredPosition, endPos) > 0.01f)
         {
             // Exponential smoothing towards target
-            float t = 1f - Mathf.Exp(-transitionSpeed * Time.unscaledDeltaTime);
+            float t;
+            if (Time.timeScale <= 0)
+            {
+               t = 1f - Mathf.Exp(-transitionSpeed * Time.unscaledDeltaTime);
+            }
+            else
+            {
+                t = 1f - Mathf.Exp(-transitionSpeed * Time.deltaTime);
+            }
             rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, endPos, t);
         }
         else
