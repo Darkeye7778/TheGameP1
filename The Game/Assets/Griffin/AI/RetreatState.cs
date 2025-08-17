@@ -19,7 +19,7 @@ public class RetreatState : AIState
         Controller.Agent.stoppingDistance = 0;
         
         Vector3 target = Controller.Agent.transform.position - Controller.Target.GameObject().transform.position;
-        target.z = 0;
+        target.y = 0;
         target.Normalize();
         
         Controller.Agent.SetDestination(Controller.Agent.transform.position + target);
@@ -34,7 +34,7 @@ public class RetreatState : AIState
             return;
         }
         
-        if (!Controller.IsUsingPrimary && !Controller.Secondary.IsFull)
+        if (!Controller.IsUsingPrimary && !Controller.Secondary.IsFull && Controller.Secondary.CanReload)
             Controller.InputFlags |= Inventory.InputState.Reload;
         else if (!Controller.IsUsingPrimary)
             Controller.InputFlags |= Inventory.InputState.UsePrimary;
