@@ -1,6 +1,6 @@
 #define PLAYERCONTROLLER_INERTIA
 #define PLAYERCONTROLLER_DIRECTIONAL_SPEED
-#define PLAYERCONTROLLER_AUTOCROUCH
+// #define PLAYERCONTROLLER_AUTOCROUCH
 
 using System;
 using JetBrains.Annotations;
@@ -28,10 +28,16 @@ public class PlayerController : MonoBehaviour, IDamagable
     public LayerMask GroundMask;
     public LayerMask InteractSkip;
     public int Health => (int) _health;
-    public bool TookDamage => Health != _previousHealth && Health < _previousHealth;
-    public bool GainedHealth => Health != _previousHealth && Health > _previousHealth;
+    public bool TookDamage => Health < _previousHealth;
+    public bool GainedHealth => Health > _previousHealth;
     public bool IsDead => Health <= 0;
     public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
+    public float Height => _controller.height;
+
+    [Header("Hitbox")]
+    public Animator Animator;
+    public Transform[] HitPoints;
+    private Vector3[] _hitPoints;
 
     [Header("Leaning")]
     public bool ToggleLeaning = true;
@@ -46,7 +52,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float StaminaRecoveryTime = 0.5f;
     public float StandingRecoveryRate = 1.0f;
     public float StaminaRelative => _stamina / MaximumStamina;
-    
     
     [Header("Walking")]
     public float WalkingSpeed = 1.34f;
@@ -128,6 +133,16 @@ public class PlayerController : MonoBehaviour, IDamagable
         CalculateVelocity();
         CalculateRotation();
         CalculateLeaning();
+        
+        Animator.SetFloat("Speed", Mathf.Max(LocalRealVelocity.magnitude, 1) * 0.5f, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity X", LocalRealVelocity.x, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime);
+        Animator.SetBool("Crouching", _crouch);
+
+        if (_hitPoints == null || _hitPoints.Length != HitPoints.Length)
+            _hitPoints = new Vector3[HitPoints.Length];
+        for (int i = 0; i < HitPoints.Length; i++)
+            _hitPoints[i] = HitPoints[i].position;
         
         _stamina += GetStaminaRecoveryRate() * Time.deltaTime;
         _stamina = Mathf.Clamp(_stamina, 0.0f, MaximumStamina);
@@ -343,6 +358,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         return gameObject; 
     }
 
+    public Vector3[] AimTargets()
+    {
+        return _hitPoints;
+    }
+
     private GroundState GetGround()
     {
         GroundState result = new GroundState
@@ -422,7 +442,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void GetRealVelocity()
     {
         RealVelocity = (transform.position - _previousPosition) / Time.deltaTime;
-        LocalRealVelocity = transform.worldToLocalMatrix * RealVelocity;
+        LocalRealVelocity = transform.InverseTransformDirection(RealVelocity);
         _previousPosition = transform.position;
     }
 
@@ -430,7 +450,13 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         _invulnUntilUnscaled = Mathf.Max(_invulnUntilUnscaled, Time.unscaledTime + Mathf.Max(0f, seconds));
     }
+    public Vector3 LookTarget()
+    {
+        return _inventory.Eye.position;
+    }
 
-
-
+    bool IDamagable.IsDead()
+    {
+        return IsDead;
+    }
 }

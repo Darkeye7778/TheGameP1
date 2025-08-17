@@ -195,7 +195,6 @@ public class WeaponInstance
                 _currentFireDelta = Weapon.BurstCooldown;
                 Locked = false;
             }
-            
         }
 
         _nextShot = 0.0f;
