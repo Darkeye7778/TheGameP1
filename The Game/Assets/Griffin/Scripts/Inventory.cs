@@ -197,7 +197,7 @@ public class Inventory : MonoBehaviour
         HolsteredWeapon?.Reset();
     }
     
-    private void SetCurrentWeapon(WeaponInstance weapon)
+    public void SetCurrentWeapon(WeaponInstance weapon)
     {
         _viewmodelMesh.mesh = weapon.Weapon.Mesh;
         _viewmodelRenderer.materials = weapon.Weapon.Materials;
