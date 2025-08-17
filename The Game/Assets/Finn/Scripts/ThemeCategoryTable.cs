@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Props/Theme Category Table")]
-public class ThemeCategoryTable : MonoBehaviour
+public class ThemeCategoryTable : ScriptableObject
 {
     [System.Serializable] public struct WeightedCategory
     {

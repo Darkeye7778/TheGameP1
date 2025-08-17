@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62684c2ef9b2c81418f26ec3bc9b6684, type: 3}
+  m_Name: Doubles_Room_Left_4_Way_Right
+  m_EditorClassIdentifier: 
+  Prefab: {fileID: 8318859177647998124, guid: a859d6cbf717b0f48a4014eb489ee6e1, type: 3}
+  Size: {x: 2, y: 2}
+  Offset: {x: 0, y: 0}
+  Type: 1
+  HasEntranceDoor: 1
+  ConnectionPoints:
+  - Transform:
+      Position: {x: -1, y: 1}
+      Rotation: 0
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: 1, y: 4}
+      Rotation: 1
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: 3, y: 1}
+      Rotation: 0
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: -3, y: 1}
+      Rotation: 1
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: -3, y: 4}
+      Rotation: 1
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  Archetype: 2

@@ -15,26 +15,21 @@ public static class PropDresser
 
         foreach (var room in rooms)
         {
-            // Skip nulls and the entry room (keep spawn area clean)
             if (!room || room.IsEntry) continue;
 
             var props = room.Properties;
             if (props == null) continue;
 
-            // 1) Resolve base rule by archetype (Hallway / SmallRoom / DoubleRoom)
             var rule = theme.GetRule(props.Archetype);
             if (rule == null) continue;
 
-            // 2) Optional category override (Bedroom, Armory, Cubicles, etc.)
             var catRule = GetCategoryRule(rule, room.Category);
 
-            // 3) Decide per-room prop count (category override > base rule)
             int min = (catRule != null && catRule.MinProps >= 0) ? catRule.MinProps : rule.MinProps;
             int max = (catRule != null && catRule.MaxProps >= 0) ? catRule.MaxProps : rule.MaxProps;
             if (min < 0) min = 0;
             if (max < min) max = min;
 
-            // 4) Collect sockets and shuffle for variety
             var sockets = room.GetComponentsInChildren<PropSocket>(true);
             if (sockets == null || sockets.Length == 0) continue;
             Shuffle(sockets, rng);
@@ -42,41 +37,34 @@ public static class PropDresser
             int target = rng.Next(min, max + 1);
             int placed = 0;
 
-            // 5) Try to place props at sockets until we hit the target
             foreach (var s in sockets)
             {
                 if (placed >= target) break;
 
-                // Resolve prefab list for this socket (category override first, else archetype fallback)
                 var list = GetList(rule, catRule, s.Type);
                 var prefab = PickWeighted(list, rng);
                 if (!prefab) continue;
 
-                // Placement transforms
                 Vector3 pos = s.transform.position;
                 Vector3 forward = (s.ForwardHint.sqrMagnitude < 1e-4f)
                     ? s.transform.forward
                     : s.transform.TransformDirection(s.ForwardHint);
                 Quaternion rot = Quaternion.LookRotation(forward, Vector3.up);
 
-                // 6) Keep doorways clear using your fixed door dimensions (2.0w × 4.0h × 0.3d)
-                //    - sidePadding: little extra on width so we don’t clip frames
-                //    - depthPadding: apron into the room to leave passage space
-                //    - intoRoomOffset: shift the keep-out box “into” the room if the door pivot sits at the wall face
-                if (!HasDoorClearance(room, s.transform.position,
-                                      sidePadding: 0.05f,
-                                      depthPadding: 0.35f,
-                                      heightPadding: 0.0f,
-                                      intoRoomOffset: 0.30f))
-                {
-                    continue;
-                }
+                var model = room.transform.Find("model");
+                var roomRoot = model ? model : room.transform;
 
-                // 7) Floor snap + overlap check
+                Vector3 local = roomRoot.InverseTransformPoint(s.transform.position);
+
+                float halfW = DOOR_WIDTH * 0.5f + 0.10f;
+                float halfD = 0.50f;
+
+                if (IsInsideAnyDoorBand(local, room.Properties, MapGenerator.GRID_SIZE, halfW, halfD))
+                    continue;
+
                 if (!SnapToFloor(ref pos)) continue;
                 if (!AreaFree(pos, prefab, rot, s.Clearance)) continue;
 
-                // 8) Instantiate and register for cleanup
                 var go = Object.Instantiate(prefab, pos, rot, room.transform);
                 gameManager.instance.RegisterEntity(go);
                 placed++;
@@ -135,10 +123,10 @@ public static class PropDresser
     static void Shuffle<T>(IList<T> a, System.Random rng) { for (int i = a.Count - 1; i > 0; i--) { int j = rng.Next(i + 1); (a[i], a[j]) = (a[j], a[i]); } }
 
     private static bool HasDoorClearance(RoomProfile room, Vector3 worldPos,
-                                            float sidePadding = 0.05f,   // extra space left/right (m)
-                                            float depthPadding = 0.35f,  // extra thickness along Z (m)
-                                            float heightPadding = 0.0f,  // extra height (rarely needed)
-                                            float intoRoomOffset = 0.0f) // shift the test box along +Z (m)
+                                            float sidePadding = 0.05f,   
+                                            float depthPadding = 0.35f,  
+                                            float heightPadding = 0.0f,  
+                                            float intoRoomOffset = 0.0f) 
     {
         float halfW = (DOOR_WIDTH * 0.5f) + sidePadding;
         float halfH = (DOOR_HEIGHT * 0.5f) + heightPadding;
@@ -149,19 +137,14 @@ public static class PropDresser
         {
             if (!c) continue;
 
-            // Candidate point in door-local space
             Vector3 local = c.transform.InverseTransformPoint(worldPos);
 
-            // If the door's pivot is at the wall face (not center of thickness),
-            // push the test box slightly "into" the room so we keep a clear apron.
-            // (Try +halfD or a fixed offset like 0.3–0.6 depending on your layout.)
             local.z -= intoRoomOffset;
 
             if (Mathf.Abs(local.x) <= halfW &&
                 Mathf.Abs(local.y) <= halfH &&
                 Mathf.Abs(local.z) <= halfD)
             {
-                // Inside the doorway volume -> NOT clear
                 return false;
             }
         }
@@ -185,9 +168,33 @@ public static class PropDresser
         var hits = Physics.OverlapBox(pos + rot * (b.center - prefab.transform.position), half, rot, ~0, QueryTriggerInteraction.Ignore);
         foreach (var h in hits)
         {
-            // ignore static room shell if you want; simplest is to accept empty space only:
             return false;
         }
         return true;
+    }
+
+    static bool IsInsideAnyDoorBand(Vector3 localPos, RoomProperties props, float grid, float doorHalfWidth, float doorHalfDepth)
+    {
+        if (props == null || props.ConnectionPoints == null) return false;
+
+        foreach (var c in props.ConnectionPoints)
+        {
+            var p2 = c.Transform.Position;              // grid coords
+            int r = ((int)c.Transform.Rotation) & 3;    // 0=Z+, 1=X+, 2=Z-, 3=X-
+            Vector3 center = new Vector3(grid * p2.x, 0f, grid * p2.y);
+
+            Vector2 tan = r == 0 ? new Vector2(0, 1) :
+                          r == 1 ? new Vector2(1, 0) :
+                          r == 2 ? new Vector2(0, -1) : new Vector2(-1, 0);
+            Vector2 nor = new Vector2(-tan.y, tan.x);
+
+            Vector2 d = new Vector2(localPos.x - center.x, localPos.z - center.z);
+            float dt = Vector2.Dot(d, tan);
+            float dn = Vector2.Dot(d, nor);
+
+            if (Mathf.Abs(dt) <= doorHalfWidth && Mathf.Abs(dn) <= doorHalfDepth)
+                return true;
+        }
+        return false;
     }
 }

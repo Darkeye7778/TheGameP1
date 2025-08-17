@@ -8,7 +8,10 @@ public class RoomProfile : MonoBehaviour
 { 
     [field: SerializeField]
     public RoomProperties Properties { get; private set; }
-    public RoomCategory Category = RoomCategory.None;
+    [Header("Design")]
+    public RoomCategory AllowedCategories = RoomCategory.None;
+
+    [HideInInspector] public RoomCategory Category = RoomCategory.None;
 
     [NonSerialized] public RoomProfile Parent;
     [NonSerialized] public bool HasRoomLeaf = false;

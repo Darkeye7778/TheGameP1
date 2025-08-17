@@ -62,6 +62,9 @@ public class MapGenerator : MonoBehaviour
 
     public LevelDefinition CurrentLevelDefinition { get; private set; }
 
+    [SerializeField] int maxSeedRetries = 8;
+    int _seedTries = 0;
+
     void Awake()
     {
         Instance = this;
@@ -149,6 +152,14 @@ public class MapGenerator : MonoBehaviour
 
         _navMeshSurface.BuildNavMesh();
 
+        _navMeshSurface.BuildNavMesh();
+
+        if (CurrentLevelDefinition != null && CurrentLevelDefinition.CategoryTable != null)
+        {
+            var catRng = new System.Random(Seed);
+            CategoryAssigner.AssignCategories(Parameters.Rooms, CurrentLevelDefinition.CategoryTable, catRng);
+        }
+
         if (CurrentLevelDefinition != null && CurrentLevelDefinition.Theme != null)
         {
             var rng = new System.Random(SpawnSeed);
@@ -159,12 +170,22 @@ public class MapGenerator : MonoBehaviour
 
         // Degenerate seed
         if (Parameters.RemainingRooms <= 0)
+        {
+            _seedTries++;
+            if(_seedTries >= maxSeedRetries)
+            {
+                Debug.LogError($"[MapGenerator] Failed after {maxSeedRetries} attempts. Remaining = {Parameters.RemainingRooms}." + "Check Starting room connection points and room pools.");
+                _seedTries = 0;
+                return;
+            }
+            Debug.LogWarning($"[MapGenerator] Degenerate Layout (remaining = {Parameters.RemainingRooms}). Retrying seed {_seedTries}/{maxSeedRetries}...");
+            CustomSeed = 0;
+
+            StartCoroutine(RestartNextFrame());
             return;
-        
-        Debug.Log("Regenerating degenerate seed.");
-        
-        CustomSeed = 0;
-        Generate();
+        }
+
+        _seedTries = 0;
     }
 
     public void SpawnAll()
@@ -462,6 +483,30 @@ public class MapGenerator : MonoBehaviour
         yield return null;
         CollectSpawnPointsFromRooms(); // see below
         SpawnAll();
+    }
+
+    public void ApplyDefinition(LevelDefinition def)
+    {
+        if (def == null) return;
+
+        // tileset
+        Type = def.MapType;
+
+        // generation targets
+        TargetRooms = def.TargetRooms;
+        EnemySpawnAmount = def.EnemySpawnAmount;
+        TrapSpawnAmount = def.TrapSpawnAmount;
+        HostageSpawnAmount = def.HostageSpawnAmount;
+
+        // seeds (0 means “randomize this run”)
+        CustomSeed = def.UseFixedSeed ? def.FixedSeed : 0;
+        CustomSpawnSeed = def.UseFixedSpawnSeed ? def.FixedSpawnSeed : 0;
+    }
+
+    private IEnumerator RestartNextFrame()
+    {
+        yield return null;
+        Generate();
     }
 }
 

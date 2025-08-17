@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75bdaec4cb8fbe74ea0b70714cfcc512, type: 3}
+  m_Name: Office Theme Category
+  m_EditorClassIdentifier: 
+  Sets:
+  - Archetype: 0
+    Pool:
+    - Category: 69632
+      Weight: 75
+    - Category: 524288
+      Weight: 25
+    minTotal: 0
+    maxTotal: 10
+  - Archetype: 1
+    Pool:
+    - Category: 4098
+      Weight: 75
+    - Category: 16384
+      Weight: 25
+    minTotal: 0
+    maxTotal: 0
+  - Archetype: 2
+    Pool:
+    - Category: 245760
+      Weight: 50
+    - Category: 266240
+      Weight: 25
+    - Category: 532480
+      Weight: 25
+    minTotal: 0
+    maxTotal: 0
+  Quotas: []
