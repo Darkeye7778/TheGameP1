@@ -12,33 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62684c2ef9b2c81418f26ec3bc9b6684, type: 3}
   m_Name: Doubles_Room_Open_Left
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 243852283442597787, guid: 3254bb8964dc19d41bfd25136415a720, type: 3}
+  Prefab: {fileID: 3437322975827330011, guid: 4727580943c7b1b4580196e1559dafa2, type: 3}
   Size: {x: 2, y: 2}
   Offset: {x: 0, y: 0}
   Type: 1
   HasEntranceDoor: 1
   ConnectionPoints:
   - Transform:
-      Position: {x: -1, y: 1}
+      Position: {x: -2, y: 0}
       Rotation: 0
     Required: 0
     HasDoor: 1
     Odds: 0.25
   - Transform:
-      Position: {x: -1, y: 4}
-      Rotation: 1
-    Required: 0
-    HasDoor: 1
-    Odds: 0.25
-  - Transform:
-      Position: {x: 3, y: 1}
-      Rotation: 0
-    Required: 0
-    HasDoor: 1
-    Odds: 0.25
-  - Transform:
-      Position: {x: 3, y: 4}
-      Rotation: 0
+      Position: {x: -2, y: 4}
+      Rotation: 2
     Required: 0
     HasDoor: 1
     Odds: 0.25
@@ -49,8 +37,20 @@ MonoBehaviour:
     HasDoor: 1
     Odds: 0.25
   - Transform:
-      Position: {x: -3, y: 4}
+      Position: {x: -3, y: 3}
       Rotation: 1
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: 1, y: 1}
+      Rotation: 3
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: 1, y: 3}
+      Rotation: 3
     Required: 0
     HasDoor: 1
     Odds: 0.25

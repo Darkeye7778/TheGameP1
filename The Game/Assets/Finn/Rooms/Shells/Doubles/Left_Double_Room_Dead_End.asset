@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62684c2ef9b2c81418f26ec3bc9b6684, type: 3}
   m_Name: Left_Double_Room_Dead_End
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 9186468306607675833, guid: deda1e9ccfb551e418d2f8ce7181ad94, type: 3}
+  Prefab: {fileID: 7268046901705230396, guid: a1558ad574ffeac45807f328e9e98b88, type: 3}
   Size: {x: 2, y: 2}
   Offset: {x: 0, y: 0}
   Type: 1
   HasEntranceDoor: 1
-  ConnectionPoints: []
+  ConnectionPoints:
+  - Transform:
+      Position: {x: -2, y: 0}
+      Rotation: 0
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
   Archetype: 2

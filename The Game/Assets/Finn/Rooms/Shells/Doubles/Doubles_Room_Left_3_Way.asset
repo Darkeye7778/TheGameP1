@@ -12,20 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62684c2ef9b2c81418f26ec3bc9b6684, type: 3}
   m_Name: Doubles_Room_Left_3_Way
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 1305279076009504793, guid: 2f4babc6f1b727d448b9659a102ed029, type: 3}
+  Prefab: {fileID: 6685104503508340060, guid: d8e87cb50335f5f48a2a09586acaefa2, type: 3}
   Size: {x: 2, y: 2}
   Offset: {x: 0, y: 0}
   Type: 1
   HasEntranceDoor: 1
   ConnectionPoints:
   - Transform:
-      Position: {x: -1, y: 1}
-      Rotation: 0
-    Required: 0
-    HasDoor: 1
-    Odds: 0.25
-  - Transform:
-      Position: {x: 3, y: 1}
+      Position: {x: -2, y: 0}
       Rotation: 0
     Required: 0
     HasDoor: 1
@@ -37,8 +31,14 @@ MonoBehaviour:
     HasDoor: 1
     Odds: 0.25
   - Transform:
-      Position: {x: -3, y: 4}
+      Position: {x: -3, y: 3}
       Rotation: 1
+    Required: 0
+    HasDoor: 1
+    Odds: 0.25
+  - Transform:
+      Position: {x: 1, y: 1}
+      Rotation: 3
     Required: 0
     HasDoor: 1
     Odds: 0.25

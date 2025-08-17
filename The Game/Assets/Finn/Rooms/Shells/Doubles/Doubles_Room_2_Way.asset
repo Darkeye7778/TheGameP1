@@ -12,28 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62684c2ef9b2c81418f26ec3bc9b6684, type: 3}
   m_Name: Doubles_Room_2_Way
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 8435673914461381917, guid: 9e82f91616499c84e81f1d1640f47c5f, type: 3}
+  Prefab: {fileID: 3713299543540688321, guid: 9f8ed5581b6fe5f40b73dbd2b70e98cc, type: 3}
   Size: {x: 2, y: 2}
   Offset: {x: 0, y: 0}
-  Type: 1
-  HasEntranceDoor: 1
+  Type: 0
+  HasEntranceDoor: 0
   ConnectionPoints:
   - Transform:
       Position: {x: -1, y: 1}
       Rotation: 0
     Required: 0
     HasDoor: 1
-    Odds: 0.25
-  - Transform:
-      Position: {x: 3, y: 1}
-      Rotation: 0
-    Required: 0
-    HasDoor: 1
-    Odds: 0.25
-  - Transform:
-      Position: {x: -3, y: 1}
-      Rotation: 1
-    Required: 0
-    HasDoor: 1
-    Odds: 0.25
-  Archetype: 2
+    Odds: 1
+  Archetype: 1

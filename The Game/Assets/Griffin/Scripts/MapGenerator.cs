@@ -410,11 +410,22 @@ public class MapGenerator : MonoBehaviour
 
     public RoomProperties PickRandomCell()
     {
-        if(Random.Range(0f, 1f) < Type.RoomOdds)
-            return Utils.PickRandom(Type.Rooms);
-        return Utils.PickRandom(Type.Hallways);
+        var rooms = Type.Rooms;
+        var halls = Type.Hallways;
+
+        bool hasRooms = rooms != null && rooms.Length > 0;
+        bool hasHalls = halls != null && halls.Length > 0;
+
+        if (!hasRooms && !hasHalls)
+            throw new InvalidOperationException($"[MapGen] MapType '{Type?.name}' has no Rooms or Hallways.");
+
+        float r = UnityEngine.Random.Range(0f, 1f);
+        if (r < Type.RoomOdds)
+            return hasRooms ? Utils.PickRandom(rooms) : Utils.PickRandom(halls);
+        else
+            return hasHalls ? Utils.PickRandom(halls) : Utils.PickRandom(rooms);
     }
-    
+
     public void Iterate()
     {
         Parameters.IterationBackbuffer.Clear();

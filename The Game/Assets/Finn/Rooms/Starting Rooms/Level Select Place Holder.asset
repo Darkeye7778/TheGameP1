@@ -16,6 +16,24 @@ MonoBehaviour:
   Size: {x: 2, y: 2}
   Offset: {x: 0, y: 0}
   Type: 1
-  HasEntranceDoor: 0
-  ConnectionPoints: []
+  HasEntranceDoor: 1
+  ConnectionPoints:
+  - Transform:
+      Position: {x: -3, y: 1}
+      Rotation: 3
+    Required: 0
+    HasDoor: 1
+    Odds: 0
+  - Transform:
+      Position: {x: -2, y: 0}
+      Rotation: 2
+    Required: 0
+    HasDoor: 1
+    Odds: 0
+  - Transform:
+      Position: {x: 1, y: 1}
+      Rotation: 1
+    Required: 0
+    HasDoor: 1
+    Odds: 0
   Archetype: 2
