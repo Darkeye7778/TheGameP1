@@ -117,6 +117,10 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            gameManager.instance.ShowLoadouts();
+        }
         if (Time.timeScale == 0.0f)
             return;
 
@@ -330,7 +334,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (Time.unscaledTime < _invulnUntilUnscaled) return; 
         _health = Mathf.Clamp(_health - damage, 0f, MaximumHealth);
     }
-
+    
     public void ResetState()
     {
         _health = MaximumHealth;
