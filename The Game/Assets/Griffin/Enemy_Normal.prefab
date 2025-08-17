@@ -258,8 +258,7 @@ MonoBehaviour:
   StoppingDistance: 2
   MinWaitTime: 5
   MaxWaitTime: 15
-  Waypoints:
-  - {x: 0, y: 0, z: 0}
+  Waypoints: []
   FavoriteWaypoint: 0
 --- !u!114 &3220675043529310407
 MonoBehaviour:
@@ -276,9 +275,9 @@ MonoBehaviour:
   <RetreatState>k__BackingField: {fileID: 6571534294281332166}
   FollowingDistance: 5
   MinFollowingDistance: 2
-  FaceSpeed: 5
-  MinThinkTime: 4
-  MaxThinkTime: 5
+  FaceSpeed: 15
+  MinThinkTime: 0.3
+  MaxThinkTime: 0.5
 --- !u!114 &1658508026860688515
 MonoBehaviour:
   m_ObjectHideFlags: 0

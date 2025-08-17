@@ -139,12 +139,14 @@ public class WeaponInstance
 
     public bool IsEmpty => LoadedAmmo == 0;
     public bool IsFull => LoadedAmmo >= Weapon.FinalCapacity;
+    public bool IsLoaded => LoadedAmmo >= Weapon.Capacity;
     public bool HasReserve => ReserveAmmo != 0;
     public bool Valid => Weapon != null;
     public bool CanReload => !IsFull && HasReserve;
     public bool CanShoot => !IsEmpty && _nextShot > _currentFireDelta;
     public bool CanBurst => _remainingBurst == 0 && Mode == FireMode.Burst && CanShoot;
     public bool ShouldBurst => _remainingBurst != 0 && Mode == FireMode.Burst;
+    public bool HasAnyAmmo => HasReserve || !IsEmpty;
 
     public bool Locked { get; private set; }
 

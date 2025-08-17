@@ -22,7 +22,10 @@ public class TerroristSight : AISight
     
     public override bool TrySetTarget(IDamagable target)
     {
-        bool canSee = CheckTargetRaycast(target);
+        bool canSee = false;
+        foreach (Vector3 aimTarget in target.AimTargets())
+            canSee |= CheckTargetRaycast(target, aimTarget);
+
         if (canSee)
         {
             Target = target;
@@ -50,7 +53,7 @@ public class TerroristSight : AISight
             foreach (var target in Target.AimTargets())
                 Debug.DrawRay(Eye.position, target - Eye.position, canSee ? Color.green : Color.red);
             
-            if (_forceMemory <= 0 && (_memory > MemoryTime))
+            if (Target.IsDead() || _forceMemory <= 0 && _memory > MemoryTime)
                 Target = null;
         }
 
@@ -63,7 +66,9 @@ public class TerroristSight : AISight
             
         foreach (Collider collider in colliders)
         {
-            if (!collider.TryGetComponent(out IDamagable damagable) ||
+            bool isDamagable = collider.TryGetComponent(out IDamagable damagable);
+            damagable = damagable.Base();
+            if (!isDamagable || damagable.IsDead() ||
                 !CheckTargetVisibility(damagable, out float dist) ||
                 !(dist < nearestDistance))
                     continue;
@@ -78,6 +83,8 @@ public class TerroristSight : AISight
     private bool CheckTargetVisibility(IDamagable target, out float distance)
     {
         distance = float.MaxValue;
+        if (target.AimTargets() == null)
+            return false;
         foreach (Vector3 aimTarget in target.AimTargets())
         {
             Vector3 direction = aimTarget - Eye.position; 
@@ -87,15 +94,15 @@ public class TerroristSight : AISight
             if (distance > SightDistance || angle > SightAngle)
                 continue;
 
-            if (CheckTargetRaycast(target))
+            if (CheckTargetRaycast(target, aimTarget))
                 return true;
         }
         return false;
     }
 
-    private bool CheckTargetRaycast(IDamagable target)
+    private bool CheckTargetRaycast(IDamagable target, Vector3 position)
     {
-        Vector3 direction = target.AimTarget() - Eye.position;
+        Vector3 direction = position - Eye.position;
         
         if (!Physics.Raycast(Eye.position, direction, out var hit, SightDistance, EnemyMask | EnvironmentMask))
             return false;

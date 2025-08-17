@@ -18,6 +18,12 @@ public class RetreatState : AIState
     {
         Controller.Agent.stoppingDistance = 0;
         
+        if(Controller.Target == null)
+        {
+            Controller.SetState(Controller.WanderState);
+            return;
+        }
+        
         Vector3 target = Controller.Agent.transform.position - Controller.Target.GameObject().transform.position;
         target.y = 0;
         target.Normalize();
@@ -25,22 +31,17 @@ public class RetreatState : AIState
         Controller.Agent.SetDestination(Controller.Agent.transform.position + target);
         transform.rotation = quaternion.LookRotation(-target, Vector3.up);
 
-        if (!Controller.Primary.HasReserve && !Controller.Secondary.HasReserve)
+        if (!Controller.Primary.HasAnyAmmo && !Controller.Secondary.HasAnyAmmo)
             return;
         
-        if(Controller.Target == null)
-        {
-            Controller.SetState(Controller.WanderState);
-            return;
-        }
-        
-        if (!Controller.IsUsingPrimary && !Controller.Secondary.IsFull && Controller.Secondary.CanReload)
+        if (!Controller.IsUsingPrimary && !Controller.Secondary.IsLoaded && Controller.Secondary.CanReload)
             Controller.InputFlags |= Inventory.InputState.Reload;
         else if (!Controller.IsUsingPrimary)
             Controller.InputFlags |= Inventory.InputState.UsePrimary;
-        else if (Controller.IsUsingPrimary && !Controller.Primary.IsFull)
+        else if (Controller.IsUsingPrimary && !Controller.Primary.IsLoaded)
             Controller.InputFlags |= Inventory.InputState.Reload;
-        else if(!Controller.Primary.CanReload && !Controller.Secondary.CanReload)
+        
+        if(Controller.Primary.IsLoaded)
             Controller.SetState(Controller.EnemySpottedState);
     }
 }

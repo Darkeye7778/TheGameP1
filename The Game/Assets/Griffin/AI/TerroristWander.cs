@@ -26,7 +26,7 @@ public class TerroristWander : AIState
         Controller.Agent.stoppingDistance = StoppingDistance;
         
         Vector3 target;
-        if (Random.Range(0f, 1f) < RoamChance)
+        if (Waypoints.Length == 0 || Random.Range(0f, 1f) < RoamChance)
         {
             float randomDistance = Random.Range(MinRoamDistance, MaxRoamDistance);
             float randomAngle = Random.Range(0, 2 * Mathf.PI);
