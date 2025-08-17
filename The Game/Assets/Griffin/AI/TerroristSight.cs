@@ -13,7 +13,9 @@ public class TerroristSight : AISight
     public float MemoryTime;
     
     public IDamagable Target;
+    
     private float _memory;
+    private float _forceMemory;
 
     public override bool CanSee() { return _memory == 0; }
     public override IDamagable GetTarget() { return Target; }
@@ -22,12 +24,18 @@ public class TerroristSight : AISight
     {
         bool canSee = CheckTargetRaycast(target);
         if (canSee)
+        {
             Target = target;
+            _forceMemory = 10;
+        }
         return canSee;
     }
 
     public override IDamagable FindTarget(EnemyAI controller)
     {
+        if (_forceMemory > 0)
+            _forceMemory -= Time.deltaTime;
+        
         if (Target != null)
         {
             var canSee = CheckTargetVisibility(Target);
@@ -42,7 +50,7 @@ public class TerroristSight : AISight
             foreach (var target in Target.AimTargets())
                 Debug.DrawRay(Eye.position, target - Eye.position, canSee ? Color.green : Color.red);
             
-            if (_memory > MemoryTime || Target.IsDead())
+            if (_forceMemory <= 0 && (_memory > MemoryTime))
                 Target = null;
         }
 

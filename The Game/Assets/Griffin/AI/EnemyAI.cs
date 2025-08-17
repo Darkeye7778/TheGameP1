@@ -1,10 +1,57 @@
 using System;
-using JetBrains.Annotations;
-using Unity.Mathematics;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+
+[Serializable]
+public class AIThought<T>
+{
+    [field: SerializeField] public float MinTime { get; set; }
+    [field: SerializeField] public float MaxTime { get; set; }
+
+    public virtual void Think(T t) { }
+}
+
+[Serializable]
+public class AIThoughtQueue<T>
+{
+    private List<AIThought<T>> _queue = new();
+
+    private float _timer;
+
+    public void Push(AIThought<T> thought)
+    {
+        if (_queue.Count == 0)
+            _timer = Random.Range(thought.MinTime, thought.MaxTime);
+        _queue.Add(thought);
+    }
+    
+    public void Clear()
+    {
+        _timer = 0;
+        _queue.Clear();
+    }
+
+    public bool OnUpdate(T t)
+    {
+        if (_queue.Count == 0)
+            return false;
+        
+        _timer -= Time.deltaTime;
+
+        if (_timer > 0) 
+            return false;
+        
+        _queue[0].Think(t);
+        _queue.RemoveAt(0);
+
+        if (_queue.Count != 0) 
+            _timer = Random.Range(_queue[0].MinTime, _queue[0].MaxTime);
+
+        return true;
+    }
+}
 
 public abstract class AIState : MonoBehaviour
 {
@@ -14,8 +61,8 @@ public abstract class AIState : MonoBehaviour
     }
     
     public abstract void OnUpdate();
-    public bool OverriddenByEnemy { get; private set; } = true;
-    protected EnemyAI Controller { get; private set; }
+    public virtual bool OverriddenByEnemy() { return true; }
+    public EnemyAI Controller { get; private set; }
 }
 
 public abstract class AISight : MonoBehaviour
@@ -112,7 +159,7 @@ public class EnemyAI : Inventory, IDamagable
         _currentState.OnUpdate();
 
         IDamagable target = Sight.FindTarget(this);
-        if(Target != null && (!_currentState || _currentState.OverriddenByEnemy))
+        if(Target != null && (!_currentState || _currentState.OverriddenByEnemy()))
             SetState(EnemySpottedState);
 
     #if UNITY_EDITOR
