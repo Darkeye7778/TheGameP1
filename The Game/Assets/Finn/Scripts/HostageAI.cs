@@ -5,6 +5,7 @@ public class HostageAI : MonoBehaviour, IDamagable
 {
     [SerializeField] Renderer model;
     [SerializeField] float HP;
+    [SerializeField] private Transform Head;
 
     Color colorOrig;
 
@@ -71,5 +72,20 @@ public class HostageAI : MonoBehaviour, IDamagable
         model.material.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
+    }
+
+    public Vector3[] AimTargets()
+    {
+        return new Vector3[1] { transform.position };
+    }
+
+    public Vector3 LookTarget()
+    {
+        return Head.position;
+    }
+
+    public bool IsDead()
+    {
+        return HP > 0;
     }
 }

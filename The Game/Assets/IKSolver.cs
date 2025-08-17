@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class IKSolver : MonoBehaviour
 {
-    public Vector3 TargetPosition;
-    public Quaternion TargetRotation;
-    public float Weight = 1.0f;
+    public Vector3 LookAt;
+    public TransformData Grip;
+    public float GripWeight = 1.0f;
+    [FormerlySerializedAs("LookatWeight")] public float LookAtWeight = 1.0f;
 
     private Animator _animator;
     
@@ -16,9 +18,12 @@ public class IKSolver : MonoBehaviour
     
     private void OnAnimatorIK(int layerIndex)
     {
-        _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, Weight);
-        _animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, Weight);
-        _animator.SetIKPosition(AvatarIKGoal.LeftHand, TargetPosition);
-        _animator.SetIKRotation(AvatarIKGoal.LeftHand, TargetRotation);
+        _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, GripWeight);
+        _animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, GripWeight);
+        _animator.SetIKPosition(AvatarIKGoal.LeftHand, Grip.Position);
+        _animator.SetIKRotation(AvatarIKGoal.LeftHand, Grip.Rotation);
+        
+        _animator.SetLookAtWeight(LookAtWeight);
+        _animator.SetLookAtPosition(LookAt);
     }
 }

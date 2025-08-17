@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    private enum InventoryState
+    public enum InventoryState
     {
         Equipping,
         Reloading,
@@ -11,7 +11,7 @@ public class Inventory : MonoBehaviour
     }
     
     [Flags]
-    protected enum InputState
+    public enum InputState
     {
         UsePrimary = 1 << 1,
         UseSecondary = 1 << 2,
@@ -25,6 +25,8 @@ public class Inventory : MonoBehaviour
     
     [field:SerializeField] public Transform Eye { get; private set; }
     [field:SerializeField] public GameObject Viewmodel { get; private set; }
+    [field:SerializeField] public Animator Animator { get; private set; }
+    [field:SerializeField] public IKSolver IK { get; private set; }
 
     [Header("Weapons")] 
     public WeaponInstance Primary;
@@ -35,8 +37,8 @@ public class Inventory : MonoBehaviour
     public CameraRecoil RecoilObj;
     private WeaponMovement _weaponMovement;
     
-    public WeaponInstance CurrentWeapon => _useSecondary ? Secondary : Primary;
-    public WeaponInstance HolsteredWeapon => _useSecondary ? Primary : Secondary;
+    public WeaponInstance CurrentWeapon => IsUsingPrimary ? Primary : Secondary;
+    public WeaponInstance HolsteredWeapon => IsUsingPrimary ? Secondary : Primary;
     
     public Vector3 UnequippedOffset;
     
@@ -47,9 +49,9 @@ public class Inventory : MonoBehaviour
     
     private MeshFilter _viewmodelMesh;
     private Renderer _viewmodelRenderer;
-    private bool _useSecondary;
+    public bool IsUsingPrimary { get; private set; }
     private float _equipTime;
-    private InventoryState _state;
+    public InventoryState State { get; private set; }
     private PlayerController _player;
     
     protected void Start()
@@ -59,6 +61,8 @@ public class Inventory : MonoBehaviour
         _weaponMovement = Viewmodel.GetComponent<WeaponMovement>();
         if(Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
+
+        IsUsingPrimary = true;
         
         SetCurrentWeapon(Primary);
     }
@@ -67,16 +71,19 @@ public class Inventory : MonoBehaviour
     {
         Primary.Update();
         Secondary.Update();
+        
+        if(IK)
+            IK.Grip = TransformData.FromGlobal(Viewmodel.transform) * CurrentWeapon.Weapon.Grip;
 
         if (InputFlags.HasFlag(InputState.UsePrimary)) InputUsePrimary();
         if (InputFlags.HasFlag(InputState.UseSecondary)) InputUseSecondary();
         
-        if(_state != InventoryState.Ready)
+        if(State != InventoryState.Ready)
         { 
             _equipTime += Time.deltaTime;
             InterpolateWeapon();
             
-            if(_state == InventoryState.Reloading && CurrentWeapon.IsEmpty && !_audioSource.isPlaying)
+            if(State == InventoryState.Reloading && CurrentWeapon.IsEmpty && !_audioSource.isPlaying)
             {
                 _audioSource.clip = CurrentWeapon.Weapon.EquipSound;
                 _audioSource.Play();
@@ -85,10 +92,10 @@ public class Inventory : MonoBehaviour
             if (_equipTime < GetInterpolateTime())
                 return;
 
-            if(_state == InventoryState.Reloading) 
+            if(State == InventoryState.Reloading) 
                 CurrentWeapon.Reload();
             
-            _state = InventoryState.Ready;
+            State = InventoryState.Ready;
             _equipTime = 0.0f;
         }
         
@@ -104,19 +111,19 @@ public class Inventory : MonoBehaviour
     
     void InputUsePrimary()
     {
-        if (CurrentWeapon.Locked || !_useSecondary)
+        if (CurrentWeapon.Locked || IsUsingPrimary)
             return;
         
-        _useSecondary = false;
+        IsUsingPrimary = true;
         SetCurrentWeapon(CurrentWeapon);
     }
 
     void InputUseSecondary()
     {
-        if (CurrentWeapon.Locked || _useSecondary)
+        if (CurrentWeapon.Locked || !IsUsingPrimary)
             return;
         
-        _useSecondary = true;
+        IsUsingPrimary = false;
         SetCurrentWeapon(CurrentWeapon);
     }
 
@@ -127,7 +134,9 @@ public class Inventory : MonoBehaviour
         
         _audioSource.clip = CurrentWeapon.Weapon.ReloadSound;
         _audioSource.Play();
-        _state = InventoryState.Reloading;
+        if(Animator) 
+            Animator.SetTrigger("Reload");
+        State = InventoryState.Reloading;
     }
 
     void InputShoot()
@@ -179,7 +188,7 @@ public class Inventory : MonoBehaviour
     {
         Primary.Reset();
         Secondary.Reset();
-        _useSecondary = false;
+        IsUsingPrimary = true;
     }
     
     public void ResetWeapons()
@@ -199,7 +208,7 @@ public class Inventory : MonoBehaviour
         _audioSource.Play();
         
         _equipTime = 0.0f;
-        _state = InventoryState.Equipping;
+        State = InventoryState.Equipping;
     }
 
     private void InterpolateWeapon()
@@ -215,7 +224,11 @@ public class Inventory : MonoBehaviour
         if (!CurrentWeapon.Shoot())
             return;
         
-        RecoilObj.AddRecoil(CurrentWeapon.Weapon);
+        if(RecoilObj)
+            RecoilObj.AddRecoil(CurrentWeapon.Weapon);
+        if(Animator)
+            Animator.SetTrigger("Shoot");
+        
         if(_weaponMovement != null) 
             _weaponMovement.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
         
@@ -240,7 +253,7 @@ public class Inventory : MonoBehaviour
 
     private float GetInterpolateTime()
     {
-        return _state switch
+        return State switch
         {
             InventoryState.Ready => 0.0f,
             InventoryState.Equipping => CurrentWeapon.Weapon.EquipTime,
