@@ -47,6 +47,7 @@ public void Restart()
         player.WalkingSpeed = 2 * loadout.SpeedMult; // this should change
         player.RunningSpeed = 4 * loadout.SpeedMult; // this should change
         inv.ResetInventory();
+        inv.SetCurrentWeapon(inv.Primary);
         player.ResetState();
     }
     public void Quit()
