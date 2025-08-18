@@ -98,7 +98,11 @@ public class gameManager : MonoBehaviour
         inventoryScript = player.GetComponent<PlayerInventory>();
     }
 
-
+    public void ResetLoseMenu()
+    {
+        loseMenuUp = false;
+        playerScript.ResetState();
+    }
     void Update()
     {
         if (Input.GetButtonDown("Cancel"))
