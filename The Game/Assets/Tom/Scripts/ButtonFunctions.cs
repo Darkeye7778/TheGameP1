@@ -19,6 +19,7 @@ public class ButtonFunctions : MonoBehaviour
     {
         gameManager.instance.stateUnpause();
         MapGenerator.Instance.GenerateSame();
+        gameManager.instance.ResetLoseMenu();
     }
 
     public void NextLevel()
