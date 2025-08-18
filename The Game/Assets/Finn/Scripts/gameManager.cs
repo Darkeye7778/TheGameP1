@@ -81,10 +81,12 @@ public class gameManager : MonoBehaviour
     {
         if (LevelManager.Instance != null)
         {
-            MapGenerator.Instance.Generate();
-            gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
-            gameHostageSaved = 0;
-            updateGameGoal(0);
+            if (MapGenerator.Instance == null) return;
+            
+                MapGenerator.Instance.Generate();
+                gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+                gameHostageSaved = 0;
+                updateGameGoal(0);
         }
         Invoke(nameof(ShowLoadouts), 1.5f);
         
@@ -142,21 +144,34 @@ public class gameManager : MonoBehaviour
         SetGunModeText(inventoryScript.CurrentWeapon.Mode);
         SetAmmoTxt(inventoryScript.CurrentWeapon.LoadedAmmo, inventoryScript.CurrentWeapon.ReserveAmmo);
 
-        GunAmmoBar.fillAmount = (float)inventoryScript.CurrentWeapon.LoadedAmmo / inventoryScript.CurrentWeapon.Weapon.Capacity;
-        GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
-        PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
-        PlayerHealthBar.fillAmount = playerScript.HealthRelative;
+        if (inventoryScript != null && playerUI != null)
+        {
+            GunAmmoBar.fillAmount = (float)inventoryScript.CurrentWeapon.LoadedAmmo /
+                                    inventoryScript.CurrentWeapon.Weapon.Capacity;
+            GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
 
-        PrimaryGun.sprite = inventoryScript.CurrentWeapon.Weapon.Image;
-        SecondaryGun.sprite = inventoryScript.HolsteredWeapon.Weapon.Image;
 
-        if (playerScript.CurrentInteractable != null)
-            InteractionPopup.SetActive(true);
-        else
-            InteractionPopup.SetActive(false);
+            PrimaryGun.sprite = inventoryScript.CurrentWeapon.Weapon.Image;
+            SecondaryGun.sprite = inventoryScript.HolsteredWeapon.Weapon.Image;
+        }
+        if (playerScript != null && playerUI != null)
+        {
+            PlayerSprintBar.fillAmount = playerScript.StaminaRelative;
+            PlayerHealthBar.fillAmount = playerScript.HealthRelative;
 
-        if (playerScript.TookDamage) StartCoroutine(PlayerHurtFlash());
-        if (playerScript.GainedHealth) StartCoroutine(PlayerHealthFlash());
+            
+        }
+
+        if (playerScript != null)
+        {
+            if (playerScript.CurrentInteractable != null)
+                InteractionPopup.SetActive(true);
+            else
+                InteractionPopup.SetActive(false);
+
+            if (playerScript.TookDamage) StartCoroutine(PlayerHurtFlash());
+            if (playerScript.GainedHealth) StartCoroutine(PlayerHealthFlash());
+        }
     }
     
     
@@ -178,7 +193,7 @@ public class gameManager : MonoBehaviour
         Time.timeScale = 0.0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        playerUI.SetActive(false);
+        if (playerUI != null) playerUI.SetActive(false);
     }
 
     public void ShowLoadouts()
@@ -206,7 +221,7 @@ public class gameManager : MonoBehaviour
         if(menuActive != null)
             menuActive.SetActive(false);
         menuActive = null;
-        playerUI.SetActive(true);
+        if (playerUI != null) playerUI.SetActive(true);
     }
 
     public void updateGameGoal(int amount)
@@ -234,6 +249,7 @@ public class gameManager : MonoBehaviour
 
     public void SetGunModeText(FireMode fireMode)
     {
+        if (GunModeTxt == null) return;
         switch(fireMode)
         {
             case FireMode.Single:
@@ -252,6 +268,7 @@ public class gameManager : MonoBehaviour
     }
     public void SetAmmoTxt(uint currAmount, uint reserveAmount)
     {
+        if (CurrentAmmoTxt == null) return;
         CurrentAmmoTxt.text = $"<size=150%>{currAmount} | </size>{reserveAmount}";
     }
 
