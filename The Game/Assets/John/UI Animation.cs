@@ -5,59 +5,68 @@ using UnityEngine.UI;
 using System.Collections;
 using Unity.VisualScripting;
 
+[RequireComponent(typeof(RectTransform))]
 public class UIAnimation : MonoBehaviour
 {
-    public float transitionSpeed = 0.2f;
-    
+    public float transitionSpeed = 6f; // higher = snappier
     [Header("Position Settings")]
     public Vector2 startingPosOffset;
+
     RectTransform rectTransform;
-
-    
-
     Vector2 startPos;
     Vector2 endPos;
-    
-    
+    bool shouldUpdate;
+
+    void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+        endPos = rectTransform.anchoredPosition;
+        startPos = endPos + startingPosOffset;
+    }
 
     void Start()
     {
-        rectTransform = GetComponent<RectTransform>();
-        
-        endPos = rectTransform.anchoredPosition;
-        startPos = endPos + startingPosOffset;
-
-        Invoke(nameof(Restart), 0.05f);
-    }
-    
-    
-    IEnumerator Interpolate()
-    {
-        while (Vector2.Distance(rectTransform.anchoredPosition, endPos) > 0.01f)
-        {
-            
-            // Position interpolation
-            rectTransform.anchoredPosition = Vector3.Lerp(rectTransform.anchoredPosition, endPos, transitionSpeed * Time.fixedUnscaledDeltaTime);
-
-            yield return null;
-        }
-        
-        rectTransform.anchoredPosition = endPos;
-    }
-
-
-    private void OnEnable()
-    {
+        // If the object starts enabled, kick it off here
         Restart();
     }
 
-    void Restart()
+    void OnEnable()
     {
-        if (rectTransform == null) return;
-        rectTransform.anchoredPosition = startPos;
-        StartCoroutine(Interpolate());
+        // If the object was disabled at load, OnEnable fires BEFORE Start.
+        // We already initialized in Awake, so this is safe.
+        Restart();
     }
-    
+
+    void Update()
+    {
+        if (!shouldUpdate) return;
+
+        if (Vector2.Distance(rectTransform.anchoredPosition, endPos) > 0.01f)
+        {
+            // Exponential smoothing towards target
+            float t;
+            if (Time.timeScale <= 0)
+            {
+               t = 1f - Mathf.Exp(-transitionSpeed * Time.unscaledDeltaTime);
+            }
+            else
+            {
+                t = 1f - Mathf.Exp(-transitionSpeed * Time.deltaTime);
+            }
+            rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, endPos, t);
+        }
+        else
+        {
+            rectTransform.anchoredPosition = endPos;
+            shouldUpdate = false;
+        }
+    }
+
+    public void Restart()
+    {
+        shouldUpdate = true;
+        rectTransform.anchoredPosition = startPos;
+    }
 }
     
 

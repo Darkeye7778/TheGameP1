@@ -3,19 +3,19 @@ using System.Collections;
 
 public class DamageType : MonoBehaviour
 {
-    public struct PoisonData 
+    public struct PoisonData
     {
         public float damagePerTick;
         public float tickRate;
-        public int duration;
-        public PoisonData(float damage, float rate, int statusDuration)
+        public float duration;
+        public PoisonData(float damage, float rate, float statusDuration)
         {
             damagePerTick = damage;
             tickRate = rate;
             duration = statusDuration;
         }
     }
-    enum damageType { moving, stationary, DOT, homing, poison }
+    enum damageType { moving, stationary, DOT, homing, poison, explosion }
     [SerializeField] damageType type;
     [SerializeField] Rigidbody rb;
 
@@ -26,7 +26,7 @@ public class DamageType : MonoBehaviour
     [SerializeField] float damageRate;
     [SerializeField] int speed;
     [SerializeField] int statusDuration;
-    [SerializeField] int destroyTime;
+    [SerializeField] float destroyTime;
 
     bool isDamaging;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -34,7 +34,7 @@ public class DamageType : MonoBehaviour
     {
         if (rb == null) rb = GetComponent<Rigidbody>();
 
-        if (type == damageType.moving || type == damageType.homing || type == damageType.poison)
+        if (type == damageType.moving || type == damageType.homing || type == damageType.poison || type == damageType.explosion)
         {
             Destroy(gameObject, destroyTime);
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    private enum InventoryState
+    public enum InventoryState
     {
         Equipping,
         Reloading,
@@ -11,7 +11,7 @@ public class Inventory : MonoBehaviour
     }
     
     [Flags]
-    protected enum InputState
+    public enum InputState
     {
         UsePrimary = 1 << 1,
         UseSecondary = 1 << 2,
@@ -25,6 +25,8 @@ public class Inventory : MonoBehaviour
     
     [field:SerializeField] public Transform Eye { get; private set; }
     [field:SerializeField] public GameObject Viewmodel { get; private set; }
+    [field:SerializeField] public Animator Animator { get; private set; }
+    [field:SerializeField] public IKSolver IK { get; private set; }
 
     [Header("Weapons")] 
     public WeaponInstance Primary;
@@ -35,8 +37,8 @@ public class Inventory : MonoBehaviour
     public CameraRecoil RecoilObj;
     private WeaponMovement _weaponMovement;
     
-    public WeaponInstance CurrentWeapon => _useSecondary ? Secondary : Primary;
-    public WeaponInstance HolsteredWeapon => _useSecondary ? Primary : Secondary;
+    public WeaponInstance CurrentWeapon => IsUsingPrimary ? Primary : Secondary;
+    public WeaponInstance HolsteredWeapon => IsUsingPrimary ? Secondary : Primary;
     
     public Vector3 UnequippedOffset;
     
@@ -47,18 +49,20 @@ public class Inventory : MonoBehaviour
     
     private MeshFilter _viewmodelMesh;
     private Renderer _viewmodelRenderer;
-    private bool _useSecondary;
+    public bool IsUsingPrimary { get; private set; }
     private float _equipTime;
-    private InventoryState _state;
+    public InventoryState State { get; private set; }
     private PlayerController _player;
     
-    void Start()
+    protected void Start()
     {
         _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
         _viewmodelRenderer = Viewmodel.GetComponent<Renderer>();
         _weaponMovement = Viewmodel.GetComponent<WeaponMovement>();
-        if (Primary.Valid) Primary.Reset();
+        if(Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
+
+        IsUsingPrimary = true;
         
         SetCurrentWeapon(Primary);
     }
@@ -67,16 +71,19 @@ public class Inventory : MonoBehaviour
     {
         Primary.Update();
         Secondary.Update();
+        
+        if(IK)
+            IK.Grip = TransformData.FromGlobal(Viewmodel.transform) * CurrentWeapon.Weapon.Grip;
 
         if (InputFlags.HasFlag(InputState.UsePrimary)) InputUsePrimary();
         if (InputFlags.HasFlag(InputState.UseSecondary)) InputUseSecondary();
         
-        if(_state != InventoryState.Ready)
+        if(State != InventoryState.Ready)
         { 
             _equipTime += Time.deltaTime;
             InterpolateWeapon();
             
-            if(_state == InventoryState.Reloading && CurrentWeapon.IsEmpty && !_audioSource.isPlaying)
+            if(State == InventoryState.Reloading && CurrentWeapon.IsEmpty && !_audioSource.isPlaying)
             {
                 _audioSource.clip = CurrentWeapon.Weapon.EquipSound;
                 _audioSource.Play();
@@ -85,10 +92,10 @@ public class Inventory : MonoBehaviour
             if (_equipTime < GetInterpolateTime())
                 return;
 
-            if(_state == InventoryState.Reloading) 
+            if(State == InventoryState.Reloading) 
                 CurrentWeapon.Reload();
             
-            _state = InventoryState.Ready;
+            State = InventoryState.Ready;
             _equipTime = 0.0f;
         }
         
@@ -96,27 +103,27 @@ public class Inventory : MonoBehaviour
             InputCycleFireMode();
         if(InputFlags.HasFlag(InputState.Reload)) 
             InputReload();
-        if(InputFlags.HasFlag(InputState.Firing))
-            InputShoot(InputFlags.HasFlag(InputState.FiringFirst));
+        
+        InputShoot();
         
         Debug.DrawRay(Eye.position, Eye.forward * CurrentWeapon.Weapon.MaxRange, Color.red);
     }
     
     void InputUsePrimary()
     {
-        if (CurrentWeapon.Locked || !_useSecondary)
+        if (CurrentWeapon.Locked || IsUsingPrimary)
             return;
         
-        _useSecondary = false;
+        IsUsingPrimary = true;
         SetCurrentWeapon(CurrentWeapon);
     }
 
     void InputUseSecondary()
     {
-        if (CurrentWeapon.Locked || _useSecondary)
+        if (CurrentWeapon.Locked || !IsUsingPrimary)
             return;
         
-        _useSecondary = true;
+        IsUsingPrimary = false;
         SetCurrentWeapon(CurrentWeapon);
     }
 
@@ -127,11 +134,16 @@ public class Inventory : MonoBehaviour
         
         _audioSource.clip = CurrentWeapon.Weapon.ReloadSound;
         _audioSource.Play();
-        _state = InventoryState.Reloading;
+        if(Animator) 
+            Animator.SetTrigger("Reload");
+        State = InventoryState.Reloading;
     }
 
-    void InputShoot(bool first)
+    void InputShoot()
     {
+        bool shooting = InputFlags.HasFlag(InputState.Firing);
+        bool first = InputFlags.HasFlag(InputState.FiringFirst);
+        
         if (first && CurrentWeapon.IsEmpty)
         {
             _audioSource.clip = CurrentWeapon.Weapon.EmptySound;
@@ -141,7 +153,7 @@ public class Inventory : MonoBehaviour
         switch (CurrentWeapon.Mode)
         {
             case FireMode.Auto:
-                    TryShoot();
+                    if(shooting) TryShoot();
                 break;
             case FireMode.Burst:
                 if (first)
@@ -176,7 +188,7 @@ public class Inventory : MonoBehaviour
     {
         Primary.Reset();
         Secondary.Reset();
-        _useSecondary = false;
+        IsUsingPrimary = true;
     }
     
     public void ResetWeapons()
@@ -185,24 +197,24 @@ public class Inventory : MonoBehaviour
         HolsteredWeapon?.Reset();
     }
     
-    private void SetCurrentWeapon(WeaponInstance weapon)
+    public void SetCurrentWeapon(WeaponInstance weapon)
     {
         _viewmodelMesh.mesh = weapon.Weapon.Mesh;
         _viewmodelRenderer.materials = weapon.Weapon.Materials;
-        _viewmodelMesh.transform.localScale = weapon.Weapon.Scale;
-        _viewmodelMesh.transform.localRotation = weapon.Weapon.Rotation;
+        _viewmodelMesh.transform.localScale = weapon.Weapon.Transform.Scale;
+        _viewmodelMesh.transform.localRotation = weapon.Weapon.Transform.Rotation;
         
         _audioSource.clip = weapon.Weapon.EquipSound;
         _audioSource.Play();
         
         _equipTime = 0.0f;
-        _state = InventoryState.Equipping;
+        State = InventoryState.Equipping;
     }
 
     private void InterpolateWeapon()
     {
         float fac = _equipTime / GetInterpolateTime();
-        Vector3 target = CurrentWeapon.Weapon.Position;
+        Vector3 target = CurrentWeapon.Weapon.Transform.Position;
 
         Viewmodel.transform.localPosition = Vector3.Slerp(target + UnequippedOffset, target, fac);
     }
@@ -212,16 +224,20 @@ public class Inventory : MonoBehaviour
         if (!CurrentWeapon.Shoot())
             return;
         
-        RecoilObj.AddRecoil(CurrentWeapon.Weapon);
+        if(RecoilObj)
+            RecoilObj.AddRecoil(CurrentWeapon.Weapon);
+        if(Animator)
+            Animator.SetTrigger("Shoot");
+        
         if(_weaponMovement != null) 
             _weaponMovement.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
         
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
         _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
         
-        ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash,transform.position, Viewmodel.transform.rotation * CurrentWeapon.Weapon.Rotation);
+        ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash,transform.position, Viewmodel.transform.rotation * CurrentWeapon.Weapon.Transform.Rotation);
         flash.transform.parent = Viewmodel.transform;
-        flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Rotation) * CurrentWeapon.Weapon.MuzzlePosition;
+        flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Transform.Rotation) * CurrentWeapon.Weapon.Muzzle.Position;
         
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;
@@ -237,7 +253,7 @@ public class Inventory : MonoBehaviour
 
     private float GetInterpolateTime()
     {
-        return _state switch
+        return State switch
         {
             InventoryState.Ready => 0.0f,
             InventoryState.Equipping => CurrentWeapon.Weapon.EquipTime,

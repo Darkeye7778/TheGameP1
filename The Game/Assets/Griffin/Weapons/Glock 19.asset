@@ -18,19 +18,30 @@ MonoBehaviour:
   Materials:
   - {fileID: 2100000, guid: 03002324182002740a7938a02c434338, type: 2}
   - {fileID: 2100000, guid: bd6c369eafd4ac142a9e6db4d6bf93d1, type: 2}
-  Position: {x: 0.256, y: -0.15, z: 0.27}
-  MuzzlePosition: {x: 0, y: 0.03, z: 0.06}
-  Scale: {x: 1, y: 1, z: 1}
-  Rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+  Transform:
+    Position: {x: 0.256, y: -0.15, z: 0.27}
+    Rotation: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
+    Scale: {x: 1, y: 1, z: 1}
+  Grip:
+    Position: {x: 0.08, y: -0.04, z: -0.06}
+    Rotation: {x: -0.41461802, y: -0.3058464, z: 0.5824775, w: 0.62870497}
+    Scale: {x: 1, y: 1, z: 1}
+  Muzzle:
+    Position: {x: 0, y: 0.0475, z: 0.1044}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Scale: {x: 0, y: 0, z: 0}
   EquipSound: {fileID: 8300000, guid: 1cdffcc5cb2fb9640997b65aa17962b4, type: 3}
   FireSound: {fileID: 8300000, guid: a0d4c183ac4745b4e88e6d952feeb4eb, type: 3}
   ReloadSound: {fileID: 8300000, guid: 69c4a7d098fc32143ab1661c3a8fe49e, type: 3}
   EmptySound: {fileID: 8300000, guid: 9c7af20e3021e8c40b03e281ec990277, type: 3}
   Capacity: 15
   ReserveCapacity: 60
-  FireRate: 600
+  FireRate: 200
+  BurstFireRate: 0
+  BurstCooldown: 0
   Damage: 20
   FireModes: 1
+  BurstFireCount: 0
   OpenBolt: 0
   ReloadTime: 1
   EquipTime: 0.25

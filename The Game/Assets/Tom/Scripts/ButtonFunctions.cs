@@ -25,6 +25,7 @@ public class ButtonFunctions : MonoBehaviour
     {
         gameManager.instance.stateUnpause();
         gameManager.instance.NextLevel();
+        gameManager.instance.Invoke("ShowLoadouts", 1.5f);
     }
 
 public void Restart()
@@ -33,6 +34,22 @@ public void Restart()
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void SetLoadout(LoadoutLoader loader)
+    {
+        Loadout loadout = loader.loadoutRef;
+        gameManager.instance.stateUnpause();
+        PlayerInventory inv = gameManager.instance.player.GetComponent<PlayerInventory>();
+        PlayerController player = gameManager.instance.playerScript;
+        inv.Primary.Weapon = loadout.Primary;
+        inv.Secondary.Weapon = loadout.Secondary;
+        player.MaximumHealth = (int)loadout.Health;
+        player.MaximumStamina = (int)loadout.Stamina;
+        player.WalkingSpeed = 2 * loadout.SpeedMult; // this should change
+        player.RunningSpeed = 4 * loadout.SpeedMult; // this should change
+        inv.ResetInventory();
+        inv.SetCurrentWeapon(inv.Primary);
+        player.ResetState();
+    }
     public void Quit()
     {
 #if UNITY_EDITOR

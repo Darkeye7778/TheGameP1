@@ -17,10 +17,18 @@ MonoBehaviour:
   Mesh: {fileID: -5009023928823820679, guid: 2cf10fa706c7a4d42b5927d8e730f4e2, type: 3}
   Materials:
   - {fileID: 2100000, guid: 42ff7de5af3ca404cbf8813deacd8dbb, type: 2}
-  Position: {x: 0.256, y: -0.18, z: 0.27}
-  MuzzlePosition: {x: 0, y: 0.51, z: 1.04}
-  Scale: {x: 0.15, y: 0.15, z: 0.15}
-  Rotation: {x: 0, y: 0, z: 0, w: 1}
+  Transform:
+    Position: {x: 0.256, y: -0.18, z: 0.27}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Scale: {x: 0.15, y: 0.15, z: 0.15}
+  Grip:
+    Position: {x: -0.4, y: 0.29, z: 0.75}
+    Rotation: {x: -0.5164213, y: -0.041602165, z: -0.85413086, w: -0.045152504}
+    Scale: {x: 1, y: 1, z: 1}
+  Muzzle:
+    Position: {x: 0, y: 0.5, z: 1.76}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Scale: {x: 1, y: 1, z: 1}
   EquipSound: {fileID: 8300000, guid: 1cdffcc5cb2fb9640997b65aa17962b4, type: 3}
   FireSound: {fileID: 8300000, guid: a0d4c183ac4745b4e88e6d952feeb4eb, type: 3}
   ReloadSound: {fileID: 8300000, guid: 69c4a7d098fc32143ab1661c3a8fe49e, type: 3}

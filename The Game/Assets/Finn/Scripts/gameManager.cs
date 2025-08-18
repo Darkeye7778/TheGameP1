@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class gameManager : MonoBehaviour
 {
@@ -13,8 +14,9 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject loadoutsScreen;
     [SerializeField] GameObject InteractionPopup;
-
+    [SerializeField] GameObject playerUI;
     public bool isPaused;
     public GameObject player;
     public PlayerController playerScript;
@@ -30,7 +32,8 @@ public class gameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI GunName;
     [SerializeField] TextMeshProUGUI CurrentAmmoTxt;
     [SerializeField] TextMeshProUGUI GunModeTxt;
-
+    [SerializeField] Loadout[] loadouts;
+    [SerializeField] LoadoutLoader[]  loadoutLoaders;
     public Image PlayerHealthBar;
     public Image PlayerSprintBar;
     public Image PrimaryGun;
@@ -65,7 +68,6 @@ public class gameManager : MonoBehaviour
         loseMenuUp = false;
         menuLose.SetActive(false);
         instance = this;
-
         timeScaleOrig = Time.timeScale;
 
         _timer = StartingTime;
@@ -77,14 +79,17 @@ public class gameManager : MonoBehaviour
 
     private void Start()
     {
-        if (LevelManager.Instance == null)
+        if (LevelManager.Instance != null)
         {
             MapGenerator.Instance.Generate();
             gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
             gameHostageSaved = 0;
             updateGameGoal(0);
         }
+        Invoke(nameof(ShowLoadouts), 1.5f);
+        
     }
+
 
     public void SetPlayer(GameObject _player)
     {
@@ -98,8 +103,18 @@ public class gameManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Cancel"))
         {
-            if (menuActive == null) { statePause(); menuActive = menuPause; menuActive.SetActive(true); }
-            else if (menuActive == menuPause) { stateUnpause(); }
+            if (menuActive == null)
+            {
+                statePause(); 
+                menuActive = menuPause; 
+                menuActive.SetActive(true);
+                
+            }
+            else if (menuActive == menuPause)
+            {
+                stateUnpause();
+                
+            }
         }
 
         
@@ -139,7 +154,8 @@ public class gameManager : MonoBehaviour
         if (playerScript.TookDamage) StartCoroutine(PlayerHurtFlash());
         if (playerScript.GainedHealth) StartCoroutine(PlayerHealthFlash());
     }
-
+    
+    
     private void LateUpdate()
     {
         if (!PlayerReady) return;                   
@@ -158,8 +174,25 @@ public class gameManager : MonoBehaviour
         Time.timeScale = 0.0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        playerUI.SetActive(false);
     }
 
+    public void ShowLoadouts()
+    {
+        menuActive = loadoutsScreen;
+        menuActive.SetActive(true);
+        LoadLoadouts();
+        statePause();
+    }
+    void LoadLoadouts()
+    {
+        foreach (LoadoutLoader loader in loadoutLoaders)
+        {
+            loader.gameObject.SetActive(true);
+            loader.Load(loadouts[Random.Range(0, loadouts.Length)]);
+        }
+        statePause();
+    }
     public void stateUnpause()
     {
         isPaused = false;
@@ -169,6 +202,7 @@ public class gameManager : MonoBehaviour
         if(menuActive != null)
             menuActive.SetActive(false);
         menuActive = null;
+        playerUI.SetActive(true);
     }
 
     public void updateGameGoal(int amount)
@@ -214,7 +248,7 @@ public class gameManager : MonoBehaviour
     }
     public void SetAmmoTxt(uint currAmount, uint reserveAmount)
     {
-        CurrentAmmoTxt.text = $"{currAmount} | {reserveAmount}";
+        CurrentAmmoTxt.text = $"<size=150%>{currAmount} | </size>{reserveAmount}";
     }
 
     public void youWin()

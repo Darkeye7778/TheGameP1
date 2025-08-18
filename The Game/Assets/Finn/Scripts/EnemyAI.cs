@@ -364,4 +364,19 @@ public class enemyAI : MonoBehaviour, IDamagable
         yield return new WaitForSeconds(pauseTime);
         bomberState = BomberState.Reacquire;
     }
+
+    public Vector3[] AimTargets()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Vector3 LookTarget()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool IsDead()
+    {
+        return HP > 0;
+    }
 }

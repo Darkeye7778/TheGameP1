@@ -94,4 +94,19 @@ public class KapkanTrap : MonoBehaviour, IDamagable
     {
         return gameObject;
     }
+
+    public Vector3[] AimTargets()
+    {
+        return new Vector3[1] { transform.position };
+    }
+
+    public Vector3 LookTarget()
+    {
+        return transform.position;
+    }
+
+    public bool IsDead()
+    {
+        return true;
+    }
 }
