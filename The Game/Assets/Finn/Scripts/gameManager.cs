@@ -81,6 +81,7 @@ public class gameManager : MonoBehaviour
     {
         if (LevelManager.Instance != null)
         {
+            Debug.Log("Level Manager is not active.");
             MapGenerator.Instance.Generate();
             gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
             gameHostageSaved = 0;

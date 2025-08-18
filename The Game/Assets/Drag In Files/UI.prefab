@@ -789,57 +789,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transitionSpeed: 15
   startingPosOffset: {x: -150, y: 0}
---- !u!1 &695954265993930880
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9092094628099276808}
-  - component: {fileID: 2434457292941802195}
-  m_Layer: 5
-  m_Name: LevelManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &9092094628099276808
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 695954265993930880}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1104601943334667321}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2434457292941802195
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 695954265993930880}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f3e2809bf2f2424eb458c525a154b45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levels:
-  - {fileID: 11400000, guid: 8e4797c385059ad4b8688fd87487ae02, type: 2}
-  - {fileID: 11400000, guid: 8e4797c385059ad4b8688fd87487ae02, type: 2}
 --- !u!1 &720277374724921616
 GameObject:
   m_ObjectHideFlags: 0
@@ -6651,7 +6600,7 @@ MonoBehaviour:
   playerScript: {fileID: 0}
   inventoryScript: {fileID: 0}
   gameTerroristCount: 0
-  gameHostageCount: 0
+  gameHostageCount: 1
   gameHostageSaved: 0
   TimerTxt: {fileID: 307636736554268873}
   HostageTxt: {fileID: 1873862976800530067}
@@ -6906,7 +6855,6 @@ RectTransform:
   - {fileID: 6066268645071073217}
   - {fileID: 5795217910606542950}
   - {fileID: 2850321975914692886}
-  - {fileID: 9092094628099276808}
   - {fileID: 3292023573726691784}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
