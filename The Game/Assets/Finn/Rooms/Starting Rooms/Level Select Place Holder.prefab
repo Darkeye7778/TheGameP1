@@ -452,6 +452,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6142692565545855703
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7753101804600799644}
+  m_Layer: 0
+  m_Name: door anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7753101804600799644
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6142692565545855703}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -20.2, y: 0.8, z: -23.02}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1091237474792234485}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6683329963310653012
 GameObject:
   m_ObjectHideFlags: 0
@@ -746,6 +777,7 @@ Transform:
   - {fileID: 3834973309389977687}
   - {fileID: 1332599072712654189}
   - {fileID: 7965409673241488243}
+  - {fileID: 7753101804600799644}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5901534424552020130
@@ -761,8 +793,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Properties>k__BackingField: {fileID: 11400000, guid: a7f36ac88cf08484abc9922e67610c69, type: 2}
-  AllowedCategories: 0
+  AllowedCategories: -1
   Category: 0
+  entranceAnchor: {fileID: 7753101804600799644}
+  useAnchorAsOrigin: 1
 --- !u!65 &3938769558634990288
 BoxCollider:
   m_ObjectHideFlags: 0
