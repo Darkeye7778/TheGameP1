@@ -1,6 +1,6 @@
 #define PLAYERCONTROLLER_INERTIA
 #define PLAYERCONTROLLER_DIRECTIONAL_SPEED
-// #define PLAYERCONTROLLER_AUTOCROUCH
+#define PLAYERCONTROLLER_AUTOCROUCH
 
 using System;
 using JetBrains.Annotations;
@@ -20,6 +20,8 @@ public struct GroundState
 public class PlayerController : MonoBehaviour, IDamagable
 {
     public GameObject Camera;
+    public WeaponRotationPivot Pivot;
+    public IKSolver IK;
     
     [Range(0.01f, 10.0f)] 
     public float MouseSensitivity;
@@ -233,10 +235,19 @@ public class PlayerController : MonoBehaviour, IDamagable
     void CalculateRotation()
     {
         float x = Input.GetAxis("Mouse X"), // Left to Right
-            y = Input.GetAxis("Mouse Y"); // Down to Up
+              y = Input.GetAxis("Mouse Y"); // Down to Up
 
         _rotationX += x * MouseSensitivity;
         _rotationY = Mathf.Clamp(_rotationY + y * MouseSensitivity, RotationClamp.x, RotationClamp.y);
+
+        if (Pivot)
+            Pivot.Rotation = _rotationY;
+
+        if (IK)
+        {
+            IK.LookAtWeight = 1;
+            IK.LookAt = _inventory.WorldModel.transform.position;
+        }
 
         transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
         Camera.transform.localRotation = Quaternion.Euler(-_rotationY, 0, _leaningAngle);
@@ -430,7 +441,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         float heightDifference = StandingHeight - _controller.height / 2.0f - _controller.radius;
         // I cannot get Physics.CheckCapsule to work.
     #if PLAYERCONTROLLER_AUTOCROUCH
-        return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference);
+        return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference, GroundMask);
     #else
         return false;
     #endif

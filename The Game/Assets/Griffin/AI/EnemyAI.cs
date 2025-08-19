@@ -208,7 +208,7 @@ public class EnemyAI : Inventory, IDamagable
             foreach (Collider collider in GetComponentsInChildren<Collider>())
                 collider.enabled = false;
 
-        IK.LookAtWeight = IK.GripWeight = 0;
+        IK.LookAtWeight = IK.LeftGripWeight = IK.RightGripWeight = 0;
     }
 
     public GameObject GameObject()

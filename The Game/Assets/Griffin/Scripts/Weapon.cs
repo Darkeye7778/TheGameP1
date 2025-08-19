@@ -81,6 +81,7 @@ public class Weapon : ScriptableObject
     public TransformData Transform;
 
     public TransformData Grip;
+    public TransformData Foregrip;
     public TransformData Muzzle;
 
     [Header("Sounds")]

@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 529517292}
   - component: {fileID: 529517291}
+  - component: {fileID: 529517293}
   m_Layer: 0
   m_Name: MapGenerator
   m_TagString: Untagged
@@ -150,10 +151,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Type>k__BackingField: {fileID: 11400000, guid: 0b19577c302041549b51c68a8db90889, type: 2}
   <ExitPrefab>k__BackingField: {fileID: 3095021996766176241, guid: fd54308955165174395008ced6cb85d2, type: 3}
+  CustomSeed: 0
+  CustomSpawnSeed: 0
   TargetRooms: 5
+  EnemySpawnAmount: 4
+  TrapSpawnAmount: 4
+  HostageSpawnAmount: 2
   MaxIterations: 20
   MaxLeafRetry: 3
-  CustomSeed: 0
+  <CurrentLevelDefinition>k__BackingField: {fileID: 11400000, guid: 8e4797c385059ad4b8688fd87487ae02, type: 2}
+  maxSeedRetries: 8
 --- !u!4 &529517292
 Transform:
   m_ObjectHideFlags: 0
@@ -169,6 +176,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &529517293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 529517290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
 --- !u!1001 &657001260
 PrefabInstance:
   m_ObjectHideFlags: 0
