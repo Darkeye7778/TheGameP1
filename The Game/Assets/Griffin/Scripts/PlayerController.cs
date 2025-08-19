@@ -103,6 +103,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _invulnUntilUnscaled = 0f;
 
     private Vector3 _cameraOrigin, _cameraTarget;
+    private Vector3 _eyeWeaponOffset;
  
     private PlayerInventory _inventory;
     void Start()
@@ -114,7 +115,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _controller.height = StandingHeight;
         _inventory = GetComponent<PlayerInventory>();
         //_cameraOrigin = Camera.transform.localPosition;
-        _previousPosition = transform.position;
+        _previousPosition = transform.position;;
     }
     
     void Update()
@@ -245,8 +246,10 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         if (IK)
         {
+            Vector3 lookTarget = Pivot.FinalRotation * Vector3.forward + _inventory.Eye.position;
+            
             IK.LookAtWeight = 1;
-            IK.LookAt = _inventory.WorldModel.transform.position;
+            IK.LookAt = lookTarget;
         }
 
         transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);

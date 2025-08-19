@@ -76,8 +76,7 @@ public class Weapon : ScriptableObject
     public Sprite Image;
 
     [Header("Display")]
-    public Mesh Mesh;
-    public Material[] Materials;
+    public GameObject Mesh;
     public TransformData Transform;
 
     public TransformData Grip;

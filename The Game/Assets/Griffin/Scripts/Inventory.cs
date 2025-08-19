@@ -47,12 +47,9 @@ public class Inventory : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
 
     protected InputState InputFlags;
+
+    private GameObject _spawnedViewModel, _spawnedWorldModel;
     
-    private MeshFilter _viewmodelMesh;
-    private Renderer _viewmodelRenderer;
-    
-    private MeshFilter _worldmodelMesh;
-    private Renderer _worldmodelRenderer;
     public bool IsUsingPrimary { get; private set; }
     private float _equipTime;
     public InventoryState State { get; private set; }
@@ -60,20 +57,10 @@ public class Inventory : MonoBehaviour
     
     protected void Start()
     {
-        if(ViewModel)
-        {
-            _viewmodelMesh = ViewModel.GetComponent<MeshFilter>();
-            _viewmodelRenderer = ViewModel.GetComponent<Renderer>();
-            _weaponMovement = ViewModel.GetComponent<WeaponMovement>();
-        }
-
-        if (WorldModel)
-        {
-            _worldmodelMesh = WorldModel.GetComponent<MeshFilter>();
-            _worldmodelRenderer = WorldModel.GetComponent<Renderer>();
-        }
-        else
-            IK.LeftGripWeight = IK.RightGripWeight = 0;
+        if(ViewModel) _weaponMovement = ViewModel.GetComponent<WeaponMovement>();
+        
+        if(IK)
+            IK.LeftGripWeight = IK.RightGripWeight = WorldModel == null ? 0 : 1;
         
         if(Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
@@ -215,21 +202,37 @@ public class Inventory : MonoBehaviour
         CurrentWeapon?.Reset();
         HolsteredWeapon?.Reset();
     }
+
+    private static void SetLayerInChildren(GameObject root, int newLayer, int oldLayer = 0)
+    {
+        foreach (Transform transform in root.GetComponentsInChildren<Transform>(true))
+            if (transform.gameObject.layer == oldLayer)
+                transform.gameObject.layer = newLayer;
+    }
     
     public void SetCurrentWeapon(WeaponInstance weapon)
     {
         if(ViewModel)
         {
-            _viewmodelMesh.sharedMesh = weapon.Weapon.Mesh;
-            _viewmodelRenderer.materials = weapon.Weapon.Materials;
+            if(_spawnedViewModel)
+                Destroy(_spawnedViewModel);
+            
+            _spawnedViewModel = Instantiate(weapon.Weapon.Mesh, ViewModel.transform);
+            SetLayerInChildren(_spawnedViewModel, ViewModel.layer);
+            
             ViewModel.transform.localScale = weapon.Weapon.Transform.Scale;
             ViewModel.transform.localRotation = weapon.Weapon.Transform.Rotation;
         }
         
         if(WorldModel)
         {
-            _worldmodelMesh.sharedMesh = weapon.Weapon.Mesh;
-            _worldmodelRenderer.materials = weapon.Weapon.Materials;
+            if(_spawnedWorldModel)
+                Destroy(_spawnedWorldModel);
+            
+            _spawnedWorldModel = Instantiate(weapon.Weapon.Mesh, WorldModel.transform);
+            SetLayerInChildren(_spawnedWorldModel, WorldModel.layer);
+            
+            
             WorldModel.transform.localScale = weapon.Weapon.Transform.Scale;
             WorldModel.transform.localRotation = weapon.Weapon.Transform.Rotation;
         }
@@ -294,5 +297,11 @@ public class Inventory : MonoBehaviour
             InventoryState.Reloading => CurrentWeapon.Weapon.ReloadTime,
             _ => 0.0f
         };
+    }
+
+    protected void DestroyAllModels()
+    {
+        Destroy(_spawnedViewModel);
+        Destroy(_spawnedWorldModel);
     }
 }

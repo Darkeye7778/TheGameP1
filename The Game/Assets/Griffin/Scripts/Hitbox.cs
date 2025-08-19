@@ -41,7 +41,7 @@ public class Hitbox : SoundProfile, IDamagable
 
     public IDamagable Base()
     {
-        return BaseDamagable;
+        return BaseDamagable?.Base() ?? this;
     }
 
     public bool IsDead()

@@ -7,6 +7,8 @@ public class WeaponRotationPivot : MonoBehaviour
     public float MinVertical, MaxVertical;
     public float MinRotation, MaxRotation;
     
+    public Quaternion FinalRotation { get; private set; }
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -22,7 +24,7 @@ public class WeaponRotationPivot : MonoBehaviour
 
         Transform parentTransform = transform.parent.transform;
 
-        transform.position = parentTransform.position + target;
-        transform.rotation = Quaternion.Euler(rotation, parentTransform.rotation.eulerAngles.y, 0);
+        transform.position = parentTransform.position + target; 
+        transform.rotation = FinalRotation = Quaternion.Euler(rotation, parentTransform.rotation.eulerAngles.y, 0);
     }
 }
