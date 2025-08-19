@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b76cd2e7ce49924cb5d58ad55f4573f, type: 3}
+  m_Name: Uzi
+  m_EditorClassIdentifier: 
+  Name: Uzi
+  Image: {fileID: 21300000, guid: 94e14c5e8c1282a40afc27e3ef4d2e3f, type: 3}
+  Mesh: {fileID: -6222581352149868263, guid: a957639d15248134a9be03d5ae4fed7f, type: 3}
+  Materials:
+  - {fileID: 2100000, guid: d05b83a5733b4ba469d3c1a5891d6f88, type: 2}
+  Transform:
+    Position: {x: 0.256, y: -0.18, z: 0.27}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Scale: {x: 0.15, y: 0.15, z: 0.15}
+  Grip:
+    Position: {x: -0.4, y: 0.29, z: 0.75}
+    Rotation: {x: -0.5164213, y: -0.041602165, z: -0.85413086, w: -0.045152504}
+    Scale: {x: 1, y: 1, z: 1}
+  Muzzle:
+    Position: {x: 0, y: 0.5, z: 0.85}
+    Rotation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
+    Scale: {x: 1, y: 1, z: 1}
+  EquipSound: {fileID: 8300000, guid: 1cdffcc5cb2fb9640997b65aa17962b4, type: 3}
+  FireSound: {fileID: 8300000, guid: a0d4c183ac4745b4e88e6d952feeb4eb, type: 3}
+  ReloadSound: {fileID: 8300000, guid: 69c4a7d098fc32143ab1661c3a8fe49e, type: 3}
+  EmptySound: {fileID: 8300000, guid: 9c7af20e3021e8c40b03e281ec990277, type: 3}
+  Capacity: 20
+  ReserveCapacity: 100
+  FireRate: 1000
+  BurstFireRate: 1000
+  BurstCooldown: 0
+  Damage: 10
+  FireModes: 7
+  BurstFireCount: 5
+  OpenBolt: 0
+  ReloadTime: 1.5
+  EquipTime: 0.5
+  MaxRange: 50
+  RecoilIntensity: 2.5
+  RecoilX: 1
+  RecoilY: -0.19
+  MuzzleFlash: {fileID: 19800004, guid: 234e5aa95353f0643b0181dc3872cda9, type: 3}
