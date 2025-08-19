@@ -55,8 +55,16 @@ public class LevelManager : MonoBehaviour
         var gm = gameManager.instance;
         if (def.StartingTime > 0f) gm.StartingTime = def.StartingTime;
 
+        if (level == LevelClass.Hub)
+        {
+            gm.gameHostageCount = 1;
+        }
+        else
+        {
+            gm.gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        }
+
         gm.gameHostageSaved = 0;
-        gm.gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
 
         // reset private _timer
         var f = typeof(gameManager).GetField("_timer",
