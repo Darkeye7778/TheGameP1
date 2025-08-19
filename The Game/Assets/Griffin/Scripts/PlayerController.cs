@@ -77,6 +77,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float Deacceleration = 15.0f;
     public Vector3 RealVelocity { get; private set; }
     public Vector3 LocalRealVelocity { get; private set; }
+    public bool HasTraction => _fallingTime <= GroundSnapTime;
     
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
@@ -141,9 +142,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         CalculateRotation();
         CalculateLeaning();
         
-        Animator.SetFloat("Speed", Mathf.Max(LocalRealVelocity.magnitude, 1) * 0.5f, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity X", LocalRealVelocity.x, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Speed",  Mathf.Max(HasTraction ? LocalRealVelocity.magnitude : 1f, 1) * 0.5f, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity X", HasTraction ? LocalRealVelocity.x : 0f, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity Y", HasTraction ? LocalRealVelocity.z : 0f, 0.1f, Time.deltaTime);
         Animator.SetBool("Crouching", _crouch);
 
         if (_hitPoints == null || _hitPoints.Length != HitPoints.Length)
@@ -230,7 +231,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if(_ground.NearGround)
             _velocity += direction * (Acceleration * Time.deltaTime);
         
-        _footstepOffset += new Vector2(RealVelocity.x, RealVelocity.z).magnitude * Time.deltaTime;
+        _footstepOffset += RealVelocity.magnitude * Time.deltaTime;
     }
 
     void CalculateRotation()

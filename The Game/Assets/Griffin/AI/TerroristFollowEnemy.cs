@@ -58,7 +58,7 @@ public class TerroristFollowEnemy : AIState
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * FaceSpeed);
 
             if(!Controller.CurrentWeapon.IsEmpty)
-                Controller.InputFlags |= Inventory.InputState.Firing | Inventory.InputState.FiringFirst;
+                TryShoot();
         }
         
         if (Controller.IsUsingPrimary && Controller.Primary.IsEmpty && !_queueState.HasFlag(Inventory.InputState.UseSecondary))
@@ -93,5 +93,24 @@ public class TerroristFollowEnemy : AIState
             Controller.SetState(RetreatState);
 
         _thoughts.OnUpdate(this);
+    }
+
+    private void TryShoot()
+    {
+        Controller.InputFlags |= Inventory.InputState.Firing;
+
+        if (Controller.CurrentWeapon.Mode == FireMode.Single && !_queueState.HasFlag(Inventory.InputState.FiringFirst))
+        {
+            InventoryThought thought = new InventoryThought
+            {
+                MinTime = MinThinkTime,
+                MaxTime = MaxThinkTime,
+                Flags = Inventory.InputState.FiringFirst
+            };
+            
+            _queueState |= Inventory.InputState.FiringFirst;
+
+            _thoughts.Push(thought);
+        }
     }
 }

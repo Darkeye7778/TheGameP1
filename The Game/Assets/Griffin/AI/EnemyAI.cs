@@ -231,7 +231,6 @@ public class EnemyAI : Inventory, IDamagable
         IK.LookAtWeight = IK.LeftGripWeight = IK.RightGripWeight = 0;
 
         DestroyAllModels();
-
     }
 
     public GameObject GameObject()

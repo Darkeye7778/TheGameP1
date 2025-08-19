@@ -106,9 +106,10 @@ public class Weapon : ScriptableObject
     public float ReloadTime;
     public float EquipTime;
     public float MaxRange;
+    
     public float RecoilIntensity;
-   [Range(0,1)] public float RecoilX;
-   [Range(-1,1)] public float RecoilY;
+    [Range(0,1)] public float RecoilX;
+    [Range(-1,1)] public float RecoilY;
 
     
     [Header("Effects")]
@@ -162,7 +163,7 @@ public class WeaponInstance
             return;
 
         uint remainingCapacity = Weapon.FinalCapacity - LoadedAmmo;
-        uint amountToLoad = Math.Min(ReserveAmmo, remainingCapacity);
+        uint amountToLoad = Math.Min(Math.Min(ReserveAmmo, remainingCapacity), Weapon.Capacity);
 
         ReserveAmmo -= amountToLoad;
         LoadedAmmo += amountToLoad;
@@ -195,6 +196,7 @@ public class WeaponInstance
             if (_remainingBurst == 0 || LoadedAmmo == 1)
             {
                 _currentFireDelta = Weapon.BurstCooldown;
+                _remainingBurst = 0;
                 Locked = false;
             }
         }

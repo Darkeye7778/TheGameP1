@@ -14,33 +14,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: FAMAS
   Image: {fileID: 21300000, guid: 7f72baecfd3597a4fbf31b19099a8488, type: 3}
-  Mesh: {fileID: -7773350712032519188, guid: e525d5c90c0df01498dca09570cfb5ec, type: 3}
-  Materials:
-  - {fileID: 2100000, guid: 9a50065a1e4866b42946175d9a5f86b6, type: 2}
+  Mesh: {fileID: 5580461060574919715, guid: 0c13925a9a073c14fa90b419dfc0ded4, type: 3}
   Transform:
     Position: {x: 0.256, y: -0.18, z: 0.27}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    Scale: {x: 0.15, y: 0.15, z: 0.15}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Scale: {x: 1, y: 1, z: 1}
   Grip:
-    Position: {x: -0.4, y: 0.29, z: 0.75}
-    Rotation: {x: -0.5164213, y: -0.041602165, z: -0.85413086, w: -0.045152504}
+    Position: {x: 0, y: 0.01, z: -0.02}
+    Rotation: {x: 0.054418877, y: 0.024754833, z: -0.6387966, w: 0.7670494}
+    Scale: {x: 1, y: 1, z: 1}
+  Foregrip:
+    Position: {x: -0.06, y: 0.05, z: 0.18}
+    Rotation: {x: 0.24529238, y: 0.0067415573, z: 0.9386299, w: 0.24240473}
     Scale: {x: 1, y: 1, z: 1}
   Muzzle:
     Position: {x: 0, y: 0.35, z: 2.31}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
     Scale: {x: 1, y: 1, z: 1}
   EquipSound: {fileID: 8300000, guid: 1cdffcc5cb2fb9640997b65aa17962b4, type: 3}
   FireSound: {fileID: 8300000, guid: a0d4c183ac4745b4e88e6d952feeb4eb, type: 3}
   ReloadSound: {fileID: 8300000, guid: 69c4a7d098fc32143ab1661c3a8fe49e, type: 3}
   EmptySound: {fileID: 8300000, guid: 9c7af20e3021e8c40b03e281ec990277, type: 3}
-  Capacity: 28
+  Capacity: 25
   ReserveCapacity: 120
-  FireRate: 600
-  BurstFireRate: 600
-  BurstCooldown: 0
+  FireRate: 900
+  BurstFireRate: 900
+  BurstCooldown: 0.2
   Damage: 20
   FireModes: 3
-  BurstFireCount: 4
+  BurstFireCount: 3
   OpenBolt: 0
   ReloadTime: 1.5
   EquipTime: 0.5
