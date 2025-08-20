@@ -15,7 +15,7 @@ public static class PropDresser
 
         foreach (var room in rooms)
         {
-            if (!room || room.IsEntry) continue;
+            /*if (!room || room.IsEntry) continue;
 
             var props = room.Properties;
             if (props == null) continue;
@@ -68,7 +68,7 @@ public static class PropDresser
                 var go = Object.Instantiate(prefab, pos, rot, room.transform);
                 gameManager.instance.RegisterEntity(go);
                 placed++;
-            }
+            }*/
         }
     }
 

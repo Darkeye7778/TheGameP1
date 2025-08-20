@@ -27,54 +27,41 @@ public class LevelManager : MonoBehaviour
     IEnumerator Start()
     {
         // Start the game in the hub (police station)
-        yield return LoadLevelRoutine(LevelClass.Hub);
+        yield return LoadLevelRoutine(levels[0]);
     }
 
-    public void LoadLevel(LevelClass level)
+    public void LoadLevel(LevelDefinition level)
     {
         if (_loading) return;
         StartCoroutine(LoadLevelRoutine(level));
     }
 
-    private IEnumerator LoadLevelRoutine(LevelClass level)
+    private IEnumerator LoadLevelRoutine(LevelDefinition def)
     {
         _loading = true;
         gameManager.instance.statePause();
 
-        if (!map.TryGetValue(level, out var def))
-        {
-            Debug.LogError($"No LevelDefinition for {level}");
-            gameManager.instance.stateUnpause();
-            _loading = false;
-            yield break;
-        }
-
-        MapGenerator.Instance.Generate(def);
+        MapGenerator.Instance.ResetState();
+        MapGenerator.Instance.TargetRooms = def.TargetRooms;
+        MapGenerator.Instance.Type = def.MapType;
+        MapGenerator.Instance.Generate();
+        gameManager.instance.SetPlayer();
 
         // Timer & UI reset
         var gm = gameManager.instance;
         if (def.StartingTime > 0f) gm.StartingTime = def.StartingTime;
-
-        if (level == LevelClass.Hub)
-        {
-            gm.gameHostageCount = 1;
-        }
-        else
-        {
-            gm.gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
-        }
-
+        
+        gm.gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
+        
         gm.gameHostageSaved = 0;
 
         // reset private _timer
-        var f = typeof(gameManager).GetField("_timer",
-          System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (f != null) f.SetValue(gm, gm.StartingTime);
+        var f = gameManager.instance.Timer = gameManager.instance.StartingTime;
 
         if (def.Level != LevelClass.Hub)
             gm.updateGameGoal(0);
         else
-            gm.HostageTxt.text = "–";
+            gm.HostageTxt.text = "ï¿½";
 
         gameManager.instance.stateUnpause();
         _loading = false;

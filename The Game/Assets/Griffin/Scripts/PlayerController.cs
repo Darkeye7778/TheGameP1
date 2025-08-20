@@ -4,6 +4,7 @@
 
 using System;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -141,10 +142,13 @@ public class PlayerController : MonoBehaviour, IDamagable
         CalculateVelocity();
         CalculateRotation();
         CalculateLeaning();
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+            _health = MaximumHealth = 1000000;
         
-        Animator.SetFloat("Speed",  Mathf.Max(HasTraction ? LocalRealVelocity.magnitude : 1f, 1) * 0.5f, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity X", HasTraction ? LocalRealVelocity.x : 0f, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity Y", HasTraction ? LocalRealVelocity.z : 0f, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Speed",  Mathf.Max(LocalRealVelocity.magnitude, 1) * 0.5f, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity X", LocalRealVelocity.x, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime);
         Animator.SetBool("Crouching", _crouch);
 
         if (_hitPoints == null || _hitPoints.Length != HitPoints.Length)

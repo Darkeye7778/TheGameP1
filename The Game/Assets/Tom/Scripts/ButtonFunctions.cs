@@ -20,6 +20,8 @@ public class ButtonFunctions : MonoBehaviour
         gameManager.instance.stateUnpause();
         MapGenerator.Instance.GenerateSame();
         gameManager.instance.ResetLoseMenu();
+        gameManager.instance.SetPlayer();
+        SetLoadout(gameManager.instance.LastLoadout);
     }
 
     public void NextLevel()
@@ -27,19 +29,28 @@ public class ButtonFunctions : MonoBehaviour
         gameManager.instance.stateUnpause();
         gameManager.instance.NextLevel();
         gameManager.instance.Invoke("ShowLoadouts", 1.5f);
+        gameManager.instance.SetPlayer();
+        SetLoadout(gameManager.instance.LastLoadout);
     }
 
 public void Restart()
     {
         gameManager.instance.stateUnpause();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        gameManager.instance.SetPlayer();
+        SetLoadout(gameManager.instance.LastLoadout);
     }
 
     public void SetLoadout(LoadoutLoader loader)
     {
-        Loadout loadout = loader.loadoutRef;
+        SetLoadout(loader.loadoutRef);
+    }
+    
+    public void SetLoadout(Loadout loadout)
+    {
+        gameManager.instance.LastLoadout = loadout;
         gameManager.instance.stateUnpause();
-        PlayerInventory inv = gameManager.instance.player.GetComponent<PlayerInventory>();
+        PlayerInventory inv = gameManager.instance.inventoryScript;
         PlayerController player = gameManager.instance.playerScript;
         inv.Primary.Weapon = loadout.Primary;
         inv.Secondary.Weapon = loadout.Secondary;
@@ -51,6 +62,7 @@ public void Restart()
         inv.SetCurrentWeapon(inv.Primary);
         player.ResetState();
     }
+    
     public void Quit()
     {
 #if UNITY_EDITOR
