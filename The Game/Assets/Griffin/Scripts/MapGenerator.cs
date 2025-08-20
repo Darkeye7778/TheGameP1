@@ -454,7 +454,7 @@ public class MapGenerator : MonoBehaviour
 
     Vector3 GetRandomPointInRoom(RoomProfile room, System.Random rng)
     {
-        Collider floorCollider = room.GetComponent<Collider>();
+        Collider floorCollider = room.floor.GetComponent<Collider>();
         if (!floorCollider)
         {
             Debug.LogWarning($"Room {room.name} has no collider.");
