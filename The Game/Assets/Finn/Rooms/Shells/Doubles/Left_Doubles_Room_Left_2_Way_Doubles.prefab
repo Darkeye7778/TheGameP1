@@ -617,6 +617,9 @@ Transform:
   m_Children:
   - {fileID: 8791143164304585962}
   - {fileID: 4832138214895676945}
+  - {fileID: 299211837951836975}
+  - {fileID: 8939113745741825858}
+  - {fileID: 2320801771040168789}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-4089953542169896555
@@ -1119,7 +1122,11 @@ MonoBehaviour:
   Type: 3
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &2125693639954734070
+=======
+--- !u!1 &2175955008599578490
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1127,22 +1134,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 4198265842947412683}
   - component: {fileID: 1426744754644875759}
   - component: {fileID: 3370561352105112488}
   m_Layer: 0
   m_Name: BakedCol_Wall_W_Seg_Left
+=======
+  - component: {fileID: 2320801771040168789}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_E_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &4198265842947412683
+=======
+--- !u!4 &2320801771040168789
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 2125693639954734070}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1245,6 +1263,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 2175955008599578490}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 8.900274, y: -2.414169, z: 5.4916954}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3675162619411295192}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &2334266046577711692
 GameObject:
   m_ObjectHideFlags: 0
@@ -1465,6 +1494,37 @@ MonoBehaviour:
   Type: 4
   Clearance: 0.2
   ForwardHint: {x: 0, y: 0, z: 1}
+--- !u!1 &2824616259403488433
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8939113745741825858}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_S_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8939113745741825858
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2824616259403488433}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.8253021, y: -2.414169, z: -9.733305}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3675162619411295192}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2983522153003669259
 GameObject:
   m_ObjectHideFlags: 0
@@ -2110,7 +2170,42 @@ MonoBehaviour:
   Type: 3
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &3566737094240326878
+=======
+--- !u!1 &3965489272359291018
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 299211837951836975}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_S_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &299211837951836975
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3965489272359291018}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.324753, y: -2.414169, z: -9.733305}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3675162619411295192}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4040796836310434235
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

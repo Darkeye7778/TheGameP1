@@ -1078,6 +1078,9 @@ Transform:
   m_Children:
   - {fileID: 4741356366240176202}
   - {fileID: 3586729905172207289}
+  - {fileID: 7048915176012854888}
+  - {fileID: 257785118836136031}
+  - {fileID: 8958365491510809585}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3084906402167596802
@@ -1116,6 +1119,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
+<<<<<<< Updated upstream
   m_Size: {x: 20.3, y: 0.03, z: 20.3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &5616988634355918472
@@ -1172,6 +1176,11 @@ MeshRenderer:
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1825673025949501430
+=======
+  m_Size: {x: 20.3, y: 20, z: 20.3}
+  m_Center: {x: -1.3, y: 0, z: -1.25}
+--- !u!1 &1904206982596313968
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1179,22 +1188,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 4288105411892403615}
   - component: {fileID: 3640782725291777288}
   - component: {fileID: 9009044041182027208}
   m_Layer: 0
   m_Name: BakedCol_Wall_E_Seg_Left
+=======
+  - component: {fileID: 8958365491510809585}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_W_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &4288105411892403615
+=======
+--- !u!4 &8958365491510809585
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1825673025949501430}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1612,6 +1632,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 1904206982596313968}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -11.400122, y: -2.414169, z: 3.8249993}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8004287772309505720}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &1989783066078887629
 GameObject:
   m_ObjectHideFlags: 0
@@ -3752,7 +3783,11 @@ MonoBehaviour:
   Type: 0
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &4837039177109367558
+=======
+--- !u!1 &4840304543978683756
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3760,22 +3795,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 3647648181728223054}
   - component: {fileID: 4506363128538109423}
   - component: {fileID: 855389223145665837}
   m_Layer: 0
   m_Name: BakedCol_Wall_N_Tail_Left
+=======
+  - component: {fileID: 257785118836136031}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_E_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &3647648181728223054
+=======
+--- !u!4 &257785118836136031
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 4837039177109367558}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -3878,6 +3924,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 4840304543978683756}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 8.899878, y: -2.414169, z: 3.8249993}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8004287772309505720}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &4902692165782694403
 GameObject:
   m_ObjectHideFlags: 0
@@ -6307,7 +6364,11 @@ MonoBehaviour:
   Type: 4
   Clearance: 0.2
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &8346633283245279111
+=======
+--- !u!1 &8640521446942640024
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6315,22 +6376,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 267235036276854525}
   - component: {fileID: 6541641814487549427}
   - component: {fileID: 1190095447284338826}
   m_Layer: 0
   m_Name: BakedCol_Wall_E_Hdr_Back
+=======
+  - component: {fileID: 7048915176012854888}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_E_0
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &267235036276854525
+=======
+--- !u!4 &7048915176012854888
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 8346633283245279111}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -6748,6 +6820,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 8640521446942640024}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 8.899878, y: -2.414169, z: -6.3250012}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8004287772309505720}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &9101474706181552172
 GameObject:
   m_ObjectHideFlags: 0

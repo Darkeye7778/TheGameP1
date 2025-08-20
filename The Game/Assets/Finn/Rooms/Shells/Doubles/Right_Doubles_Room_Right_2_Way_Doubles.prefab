@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8989093681985099
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4580161877079127528}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Ceiling_0_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4580161877079127528
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8989093681985099}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: -4.658308}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &108779872910033143
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,7 +125,11 @@ MonoBehaviour:
   Type: 2
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &577927479118441117
+=======
+--- !u!1 &142932359788589815
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,22 +137,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 6376969390351636204}
   - component: {fileID: 1655511693586874653}
   - component: {fileID: 1532654929374704763}
   m_Layer: 0
   m_Name: BakedCol_Wall_W_Tail_Right
+=======
+  - component: {fileID: 1415618541328201566}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_E_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &6376969390351636204
+=======
+--- !u!4 &1415618541328201566
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 577927479118441117}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -129,18 +175,47 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1655511693586874653
 MeshFilter:
+=======
+  m_GameObject: {fileID: 142932359788589815}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: 5.4916897}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &408104390935728921
+GameObject:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 577927479118441117}
   m_Mesh: {fileID: 0}
 --- !u!64 &1532654929374704763
 MeshCollider:
+=======
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8326301548769221062}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Center_1_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8326301548769221062
+Transform:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 577927479118441117}
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -157,6 +232,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 408104390935728921}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: 5.4916897}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &593667613643776226
 GameObject:
   m_ObjectHideFlags: 0
@@ -204,7 +290,11 @@ MonoBehaviour:
   Type: 3
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &844142619928574416
+=======
+--- !u!1 &616973646177067556
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,22 +302,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 2071602665641459721}
   - component: {fileID: 3872138051560367316}
   - component: {fileID: 4514649845018886728}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Hdr_Face
+=======
+  - component: {fileID: 2167208385018045528}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_S_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &2071602665641459721
+=======
+--- !u!4 &2167208385018045528
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 844142619928574416}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -268,6 +369,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &1215184413059632195
+=======
+  m_GameObject: {fileID: 616973646177067556}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 6.3252335, y: -2.414169, z: -9.733309}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1119210803436075892
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,22 +388,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 2128345538261636583}
   - component: {fileID: 7990933569832666869}
   - component: {fileID: 2555502746420339153}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Seg_Right
+=======
+  - component: {fileID: 4305291186738623229}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Center_0_0
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &2128345538261636583
+=======
+--- !u!4 &4305291186738623229
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1215184413059632195}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -331,6 +455,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &1393687705837391844
+=======
+  m_GameObject: {fileID: 1119210803436075892}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: -4.658308}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1245682675345689696
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -338,22 +474,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 375666451414585044}
   - component: {fileID: 548110281978942237}
   - component: {fileID: 1084151252390182218}
   m_Layer: 0
   m_Name: BakedCol_Wall_E_Tail_Top
+=======
+  - component: {fileID: 213758571293845368}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_CenterLarge
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &375666451414585044
+=======
+--- !u!4 &213758571293845368
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1393687705837391844}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -394,6 +541,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &1571561614549475829
+=======
+  m_GameObject: {fileID: 1245682675345689696}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 1.2501373, y: -2.414169, z: 10.56669}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2200753806502329945
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -401,22 +560,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 6797307403677043218}
   - component: {fileID: 439893933354109900}
   - component: {fileID: 6764116626272351368}
   m_Layer: 0
   m_Name: BakedCol_Wall_W_Tail_Left
+=======
+  - component: {fileID: 8430958753325206060}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Ceiling_0_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &6797307403677043218
+=======
+--- !u!4 &8430958753325206060
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1571561614549475829}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -582,6 +752,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 2200753806502329945}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: 5.4916897}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &2228628879891683922
 GameObject:
   m_ObjectHideFlags: 0
@@ -688,11 +869,18 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
+<<<<<<< Updated upstream
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &2653979017439580647
+=======
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2630160804489783761
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -700,22 +888,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 7712929543366396802}
   - component: {fileID: 842176859569387356}
   - component: {fileID: 7901556076469294350}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Tail_Back
+=======
+  - component: {fileID: 5142460507739840539}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Corner_SE
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &7712929543366396802
+=======
+--- !u!4 &5142460507739840539
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 2653979017439580647}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -755,6 +954,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 2630160804489783761}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: -9.433307}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &2708133226336489671
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,7 +1169,11 @@ MonoBehaviour:
   Type: 0
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &3145297537483333167
+=======
+--- !u!1 &3085892378998510135
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -967,22 +1181,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 2897860332820974811}
   - component: {fileID: 2015789788533508311}
   - component: {fileID: 9036457334671696626}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Tail_Right
+=======
+  - component: {fileID: 5866152209009214651}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Ceiling_1_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &2897860332820974811
+=======
+--- !u!4 &5866152209009214651
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 3145297537483333167}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1023,6 +1248,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &3308062772654935654
+=======
+  m_GameObject: {fileID: 3085892378998510135}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: 5.4916897}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3585532465483924797
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1030,22 +1267,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 5189394386487763672}
   - component: {fileID: 5174454075851818416}
   - component: {fileID: 7107458401538111980}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Tail_Top
+=======
+  - component: {fileID: 2723819049662772994}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Corner_NW
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &5189394386487763672
+=======
+--- !u!4 &2723819049662772994
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 3308062772654935654}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1211,6 +1459,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 3585532465483924797}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: 10.266688}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &4330529057975988397
 GameObject:
   m_ObjectHideFlags: 0
@@ -1368,7 +1627,11 @@ MonoBehaviour:
   Type: 2
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &4632824237091099001
+=======
+--- !u!1 &4586423310354718197
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1376,22 +1639,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 4576352494895877035}
   - component: {fileID: 7000430299474950720}
   - component: {fileID: 6339113080606090245}
   m_Layer: 0
   m_Name: BakedCol_Wall_W_Tail_Top
+=======
+  - component: {fileID: 520716208799617621}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_W_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &4576352494895877035
+=======
+--- !u!4 &520716208799617621
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 4632824237091099001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1432,6 +1706,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &4741563753401041339
+=======
+  m_GameObject: {fileID: 4586423310354718197}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: 5.4916897}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4626790055349767018
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1439,22 +1725,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 8978826790412260940}
   - component: {fileID: 8428366937053941678}
   - component: {fileID: 4799218920722158791}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Seg_Left
+=======
+  - component: {fileID: 2755121795218232663}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_E_0
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &8978826790412260940
+=======
+--- !u!4 &2755121795218232663
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 4741563753401041339}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1495,6 +1792,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &4758957902775381657
+=======
+  m_GameObject: {fileID: 4626790055349767018}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: -4.658308}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5626065477944933102
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1502,22 +1811,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 6756367064639113908}
   - component: {fileID: 8093520465239957326}
   - component: {fileID: 2233230495762779404}
   m_Layer: 0
   m_Name: BakedCol_Wall_N_Tail_Face
+=======
+  - component: {fileID: 1498650582923063547}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Center_1_0
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &6756367064639113908
+=======
+--- !u!4 &1498650582923063547
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 4758957902775381657}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1558,6 +1878,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &4941502166672706207
+=======
+  m_GameObject: {fileID: 5626065477944933102}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: -4.658308}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5710093673976951789
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1565,22 +1897,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 2620983447783835004}
   - component: {fileID: 9146543052636777538}
   - component: {fileID: 9180589800856290620}
   m_Layer: 0
   m_Name: BakedCol_Wall_W_Seg_Left
+=======
+  - component: {fileID: 4094295126909878987}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_S_0
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &2620983447783835004
+=======
+--- !u!4 &4094295126909878987
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 4941502166672706207}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -2124,6 +2467,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 5710093673976951789}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.8249588, y: -2.414169, z: -9.733309}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &5724463332334667611
 GameObject:
   m_ObjectHideFlags: 0
@@ -2774,6 +3128,37 @@ MonoBehaviour:
   Type: 4
   Clearance: 0.2
   ForwardHint: {x: 0, y: 0, z: 1}
+--- !u!1 &6827853539971795190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6240378259714357766}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Corner_SW
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6240378259714357766
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6827853539971795190}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: -9.433307}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6872567583162925865
 GameObject:
   m_ObjectHideFlags: 0
@@ -2805,7 +3190,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6383587144621346133}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+<<<<<<< Updated upstream
 --- !u!1 &6976868640016299856
+=======
+--- !u!1 &6976290035411183397
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2813,22 +3202,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 5806370676065737186}
   - component: {fileID: 4253802711322126913}
   - component: {fileID: 3633907599443513235}
   m_Layer: 0
   m_Name: BakedCol_Wall_N_Tail_Left
+=======
+  - component: {fileID: 8929334109400348658}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_N_0
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &5806370676065737186
+=======
+--- !u!4 &8929334109400348658
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 6976868640016299856}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -2868,6 +3268,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 6976290035411183397}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: -3.8249588, y: -2.414169, z: 10.56669}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &6981587510128090866
 GameObject:
   m_ObjectHideFlags: 0
@@ -3135,7 +3546,11 @@ MonoBehaviour:
   Type: 3
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+<<<<<<< Updated upstream
 --- !u!1 &7291537325992802264
+=======
+--- !u!1 &7783670349141526302
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3143,22 +3558,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 3254961931937784205}
   - component: {fileID: 5635919520120476504}
   - component: {fileID: 86933353904021134}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Hdr_Top
+=======
+  - component: {fileID: 1324983140512750447}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Ceiling_1_0
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &3254961931937784205
+=======
+--- !u!4 &1324983140512750447
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7291537325992802264}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -3199,6 +3625,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &7749654884732142346
+=======
+  m_GameObject: {fileID: 7783670349141526302}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: -4.658308}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7964889547077792745
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3206,22 +3644,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 8181751657343344869}
   - component: {fileID: 1268944002512370738}
   - component: {fileID: 8638846790358725043}
   m_Layer: 0
   m_Name: BakedCol_Wall_S_Seg_Face
+=======
+  - component: {fileID: 2308212668969045719}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Center_0_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &8181751657343344869
+=======
+--- !u!4 &2308212668969045719
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7749654884732142346}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -3262,6 +3711,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &7777779401394106728
+=======
+  m_GameObject: {fileID: 7964889547077792745}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: 5.4916897}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8157894181117072965
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3269,22 +3730,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 8671738698453995365}
   - component: {fileID: 2884722133053278823}
   - component: {fileID: 4115152127782233519}
   m_Layer: 0
   m_Name: BakedCol_Wall_W_Hdr_Left
+=======
+  - component: {fileID: 3246904141057935849}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_N_1
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &8671738698453995365
+=======
+--- !u!4 &3246904141057935849
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 7777779401394106728}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -3325,6 +3797,18 @@ MeshCollider:
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &8257098408032084013
+=======
+  m_GameObject: {fileID: 8157894181117072965}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 6.3252335, y: -2.414169, z: 10.56669}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8192293095213456807
+>>>>>>> Stashed changes
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3332,22 +3816,33 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< Updated upstream
   - component: {fileID: 3596975746129805702}
   - component: {fileID: 7477130336668249585}
   - component: {fileID: 1250237664521683028}
   m_Layer: 0
   m_Name: BakedCol_Wall_W_Seg_Right
+=======
+  - component: {fileID: 3299438096805560493}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Corner_NE
+>>>>>>> Stashed changes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< Updated upstream
 --- !u!4 &3596975746129805702
+=======
+--- !u!4 &3299438096805560493
+>>>>>>> Stashed changes
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 8257098408032084013}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -3387,6 +3882,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+=======
+  m_GameObject: {fileID: 8192293095213456807}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 11.400137, y: -2.414169, z: 10.266688}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &8751985539002078830
 GameObject:
   m_ObjectHideFlags: 0
@@ -3434,6 +3940,37 @@ MonoBehaviour:
   Type: 3
   Clearance: 0.35
   ForwardHint: {x: 0, y: 0, z: 1}
+--- !u!1 &8833649908286497958
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5531575164604447884}
+  m_Layer: 0
+  m_Name: ConnectionPoint_Socket_Wall_W_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5531575164604447884
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8833649908286497958}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -8.899862, y: -2.414169, z: -4.658308}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6383587144621346133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8865922932656651355
 GameObject:
   m_ObjectHideFlags: 0
@@ -3516,6 +4053,27 @@ Transform:
   m_Children:
   - {fileID: 3129227794286654269}
   - {fileID: 8437192433540744026}
+  - {fileID: 3299438096805560493}
+  - {fileID: 2723819049662772994}
+  - {fileID: 5142460507739840539}
+  - {fileID: 6240378259714357766}
+  - {fileID: 4305291186738623229}
+  - {fileID: 2308212668969045719}
+  - {fileID: 1498650582923063547}
+  - {fileID: 8326301548769221062}
+  - {fileID: 213758571293845368}
+  - {fileID: 8929334109400348658}
+  - {fileID: 3246904141057935849}
+  - {fileID: 4094295126909878987}
+  - {fileID: 2167208385018045528}
+  - {fileID: 2755121795218232663}
+  - {fileID: 1415618541328201566}
+  - {fileID: 5531575164604447884}
+  - {fileID: 520716208799617621}
+  - {fileID: 4580161877079127528}
+  - {fileID: 8430958753325206060}
+  - {fileID: 1324983140512750447}
+  - {fileID: 5866152209009214651}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5897740180680856132
