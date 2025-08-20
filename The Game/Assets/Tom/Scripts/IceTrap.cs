@@ -30,6 +30,9 @@ public class IceTrap : MonoBehaviour
         playermovement.WalkingSpeed = Walk;
         playermovement.RunningSpeed = Run;
     }
+
+
+
     IEnumerator Freeze()
     {
         SetMovementSpeed(0.34f, 2f);
