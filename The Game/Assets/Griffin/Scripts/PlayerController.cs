@@ -368,6 +368,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         _leaningAngle = 0;
         _running = false;
         _crouch = false;
+        
+        Animator.SetTrigger("Reset");
 
         if (_controller == null)
             _controller = GetComponent<CharacterController>();

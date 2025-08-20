@@ -1,8 +1,32 @@
+using System;
 using UnityEngine;
+
+[Serializable]
+public class InventoryThought : AIThought<EnemyAI>
+{
+    public Inventory.InputState Flags;
+    
+    public override void Think(EnemyAI controller)
+    {
+        if (Flags.HasFlag(Inventory.InputState.UsePrimary) || Flags.HasFlag(Inventory.InputState.UseSecondary))
+            controller.InputFlags = 0;
+        controller.InputFlags |= Flags;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is not InventoryThought other)
+            return false;
+
+        return Flags == other.Flags;
+    }
+}
 
 public class TerroristFollowEnemy : AIState
 {
     [field: SerializeField] public AIState RetreatState { get; private set; }
+    
+    [field: SerializeField] public Transform Eye { get; private set; }
     
     public float FollowingDistance = 5;
     public float MinFollowingDistance = 2;
@@ -10,18 +34,27 @@ public class TerroristFollowEnemy : AIState
 
     public float MinThinkTime, MaxThinkTime;
 
-    private AIThoughtQueue<TerroristFollowEnemy> _thoughts = new();
+    private bool _shouldShoot;
 
-    private Inventory.InputState _queueState;
-    
-    public class InventoryThought : AIThought<TerroristFollowEnemy>
+    [Serializable]
+    private class ShootThought : AIThought<EnemyAI>
     {
-        public Inventory.InputState Flags;
-    
-        public override void Think(TerroristFollowEnemy t)
+        public bool Shoot;
+
+        public override void Think(EnemyAI t)
         {
-            t.Controller.InputFlags |= Flags;
-            t._queueState &= ~Flags;
+            if (t.CurrentState is not TerroristFollowEnemy state)
+                return;
+
+            state._shouldShoot = Shoot;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not ShootThought other)
+                return false;
+
+            return Shoot == other.Shoot;
         }
     }
 
@@ -33,9 +66,8 @@ public class TerroristFollowEnemy : AIState
     public override void OnStart(EnemyAI controller)
     {
         base.OnStart(controller);
-        
-        _thoughts.Clear();
-        _queueState = 0;
+
+        Controller.Thoughts.Clear();
     }
 
     public override void OnUpdate()
@@ -49,19 +81,23 @@ public class TerroristFollowEnemy : AIState
 
         if (Controller.Sight.CanSee())
         {
-            Vector3 offset = Controller.Target.AimTargets()[0] - transform.position;
-            offset.y = 0;
+            Vector3 offset = Controller.Target.AimTarget() - Eye.position;
+            Eye.transform.rotation = Quaternion.LookRotation(offset, Vector3.up);
 
             Controller.Agent.SetDestination(Controller.Target.GameObject().transform.position);
             
+            // Only rotate on z axis.
+            offset.y = 0;
             Quaternion targetRotation = Quaternion.LookRotation(offset, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * FaceSpeed);
 
             if(!Controller.CurrentWeapon.IsEmpty)
-                TryShoot();
+                Shoot();
         }
+        else if(!Controller.IsUsingPrimary)
+            Controller.SetState(RetreatState);
         
-        if (Controller.IsUsingPrimary && Controller.Primary.IsEmpty && !_queueState.HasFlag(Inventory.InputState.UseSecondary))
+        if (Controller.IsUsingPrimary && Controller.Primary.IsEmpty)
         {
             InventoryThought thought = new InventoryThought
             {
@@ -70,12 +106,10 @@ public class TerroristFollowEnemy : AIState
                 Flags = Inventory.InputState.UseSecondary
             };
 
-            _queueState |= Inventory.InputState.UseSecondary;
-
-            _thoughts.Push(thought);
+            Controller.Thoughts.Push(thought);
         }
 
-        if (!Controller.IsUsingPrimary && Controller.Secondary.IsEmpty && !_queueState.HasFlag(Inventory.InputState.Reload))
+        if (!Controller.IsUsingPrimary && Controller.Secondary.IsEmpty)
         {
             InventoryThought thought = new InventoryThought
             {
@@ -83,23 +117,25 @@ public class TerroristFollowEnemy : AIState
                 MaxTime = MaxThinkTime,
                 Flags = Inventory.InputState.Reload
             };
-            
-            _queueState |= Inventory.InputState.Reload;
 
-            _thoughts.Push(thought);
+            Controller.Thoughts.Push(thought);
         }
         
         if(Controller.Primary.IsEmpty && Controller.Secondary.IsEmpty && !Controller.Secondary.HasReserve)
             Controller.SetState(RetreatState);
-
-        _thoughts.OnUpdate(this);
     }
 
-    private void TryShoot()
+    private void Shoot()
     {
+        bool shoot = Controller.Sight.CheckRay(Controller.Eye.position, Controller.Eye.forward);
+        Controller.Thoughts.Push(new ShootThought{MinTime = MinThinkTime, MaxTime = MaxThinkTime, Shoot = shoot});
+        
+        if (!_shouldShoot)
+            return;
+        
         Controller.InputFlags |= Inventory.InputState.Firing;
 
-        if (Controller.CurrentWeapon.Mode == FireMode.Single && !_queueState.HasFlag(Inventory.InputState.FiringFirst))
+        if (Controller.CurrentWeapon.Mode == FireMode.Single)
         {
             InventoryThought thought = new InventoryThought
             {
@@ -107,10 +143,8 @@ public class TerroristFollowEnemy : AIState
                 MaxTime = MaxThinkTime,
                 Flags = Inventory.InputState.FiringFirst
             };
-            
-            _queueState |= Inventory.InputState.FiringFirst;
 
-            _thoughts.Push(thought);
+            Controller.Thoughts.Push(thought);
         }
     }
 }
