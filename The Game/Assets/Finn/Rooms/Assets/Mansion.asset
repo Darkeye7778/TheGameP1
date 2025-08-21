@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15e2ccfc1fd15d3439a0dcea2326cb5b, type: 3}
+  m_Name: Mansion
+  m_EditorClassIdentifier: 
+  Rules:
+  - Archetype: 2
+    CenterSmall:
+    - Prefab: {fileID: 919132149155446097, guid: 17df8d0daf7aec14698bf6d73359a747, type: 3}
+      Weight: 50
+    CenterLarge:
+    - Prefab: {fileID: 919132149155446097, guid: e8bcc2af6da4ffa4ba221825387cee57, type: 3}
+      Weight: 50
+    Corner:
+    - Prefab: {fileID: 919132149155446097, guid: 1d07df417cf9ab04bbc8f6071741f043, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: 5124ac1f4f4e17247b2f3a45584b21d1, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: d01061434e86e964abeac90d826f3a6d, type: 3}
+      Weight: 50
+    Wall:
+    - Prefab: {fileID: 919132149155446097, guid: 58f701239c50ef14494883f16e8383cc, type: 3}
+      Weight: 10
+    Ceiling: []
+    MinProps: 3
+    MaxProps: 6
+    Categories:
+    - Category: 0
+      CenterSmall: []
+      CenterLarge: []
+      Corner: []
+      Wall: []
+      Ceiling: []
+      MinProps: 0
+      MaxProps: 0
+  - Archetype: 0
+    CenterSmall:
+    - Prefab: {fileID: 919132149155446097, guid: b253decc65a576b4eb2f9744a89128ef, type: 3}
+      Weight: 0
+    CenterLarge: []
+    Corner:
+    - Prefab: {fileID: 919132149155446097, guid: 021213b5eba77904097e0f5aa1a99d72, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: 649646106a38e1346b231d5f5d64467f, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: cd560a8cb8bd1ec4fb3267ac9441df28, type: 3}
+      Weight: 50
+    Wall:
+    - Prefab: {fileID: 919132149155446097, guid: 58f701239c50ef14494883f16e8383cc, type: 3}
+      Weight: 0
+    Ceiling: []
+    MinProps: 3
+    MaxProps: 6
+    Categories:
+    - Category: 0
+      CenterSmall: []
+      CenterLarge: []
+      Corner: []
+      Wall: []
+      Ceiling: []
+      MinProps: 0
+      MaxProps: 0
+  - Archetype: 1
+    CenterSmall:
+    - Prefab: {fileID: 919132149155446097, guid: ced7d5d843f03774e8c82dc8a229be4c, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: e4a219c91f34ce74ab295a64b6a63f61, type: 3}
+      Weight: 50
+    CenterLarge:
+    - Prefab: {fileID: 919132149155446097, guid: 15b9b4825687b3b49a791a3ac38d48a3, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: 724d1b533860f6b40869157a6b678ef3, type: 3}
+      Weight: 50
+    Corner:
+    - Prefab: {fileID: 919132149155446097, guid: f057f2866f4b8964799fed1871693e10, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: c6c4229ba17e2e44a8c650fa2627f71c, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 919132149155446097, guid: 0b370e01cda840a45982c117ac706827, type: 3}
+      Weight: 50
+    Wall: []
+    Ceiling: []
+    MinProps: 2
+    MaxProps: 4
+    Categories: []
