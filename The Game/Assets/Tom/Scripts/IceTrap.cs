@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class IceTrap : MonoBehaviour
 {
+    [SerializeField] GameObject iceTrapEffect; // The effect to spawn when the trap is triggered
     [SerializeField] float freezeDuration;
     [SerializeField] float slowWalkSpeed;
     [SerializeField] float slowRunSpeed;
@@ -37,8 +38,9 @@ public class IceTrap : MonoBehaviour
     {
         SetMovementSpeed(0.34f, 2f);
         DamageSource dmg = new DamageSource("Ice Trap", gameObject);
-        playermovement.OnTakeDamage(dmg, damage);                       // Apply damage to player
+        playermovement.OnTakeDamage(dmg, damage);                               // Apply damage to player
+        Instantiate(iceTrapEffect, transform.position, Quaternion.identity);    // Spawn the ice trap effect
         yield return new WaitForSeconds(freezeDuration);
-        SetMovementSpeed(initWalkspeed, initRunspeed);                  // Reset to original speed
+        SetMovementSpeed(initWalkspeed, initRunspeed);                          // Reset to original speed
     }
 }
