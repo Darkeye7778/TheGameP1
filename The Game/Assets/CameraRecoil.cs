@@ -10,6 +10,8 @@ public class CameraRecoil : MonoBehaviour
 
     [Range(1, 100)] public float ResetSpeed = 10;
 
+    [Range(0, 5)] public float RecoilMultiplier = 1;
+
     Vector3 _targetRotation;
     
     float _timeSinceLastShot;
@@ -29,7 +31,7 @@ public class CameraRecoil : MonoBehaviour
 
     public void AddRecoil(Weapon weapon)
     {
-        Vector3 calcRecoil = new Vector3(-weapon.RecoilX, weapon.RecoilY + Random.Range(-0.1f,0.1f), 0) * weapon.RecoilIntensity;
+        Vector3 calcRecoil = new Vector3(-weapon.RecoilX, weapon.RecoilY + Random.Range(-0.1f,0.1f), 0) * weapon.RecoilIntensity * RecoilMultiplier;
         _targetRotation += calcRecoil;
         _timeSinceLastShot = 0;
     }

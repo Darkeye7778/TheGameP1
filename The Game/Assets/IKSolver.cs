@@ -21,6 +21,9 @@ public class IKSolver : MonoBehaviour
     
     private void OnAnimatorIK(int layerIndex)
     {
+        if (!_animator)
+            return;
+        
         _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, LeftGripWeight);
         _animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, LeftGripWeight);
         _animator.SetIKPosition(AvatarIKGoal.LeftHand, LeftGrip.Position);

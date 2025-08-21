@@ -230,7 +230,7 @@ public class enemyAI : MonoBehaviour, IDamagable
         foreach (var collider in colliders)
         {
             Doors door = collider.GetComponent<Doors>();
-            if(door != null && !door.isOpen)
+            if(door != null && !door.IsOpen)
             {
                 door.OnInteract(gameObject);
                 _doorCooldown = 0;

@@ -10,7 +10,7 @@ public static class CategoryAssigner
         ThemeCategoryTable table,
         System.Random rng)
     {
-        if (rooms == null || rooms.Count == 0 || table == null) return;
+        /*if (rooms == null || rooms.Count == 0 || table == null) return;
 
         var eligible = rooms.Where(r => r != null
                                      && r.Properties != null
@@ -121,7 +121,7 @@ public static class CategoryAssigner
                 r.Category = chosen;
                 Inc(assignedCounts, chosen);
             }
-        }
+        }*/
     }
 
     static RoomProfile PickRoomForQuota(
@@ -130,7 +130,7 @@ public static class CategoryAssigner
         ThemeCategoryTable table,
         System.Random rng)
     {
-        var candidates = new List<RoomProfile>();
+        /*var candidates = new List<RoomProfile>();
 
         // prefer archetypes whose set actually mentions this category
         foreach (var kv in byArch)
@@ -184,11 +184,14 @@ public static class CategoryAssigner
                        .Where(c => c != RoomCategory.None && (mask & c) != 0)
                        .ToArray();
         }
+        */
+        return null;
     }
 
     // original style picker (unchanged behavior)
     static RoomCategory PickWeighted(ThemeCategoryTable.WeightedCategory[] pool, System.Random rng)
     {
+    /*
         if (pool == null || pool.Length == 0) return RoomCategory.None;
         float total = 0f;
         for (int i = 0; i < pool.Length; i++)
@@ -201,10 +204,11 @@ public static class CategoryAssigner
             roll -= Mathf.Max(0f, pool[i].Weight);
             if (roll <= 0.0) return pool[i].Category;
         }
-        return pool[pool.Length - 1].Category;
+        return pool[pool.Length - 1].Category;*/
+        return RoomCategory.None;
     }
 
-    // wildcard-aware picker using Category=None as “Everything else”
+    // wildcard-aware picker using Category=None as ï¿½Everything elseï¿½
     static RoomCategory PickWeightedWithWildcard(
         ThemeCategoryTable.WeightedCategory[] pool,
         RoomCategory[] allowed,
@@ -212,6 +216,7 @@ public static class CategoryAssigner
         Dictionary<RoomCategory, int> counts,
         System.Random rng)
     {
+        /*
         var allowedSet = new HashSet<RoomCategory>(allowed);
 
         // explicit, allowed, and not maxed
@@ -254,7 +259,8 @@ public static class CategoryAssigner
         if (fallbackCats.Length > 0)
             return fallbackCats[rng.Next(fallbackCats.Length)];
 
-        return explicitEntries.Length > 0 ? explicitEntries.Last().Category : RoomCategory.None;
+        return explicitEntries.Length > 0 ? explicitEntries.Last().Category : RoomCategory.None;*/
+        return RoomCategory.None;
     }
 
     static bool ReachedMax(RoomCategory c,

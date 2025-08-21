@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class ClickableLevelFile : MonoBehaviour
 {
-    public LevelClass level;
+    public LevelDefinition level;
 
     [Header("Interaction")]
     public float maxDistance = 6f;

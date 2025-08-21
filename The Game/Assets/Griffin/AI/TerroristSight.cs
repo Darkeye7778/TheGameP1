@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class TerroristSight : AISight
 {
-    public LayerMask EnemyMask;
     public LayerMask EnvironmentMask;
 
     public Transform Eye;
@@ -12,55 +11,80 @@ public class TerroristSight : AISight
     public float SightAngle;
     public float MemoryTime;
     
-    public IDamagable Target;
+    [Tooltip("X = Distance, Y = Time to spot")]
+    public AnimationCurve SpottingTime;
     
+    public IDamagable Target;
+
+    private float _spottingTime;
     private float _memory;
     private float _forceMemory;
 
-    public override bool CanSee() { return _memory == 0; }
+    private EnemyAI _controller;
+
+    public override bool CanSee() { return _memory == 0 && _spottingTime <= 0; }
     public override IDamagable GetTarget() { return Target; }
-    
+
+    private void Start()
+    {
+        _controller = GetComponent<EnemyAI>();
+    }
+
     public override bool TrySetTarget(IDamagable target)
     {
         bool canSee = false;
         foreach (Vector3 aimTarget in target.AimTargets())
             canSee |= CheckTargetRaycast(target, aimTarget);
 
-        if (canSee)
-        {
-            Target = target;
-            _forceMemory = 10;
-        }
-        return canSee;
+        if (!canSee)
+            return false;
+        
+        _forceMemory = 10;
+        
+        return true;
+    }
+
+    public override bool CheckRay(Ray ray)
+    {
+        if (!Physics.Raycast(ray, out var hit, SightDistance, _controller.EnemyMask | EnvironmentMask))
+            return false;
+        return hit.collider.TryGetComponent(out IDamagable damagable) && damagable.Base() == Target.Base();
     }
 
     public override IDamagable FindTarget(EnemyAI controller)
     {
         if (_forceMemory > 0)
             _forceMemory -= Time.deltaTime;
-        
+
         if (Target != null)
         {
             var canSee = CheckTargetVisibility(Target);
             if (canSee)
             {
+                float distance = Vector3.Distance(Eye.position, Target.AimTarget());
+                _spottingTime -= Time.deltaTime / SpottingTime.Evaluate(distance);
                 _memory = 0;
                 Eye.rotation = Quaternion.LookRotation(Target.AimTargets()[0] - Eye.position, Vector3.up);
             }
             else
+            {
                 _memory += Time.deltaTime;
+                _spottingTime = 1;
+            }
 
             foreach (var target in Target.AimTargets())
                 Debug.DrawRay(Eye.position, target - Eye.position, canSee ? Color.green : Color.red);
-            
+
             if (Target.IsDead() || _forceMemory <= 0 && _memory > MemoryTime)
                 Target = null;
         }
+        else
+            _spottingTime = 1;
 
         if (Target != null) 
             return Target;
         
-        Collider[] colliders = Physics.OverlapSphere(Eye.position, SightDistance, EnemyMask);
+        Collider[] colliders = Physics.OverlapSphere(Eye.position, SightDistance, _controller.EnemyMask);
 
         float nearestDistance = float.MaxValue;
             
@@ -100,13 +124,13 @@ public class TerroristSight : AISight
         return false;
     }
 
-    private bool CheckTargetRaycast(IDamagable target, Vector3 position)
+    private bool CheckTargetRaycast(IDamagable subCollider, Vector3 position)
     {
         Vector3 direction = position - Eye.position;
         
-        if (!Physics.Raycast(Eye.position, direction, out var hit, SightDistance, EnemyMask | EnvironmentMask))
+        if (!Physics.Raycast(Eye.position, direction, out var hit, SightDistance, _controller.EnemyMask | EnvironmentMask))
             return false;
-        return hit.collider.TryGetComponent(out IDamagable damagable) && damagable.Base() == target.Base();
+        return hit.collider.TryGetComponent(out IDamagable damagable) && damagable.Base() == subCollider.Base();
     }
     
     private bool CheckTargetVisibility(IDamagable target)

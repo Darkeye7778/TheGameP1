@@ -8,28 +8,11 @@ public class RoomProfile : MonoBehaviour
 { 
     [field: SerializeField]
     public RoomProperties Properties { get; private set; }
-    [Header("Design")]
-    public RoomCategory AllowedCategories = RoomCategory.None;
-
-    [HideInInspector] public RoomCategory Category = RoomCategory.None;
-
+    
     [NonSerialized] public RoomProfile Parent;
     [NonSerialized] public bool HasRoomLeaf = false;
     [NonSerialized] public bool IsLeaf = true;
     [NonSerialized] public bool IsEntry = false;
-    [NonSerialized] public bool IsInEntryZone = false;
-    [SerializeField] public GameObject floor;
-
-    [SerializeField] private Transform entranceAnchor;
-    [SerializeField] private bool useAnchorAsOrigin = true;
-
-    float G => MapGenerator.GRID_SIZE;
-    Vector3 GridToLocal(Vector2 grid) => new Vector3(grid.x * G, 0f, grid.y * G);
-
-    private void Reset()
-    {
-        if (!entranceAnchor) entranceAnchor = transform.Find("DoorAnchor");
-    }
 
     private void Awake()
     {
@@ -39,48 +22,27 @@ public class RoomProfile : MonoBehaviour
         
         collider.size = Properties.CollisionBox;
         collider.center = Properties.CollisionOffset;
-
-        if (!entranceAnchor) entranceAnchor = transform.Find("DoorAnchor");
     }
     
     public void GenerateLeafs()
     {
         foreach (Connection connection in Properties.ConnectionPoints)
         {
-            if (!connection.Required &&
-                Random.Range(0f, 1f) > connection.Odds &&
-                MapGenerator.Instance.Parameters.RemainingRooms <= 0)
+            if (!connection.Required && Random.Range(0f, 1f) > connection.Odds && MapGenerator.Instance.Parameters.RemainingRooms <= 0) 
                 continue;
-
-            Vector3 connPos = GetConnWorldPos(connection);
-            Quaternion connRot = GetConnWorldRot(connection);
+            
+            Vector3 position = transform.position + transform.rotation * connection.Transform.WorldPosition;
+            Quaternion rotation = transform.rotation * Direction.ToQuaternion(connection.Transform.Rotation);
 
             for (uint i = 0; i < MapGenerator.Instance.MaxLeafRetry; i++)
             {
-                var cell = MapGenerator.Instance.PickRandomCell();
-                var prefab = cell.Prefab;
-
-                GameObject leaf = Instantiate(prefab);
-                RoomProfile child = leaf.GetComponent<RoomProfile>();
-
-                Transform childAnchor =
-                    (child && child.entranceAnchor) ? child.entranceAnchor : leaf.transform;
-
-                leaf.transform.rotation = connRot * Quaternion.Inverse(childAnchor.localRotation);
-
-                leaf.transform.position = connPos - leaf.transform.rotation * childAnchor.localPosition;
-
-                if (child == null)
-                {
-                    Debug.LogError($"[MapGen] Prefab '{prefab.name}' is missing RoomProfile.");
-                    DestroyImmediate(leaf);
-                    continue;
-                }
-
-                child.Parent = this;
+                GameObject leaf = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, position, rotation);
+                RoomProfile roomProfile = leaf.GetComponent<RoomProfile>();
+                    
+                roomProfile.Parent = this;
                 IsLeaf = false;
-
-                if (child.TryFit()) // If it fits, let it be. Otherwise, try again.
+                
+                if (roomProfile.TryFit()) // If it fits, let it be. Otherwise, try again.
                     break;
             }
         }
@@ -104,11 +66,9 @@ public class RoomProfile : MonoBehaviour
     private void GenerateExit(Connection connection)
     {
         GameObject exit = Instantiate(MapGenerator.Instance.ExitPrefab, transform);
-        exit.transform.SetPositionAndRotation(
-            GetConnWorldPos(connection),
-            GetConnWorldRot(connection)
-        );
-
+        exit.transform.localRotation = Direction.ToQuaternion(connection.Transform.Rotation);
+        exit.transform.localPosition = connection.Transform.WorldPosition;
+ 
         exit.GetComponent<ConnectionProfile>().Connection = connection;
     }
 
@@ -118,11 +78,11 @@ public class RoomProfile : MonoBehaviour
 
         collider.enabled = false;
         bool hit = Physics.CheckBox(
-            transform.position + transform.rotation * Properties.CollisionOffset,
-            Properties.CollisionBox * 0.5f,
-            transform.rotation,
-            MapGenerator.Instance.GridMask
-        );
+                transform.position + transform.rotation * Properties.CollisionOffset, 
+                Properties.CollisionBox * 0.45f, 
+                Quaternion.identity,
+                MapGenerator.Instance.GridMask
+            );
         collider.enabled = true;
         
         return hit;
@@ -150,26 +110,5 @@ public class RoomProfile : MonoBehaviour
             
         if(Properties.Type != RoomType.Hallway)
             MapGenerator.Instance.Parameters.RemainingRooms--;
-    }
-
-
-    Vector3 AnchorLocalToRootLocal(Vector3 anchorLocal)
-    {
-        if (!useAnchorAsOrigin || !entranceAnchor) return anchorLocal;
-        return entranceAnchor.localPosition + entranceAnchor.localRotation * anchorLocal;
-    }
-
-    Vector3 GetConnWorldPos(Connection c)
-    {
-        var localFromAnchor = GridToLocal(c.Transform.Position);
-        return (useAnchorAsOrigin && entranceAnchor)
-            ? entranceAnchor.TransformPoint(localFromAnchor)
-            : transform.TransformPoint(localFromAnchor);
-    }
-
-    Quaternion GetConnWorldRot(Connection c)
-    {
-        var baseRot = (useAnchorAsOrigin && entranceAnchor) ? entranceAnchor.rotation : transform.rotation;
-        return baseRot * Direction.ToQuaternion(c.Transform.Rotation);
     }
 }

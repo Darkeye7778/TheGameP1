@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 [Serializable]
@@ -21,6 +22,12 @@ public class AIThoughtQueue<T>
     private float _timer;
 
     public void Push(AIThought<T> thought)
+    {
+        if(!_queue.Exists(thought.Equals)) 
+            PushDuplicate(thought);
+    }
+    
+    public void PushDuplicate(AIThought<T> thought)
     {
         if (_queue.Count == 0)
             _timer = Random.Range(thought.MinTime, thought.MaxTime);
@@ -65,6 +72,11 @@ public abstract class AIState : MonoBehaviour
     public EnemyAI Controller { get; private set; }
 }
 
+public abstract class AIInvestigateState : AIState
+{
+    public abstract void SetTarget(Vector3 position);
+}
+
 public abstract class AISight : MonoBehaviour
 {
     public abstract IDamagable FindTarget(EnemyAI controller);
@@ -73,23 +85,41 @@ public abstract class AISight : MonoBehaviour
     public abstract bool CanSee();
     public abstract IDamagable GetTarget();
     public abstract bool TrySetTarget(IDamagable target);
+    public abstract bool CheckRay(Ray ray);
+    public bool CheckRay(Vector3 origin, Vector3 direction) { return CheckRay(new Ray(origin, direction)); }
 }
 
 public class EnemyAI : Inventory, IDamagable
 {
     [Header("EnemyAI")]
     public IDamagable Target => Sight.GetTarget();
+    public AIThoughtQueue<EnemyAI> Thoughts { get; private set; }
+    
+   
     
     [field: Header("Display")]
     [field: SerializeField] public WeaponRotationPivot Pivot { get; private set; }
     [field: SerializeField] public Vector3 AimOffset { get; private set; }
     [field: SerializeField] public Transform WeaponOffsetOrigin { get; private set; }
     
+    [Header("Audio")]
+    [SerializeField] private AudioSource _footstepAudioSource;
+    public SoundEmitterSettings DefaultSoundProfile;
+    
     [Header("Hitbox")] 
     public Transform[] HitPoints;
-    private Vector3[] _hitPoints;
+    private Vector3[] _hitPoints; 
     
-    private AIState _currentState;
+    [Header("Misc")]
+    public float FootstepOffset = 1.25f;
+    public LayerMask GroundMask;
+    
+    private GroundState _ground;
+    private bool _moving => _ground.NearGround && _velocity.sqrMagnitude > 0.01;
+    private float _standingTimer, _footstepOffset;
+    private Vector3 _previousPosition, _velocity;
+    
+    public AIState CurrentState { get; private set; }
     private bool _queueState;
 
     public InputState InputFlags
@@ -100,7 +130,7 @@ public class EnemyAI : Inventory, IDamagable
 
     public void SetState(AIState state)
     {
-        _currentState = state;
+        CurrentState = state;
         _queueState = true;
     }
     
@@ -110,13 +140,12 @@ public class EnemyAI : Inventory, IDamagable
 
     [field: SerializeField] public AISight Sight { get; private set; }
     [field: SerializeField] public AIState WanderState { get; private set; }
-    [field: SerializeField] public AIState InvestigateState { get; private set; }
+    [field: SerializeField] public AIInvestigateState InvestigateState { get; private set; }
     [field: SerializeField] public AIState EnemySpottedState { get; private set; }
         
     [field: SerializeField] public float Health { get; private set; } = 100;
     public bool IsDead => Health <= 0;
     
-    private Vector3 _previousPosition;
     public NavMeshAgent Agent { get; private set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -124,6 +153,7 @@ public class EnemyAI : Inventory, IDamagable
     {
         base.Start();
         Agent = GetComponent<NavMeshAgent>();
+        Thoughts = new AIThoughtQueue<EnemyAI>();
         
         SetState(WanderState);
     }
@@ -133,38 +163,26 @@ public class EnemyAI : Inventory, IDamagable
     {
         if (IsDead)
             return;
+
+        InputFlags = 0;
         
         if (_hitPoints == null || _hitPoints.Length != HitPoints.Length)
             _hitPoints = new Vector3[HitPoints.Length];
         for (int i = 0; i < HitPoints.Length; i++)
             _hitPoints[i] = HitPoints[i].position;
-        
-        InputFlags = 0;
-
-        if (Input.GetKey(KeyCode.P))
-            InputFlags |= InputState.Firing;
-        if (Input.GetKeyDown(KeyCode.P))
-            InputFlags |= InputState.FiringFirst;
-        
-        if (Input.GetKeyDown(KeyCode.K))
-            InputFlags |= InputState.CycleFireMode;
-        if (Input.GetKeyDown(KeyCode.L))
-            InputFlags |= InputState.Reload;
-
-        if (Input.GetKeyDown(KeyCode.Semicolon))
-            InputFlags |= CurrentWeapon == Primary ? InputState.UseSecondary : InputState.UsePrimary;
          
         CalculateVelocity();
+        GetFootsteps();
 
         if (_queueState)
         {
-            _currentState.OnStart(this);
+            CurrentState.OnStart(this);
             _queueState = false;
         }
-        _currentState.OnUpdate();
+        CurrentState.OnUpdate();
 
         IDamagable target = Sight.FindTarget(this);
-        if(Target != null && (!_currentState || _currentState.OverriddenByEnemy()))
+        if(Target != null && (!CurrentState || CurrentState.OverriddenByEnemy()))
             SetState(EnemySpottedState);
 
     #if UNITY_EDITOR
@@ -187,23 +205,45 @@ public class EnemyAI : Inventory, IDamagable
         
         if (target != null)
             IK.LookAt = target.LookTarget();
+
+        Thoughts.OnUpdate(this);
         
         base.Update();
     }
 
     private void CalculateVelocity()
     {
-        Vector3 velocity = (transform.position - _previousPosition) / Time.deltaTime;
-        velocity.x /= transform.lossyScale.x;
-        velocity.y /= transform.lossyScale.y;
-        velocity.z /= transform.lossyScale.z;
+        _velocity = (transform.position - _previousPosition) / Time.deltaTime;
+        _velocity.x /= transform.lossyScale.x;
+        _velocity.y /= transform.lossyScale.y;
+        _velocity.z /= transform.lossyScale.z;
         _previousPosition = transform.position;
 
-        velocity = transform.InverseTransformDirection(velocity);
+        _velocity = transform.InverseTransformDirection(_velocity);
         
-        Animator.SetFloat("Speed", Mathf.Max(velocity.magnitude, 1));
-        Animator.SetFloat("Velocity X", velocity.x);
-        Animator.SetFloat("Velocity Y", velocity.z);
+        Animator.SetFloat("Speed", Mathf.Max(_velocity.magnitude, 1));
+        Animator.SetFloat("Velocity X", _velocity.x);
+        Animator.SetFloat("Velocity Y", _velocity.z);
+    }
+    
+    private void GetFootsteps()
+    {
+        _ground = GroundState.GetGround(transform.position, 0.1f, GroundMask);
+        _standingTimer += Time.deltaTime;
+        if (_moving)
+            _standingTimer = 0.0f;
+        
+        if (_standingTimer > 0.1)
+            _footstepOffset = 0.0f;
+
+        _footstepOffset += _velocity.magnitude * Time.deltaTime;
+        
+        if (_moving && _footstepOffset >= FootstepOffset)
+        {
+            _footstepAudioSource.clip = _ground.SoundSettings != null ? _ground.SoundSettings.Footstep : DefaultSoundProfile.Footstep;
+            _footstepAudioSource.Play();
+            _footstepOffset %= FootstepOffset;
+        }
     }
 
     public void OnTakeDamage(DamageSource source, float damage)
@@ -213,13 +253,15 @@ public class EnemyAI : Inventory, IDamagable
         Health -= damage;
 
         if (Target == null && source.Object.TryGetComponent(out IDamagable damagable))
-            if(Sight.TrySetTarget(damagable))
-                SetState(EnemySpottedState);
+        {
+            if (Sight.TrySetTarget(damagable))
+            {
+                SetState(InvestigateState);
+                InvestigateState.SetTarget(damagable.AimTarget());
+            }
+        }
 
-        if (!IsDead)
-            return;
-
-        if (wasDead)
+        if (!IsDead || wasDead)
             return;
 
         Agent.enabled = false;

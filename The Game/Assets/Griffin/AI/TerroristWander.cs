@@ -18,10 +18,12 @@ public class TerroristWander : AIState
     
     public override void OnStart(EnemyAI controller)
     {
+        base.OnStart(controller);
+        
         _resetTimer = 0;
         _startTimer = false;
         
-        base.OnStart(controller);
+        Controller.Thoughts.Clear();
         
         Controller.Agent.stoppingDistance = StoppingDistance;
         

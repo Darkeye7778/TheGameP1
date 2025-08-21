@@ -17,6 +17,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject loadoutsScreen;
     [SerializeField] GameObject InteractionPopup;
     [SerializeField] GameObject playerUI;
+    public Loadout LastLoadout;
     public bool isPaused;
     public GameObject player;
     public PlayerController playerScript;
@@ -51,7 +52,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] private float flashSpeed;
 
     public float StartingTime = 120;
-    private float _timer;
+    public float Timer { get; set; }
 
     private Color timerColorOrig;
     private bool isFlashing;
@@ -74,7 +75,7 @@ public class gameManager : MonoBehaviour
         instance = this;
         timeScaleOrig = Time.timeScale;
 
-        _timer = StartingTime;
+        Timer = StartingTime;
         if (TimerTxt != null)
         {
             timerColorOrig = TimerTxt.color;
@@ -83,15 +84,6 @@ public class gameManager : MonoBehaviour
 
     private void Start()
     {
-        if (LevelManager.Instance != null)
-        {
-            if (MapGenerator.Instance == null) return;
-            
-                MapGenerator.Instance.Generate();
-                gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
-                gameHostageSaved = 0;
-                updateGameGoal(0);
-        }
         Invoke(nameof(ShowLoadouts), 1.5f);
         
         if (audioSource == null)
@@ -103,12 +95,16 @@ public class gameManager : MonoBehaviour
 
     }
 
-
     public void SetPlayer(GameObject _player)
     {
         player = _player;
         playerScript = player.GetComponent<PlayerController>();
         inventoryScript = player.GetComponent<PlayerInventory>();
+    }
+    
+    public void SetPlayer()
+    {
+        SetPlayer(GameObject.FindWithTag("Player"));
     }
 
     public void ResetLoseMenu()
@@ -135,9 +131,9 @@ public class gameManager : MonoBehaviour
         }
 
         
-        _timer -= Time.deltaTime;
-        if (TimerTxt) TimerTxt.text = $"{(int)_timer / 60:00}:{(int)_timer % 60:00}";
-        if (_timer <= timerFlashThreshold)
+        Timer -= Time.deltaTime;
+        if (TimerTxt) TimerTxt.text = $"{(int)Timer / 60:00}:{(int)Timer % 60:00}";
+        if (Timer <= timerFlashThreshold)
         {
             if (!_thresholdPassed)
             {
@@ -149,7 +145,7 @@ public class gameManager : MonoBehaviour
         }
         else if (TimerTxt) TimerTxt.color = Color.white;
 
-        if (_timer <= 0.0f) youLose();
+        if (Timer <= 0.0f) youLose();
 
         if (!PlayerReady)
         {
@@ -165,8 +161,7 @@ public class gameManager : MonoBehaviour
             GunAmmoBar.fillAmount = (float)inventoryScript.CurrentWeapon.LoadedAmmo /
                                     inventoryScript.CurrentWeapon.Weapon.Capacity;
             GunName.text = inventoryScript.CurrentWeapon.Weapon.name;
-
-
+            
             PrimaryGun.sprite = inventoryScript.CurrentWeapon.Weapon.Image;
             SecondaryGun.sprite = inventoryScript.HolsteredWeapon.Weapon.Image;
         }
@@ -312,7 +307,7 @@ public class gameManager : MonoBehaviour
         gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
         gameHostageSaved = 0;
         StartingTime += 30;
-        _timer = StartingTime;
+        Timer = StartingTime;
         updateGameGoal(0);
     }
 
@@ -323,7 +318,7 @@ public class gameManager : MonoBehaviour
         MapGenerator.Instance.GenerateSame();
         gameHostageCount = MapGenerator.Instance.HostageSpawnAmount;
         gameHostageSaved = 0;
-        _timer = StartingTime;
+        Timer = StartingTime;
         updateGameGoal(0);
     }
     public void youLose()

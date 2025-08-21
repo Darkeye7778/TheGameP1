@@ -15,9 +15,11 @@ GameObject:
   - component: {fileID: 349382079055398505}
   - component: {fileID: 5350602330722724910}
   - component: {fileID: 6306269120743851405}
+  - component: {fileID: 8360425939651538162}
   - component: {fileID: 3220675043529310407}
   - component: {fileID: 1658508026860688515}
   - component: {fileID: 6571534294281332166}
+  - component: {fileID: 1553058225126278381}
   m_Layer: 12
   m_Name: Enemy_Normal
   m_TagString: Untagged
@@ -34,7 +36,7 @@ Transform:
   m_GameObject: {fileID: 372274556228281715}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.32, y: 0, z: 5.9}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -188,7 +190,7 @@ MonoBehaviour:
   EnemyMask:
     serializedVersion: 2
     m_Bits: 64
-  <Eye>k__BackingField: {fileID: 2114098535556427591}
+  <Eye>k__BackingField: {fileID: 5643313660879769989}
   <ViewModel>k__BackingField: {fileID: 0}
   <WorldModel>k__BackingField: {fileID: 2204447132938363418}
   <Animator>k__BackingField: {fileID: 8858610649119479634}
@@ -203,12 +205,14 @@ MonoBehaviour:
     LoadedAmmo: 0
     ReserveAmmo: 0
     Mode: 0
-  RecoilObj: {fileID: 0}
+  RecoilObj: {fileID: 6486670798528206622}
   UnequippedOffset: {x: 0, y: 0, z: 0}
   _audioSource: {fileID: 2980631632795041402}
   <Pivot>k__BackingField: {fileID: 919255057874803457}
   <AimOffset>k__BackingField: {x: 0, y: -0.5, z: 0}
   <WeaponOffsetOrigin>k__BackingField: {fileID: 4942282462775042813}
+  _footstepAudioSource: {fileID: 2980631632795041402}
+  DefaultSoundProfile: {fileID: 11400000, guid: 5883801b99b892449ad812de47f956ec, type: 2}
   HitPoints:
   - {fileID: 7522390343214315492}
   - {fileID: 227040516816203434}
@@ -216,9 +220,13 @@ MonoBehaviour:
   - {fileID: 8239377380344677875}
   - {fileID: 8755676414059980120}
   - {fileID: 4182614056278347603}
+  FootstepOffset: 1.25
+  GroundMask:
+    serializedVersion: 2
+    m_Bits: 1
   <Sight>k__BackingField: {fileID: 5350602330722724910}
   <WanderState>k__BackingField: {fileID: 6306269120743851405}
-  <InvestigateState>k__BackingField: {fileID: 0}
+  <InvestigateState>k__BackingField: {fileID: 8360425939651538162}
   <EnemySpottedState>k__BackingField: {fileID: 3220675043529310407}
   <Health>k__BackingField: 100
 --- !u!114 &5350602330722724910
@@ -238,11 +246,44 @@ MonoBehaviour:
     m_Bits: 64
   EnvironmentMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 513
   Eye: {fileID: 2114098535556427591}
   SightDistance: 50
   SightAngle: 75
   MemoryTime: 8
+  SpottingTime:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.503427
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 5
+      value: 0.503427
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 40
+      value: 1.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &6306269120743851405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +305,19 @@ MonoBehaviour:
   MaxWaitTime: 15
   Waypoints: []
   FavoriteWaypoint: 0
+--- !u!114 &8360425939651538162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372274556228281715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c38452a24ebd0947b0568021026ad3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StoppingDistance: 2
 --- !u!114 &3220675043529310407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,6 +331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <RetreatState>k__BackingField: {fileID: 6571534294281332166}
+  <Eye>k__BackingField: {fileID: 2114098535556427591}
   FollowingDistance: 5
   MinFollowingDistance: 2
   FaceSpeed: 15
@@ -307,6 +362,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e84aa3c505b785b45af30abf7aff84e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1553058225126278381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372274556228281715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d61d3d80887e64bbf0812927675616, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OpeningRadius: 1
+  DoorMask:
+    serializedVersion: 2
+    m_Bits: 512
+--- !u!1 &1331130318462639793
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5643313660879769989}
+  - component: {fileID: 6486670798528206622}
+  m_Layer: 12
+  m_Name: WeaponOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5643313660879769989
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1331130318462639793}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2114098535556427591}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6486670798528206622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1331130318462639793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d62c4d4d6ceb104a86b0e81e3072055, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SmoothingSpeed: 20
+  ResetSpeed: 10
+  RecoilMultiplier: 4
 --- !u!1001 &1970053565968098776
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -629,7 +747,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 432838338777877151, guid: dfe034dd9c76ba34b8ac191cfd1467e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5643313660879769989}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dfe034dd9c76ba34b8ac191cfd1467e3, type: 3}
 --- !u!4 &227040516816203434 stripped
