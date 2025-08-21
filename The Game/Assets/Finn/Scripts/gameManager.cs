@@ -40,8 +40,11 @@ public class gameManager : MonoBehaviour
     public Image SecondaryGun;
     public Image GunAmmoBar;
     public GameObject PlayerHurt;
+    public AudioSource audioSource;
     public GameObject HealthFlash;
-
+    public AudioClip[] WinLines;
+    public AudioClip[] StartLines;
+    public AudioClip[] TimeLines;
     public List<GameObject> SpawnedEntities = new List<GameObject>();
 
     [SerializeField] private float timerFlashThreshold;
@@ -61,6 +64,7 @@ public class gameManager : MonoBehaviour
     private bool PlayerReady =>
     playerScript != null && inventoryScript != null;
 
+    private bool _thresholdPassed = false;
     void Awake()
     {
         menuActive = null;
@@ -90,6 +94,13 @@ public class gameManager : MonoBehaviour
         }
         Invoke(nameof(ShowLoadouts), 1.5f);
         
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
+
+        if (audioSource != null && StartLines.Length > 0)
+            audioSource.PlayOneShot(StartLines[Random.Range(0, StartLines.Length)]);
+
     }
 
 
@@ -128,6 +139,11 @@ public class gameManager : MonoBehaviour
         if (TimerTxt) TimerTxt.text = $"{(int)_timer / 60:00}:{(int)_timer % 60:00}";
         if (_timer <= timerFlashThreshold)
         {
+            if (!_thresholdPassed)
+            {
+                _thresholdPassed = true;
+                if (TimeLines.Length > 0 && audioSource != null) audioSource.PlayOneShot(TimeLines[Random.Range(0, TimeLines.Length)]);
+            }
             float t = Mathf.PingPong(Time.unscaledTime * flashSpeed, 1f);
             if (TimerTxt) TimerTxt.color = Color.Lerp(timerColorOrig, Color.red, t);
         }
@@ -231,9 +247,7 @@ public class gameManager : MonoBehaviour
 
         if (gameHostageCount <= 0)
         {
-            statePause();
-            menuActive = menuWin;
-            menuActive.SetActive(true);
+            youWin();
         }
     }
 
@@ -274,9 +288,16 @@ public class gameManager : MonoBehaviour
 
     public void youWin()
     {
+
+        
         statePause();
         menuActive = menuWin;
         menuActive.SetActive(true);
+     
+        if (audioSource != null && WinLines.Length > 0)
+            audioSource.PlayOneShot(WinLines[Random.Range(0, WinLines.Length)]);
+        
+        
     }
 
     public void NextLevel()
