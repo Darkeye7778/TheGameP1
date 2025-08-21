@@ -95,14 +95,29 @@ public class EnemyAI : Inventory, IDamagable
     public IDamagable Target => Sight.GetTarget();
     public AIThoughtQueue<EnemyAI> Thoughts { get; private set; }
     
+   
+    
     [field: Header("Display")]
     [field: SerializeField] public WeaponRotationPivot Pivot { get; private set; }
     [field: SerializeField] public Vector3 AimOffset { get; private set; }
     [field: SerializeField] public Transform WeaponOffsetOrigin { get; private set; }
     
+    [Header("Audio")]
+    [SerializeField] private AudioSource _footstepAudioSource;
+    public SoundEmitterSettings DefaultSoundProfile;
+    
     [Header("Hitbox")] 
     public Transform[] HitPoints;
-    private Vector3[] _hitPoints;
+    private Vector3[] _hitPoints; 
+    
+    [Header("Misc")]
+    public float FootstepOffset = 1.25f;
+    public LayerMask GroundMask;
+    
+    private GroundState _ground;
+    private bool _moving => _ground.NearGround && _velocity.sqrMagnitude > 0.01;
+    private float _standingTimer, _footstepOffset;
+    private Vector3 _previousPosition, _velocity;
     
     public AIState CurrentState { get; private set; }
     private bool _queueState;
@@ -131,7 +146,6 @@ public class EnemyAI : Inventory, IDamagable
     [field: SerializeField] public float Health { get; private set; } = 100;
     public bool IsDead => Health <= 0;
     
-    private Vector3 _previousPosition;
     public NavMeshAgent Agent { get; private set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -158,6 +172,7 @@ public class EnemyAI : Inventory, IDamagable
             _hitPoints[i] = HitPoints[i].position;
          
         CalculateVelocity();
+        GetFootsteps();
 
         if (_queueState)
         {
@@ -198,17 +213,37 @@ public class EnemyAI : Inventory, IDamagable
 
     private void CalculateVelocity()
     {
-        Vector3 velocity = (transform.position - _previousPosition) / Time.deltaTime;
-        velocity.x /= transform.lossyScale.x;
-        velocity.y /= transform.lossyScale.y;
-        velocity.z /= transform.lossyScale.z;
+        _velocity = (transform.position - _previousPosition) / Time.deltaTime;
+        _velocity.x /= transform.lossyScale.x;
+        _velocity.y /= transform.lossyScale.y;
+        _velocity.z /= transform.lossyScale.z;
         _previousPosition = transform.position;
 
-        velocity = transform.InverseTransformDirection(velocity);
+        _velocity = transform.InverseTransformDirection(_velocity);
         
-        Animator.SetFloat("Speed", Mathf.Max(velocity.magnitude, 1));
-        Animator.SetFloat("Velocity X", velocity.x);
-        Animator.SetFloat("Velocity Y", velocity.z);
+        Animator.SetFloat("Speed", Mathf.Max(_velocity.magnitude, 1));
+        Animator.SetFloat("Velocity X", _velocity.x);
+        Animator.SetFloat("Velocity Y", _velocity.z);
+    }
+    
+    private void GetFootsteps()
+    {
+        _ground = GroundState.GetGround(transform.position, 0.1f, GroundMask);
+        _standingTimer += Time.deltaTime;
+        if (_moving)
+            _standingTimer = 0.0f;
+        
+        if (_standingTimer > 0.1)
+            _footstepOffset = 0.0f;
+
+        _footstepOffset += _velocity.magnitude * Time.deltaTime;
+        
+        if (_moving && _footstepOffset >= FootstepOffset)
+        {
+            _footstepAudioSource.clip = _ground.SoundSettings != null ? _ground.SoundSettings.Footstep : DefaultSoundProfile.Footstep;
+            _footstepAudioSource.Play();
+            _footstepOffset %= FootstepOffset;
+        }
     }
 
     public void OnTakeDamage(DamageSource source, float damage)
@@ -226,10 +261,7 @@ public class EnemyAI : Inventory, IDamagable
             }
         }
 
-        if (!IsDead)
-            return;
-
-        if (wasDead)
+        if (!IsDead || wasDead)
             return;
 
         Agent.enabled = false;

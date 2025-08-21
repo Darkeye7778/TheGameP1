@@ -4,6 +4,7 @@
 
 using System;
 using JetBrains.Annotations;
+using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -16,6 +17,30 @@ public struct GroundState
     public bool NearGround;
     public bool Grounded;
     [CanBeNull] public SoundEmitterSettings SoundSettings;
+    
+    public static GroundState GetGround(Vector3 origin, float maxDistance, LayerMask groundMask)
+    {
+        GroundState result = new GroundState
+        {
+            Grounded = false,
+            NearGround = false
+        };
+        
+        RaycastHit rayResult;
+        if (!Physics.Raycast(origin, Vector3.down, out rayResult, maxDistance, groundMask))
+            return result;
+        
+        Debug.DrawRay(origin, Vector3.down * rayResult.distance, Color.red);
+
+        result.Distance = Mathf.Max(rayResult.distance, 0.0f);
+        result.NearGround |= result.Distance < maxDistance;
+        
+        SoundProfile profile = rayResult.collider.GetComponent<SoundProfile>();
+        if (profile is not null)
+            result.SoundSettings = profile.GetSettings();
+        
+        return result;
+    }
 }
 
 public class PlayerController : MonoBehaviour, IDamagable
@@ -31,8 +56,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     public LayerMask GroundMask;
     public LayerMask InteractSkip;
     public int Health => (int) _health;
-    public bool TookDamage => Health < _previousHealth;
-    public bool GainedHealth => Health > _previousHealth;
+    public bool TookDamage => _health < _previousHealth;
+    public bool GainedHealth => _health > _previousHealth;
     public bool IsDead => Health <= 0;
     public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
     public float Height => _controller.height;
@@ -117,7 +142,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _controller.height = StandingHeight;
         _inventory = GetComponent<PlayerInventory>();
         //_cameraOrigin = Camera.transform.localPosition;
-        _previousPosition = transform.position;;
+        _previousPosition = transform.position;
     }
     
     void Update()
@@ -359,7 +384,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = MaximumHealth;
         _stamina = MaximumStamina;
 
-        _velocity = Vector3.zero;
+        _previousPosition = transform.position;
+        
         _previousHealth = _health;
         _fallingTime = 0;
         _standingTimer = 0;
@@ -390,26 +416,11 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private GroundState GetGround()
     {
-        GroundState result = new GroundState
-        {
-            Grounded = _controller.isGrounded,
-            NearGround = _controller.isGrounded
-        };
-
         Vector3 rayOrigin = transform.position + Vector3.down * (_controller.height / 2.0f);
         
-        RaycastHit rayResult;
-        if (!Physics.Raycast(rayOrigin, Vector3.down, out rayResult, _controller.stepOffset, GroundMask))
-            return result;
-        
-        Debug.DrawRay(rayOrigin, Vector3.down * rayResult.distance, Color.red);
-
-        result.Distance = Mathf.Max(rayResult.distance - _controller.skinWidth, 0.0f);
-        result.NearGround |= result.Distance < _controller.stepOffset;
-        
-        SoundProfile profile = rayResult.collider.GetComponent<SoundProfile>();
-        if (profile is not null)
-            result.SoundSettings = profile.GetSettings();
+        GroundState result = GroundState.GetGround(rayOrigin, _controller.stepOffset, GroundMask);
+        result.Grounded |= _controller.isGrounded;
+        result.NearGround |= _controller.isGrounded;
         
         return result;
     }
@@ -469,6 +480,17 @@ public class PlayerController : MonoBehaviour, IDamagable
         RealVelocity = (transform.position - _previousPosition) / Time.deltaTime;
         LocalRealVelocity = transform.InverseTransformDirection(RealVelocity);
         _previousPosition = transform.position;
+
+        RealVelocity = FixNan(RealVelocity);
+        LocalRealVelocity = FixNan(LocalRealVelocity);
+    }
+
+    private static Vector3 FixNan(Vector3 vec)
+    {
+        if (float.IsNaN(vec.x)) vec.x = 0;
+        if (float.IsNaN(vec.y)) vec.y = 0;
+        if (float.IsNaN(vec.z)) vec.z = 0;
+        return vec;
     }
 
     public void GrantTemporaryInvulnerability(float seconds)

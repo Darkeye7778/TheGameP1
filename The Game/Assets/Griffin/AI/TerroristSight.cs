@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class TerroristSight : AISight
 {
-    public LayerMask EnemyMask;
     public LayerMask EnvironmentMask;
 
     public Transform Eye;
@@ -21,9 +20,16 @@ public class TerroristSight : AISight
     private float _memory;
     private float _forceMemory;
 
+    private EnemyAI _controller;
+
     public override bool CanSee() { return _memory == 0 && _spottingTime <= 0; }
     public override IDamagable GetTarget() { return Target; }
-    
+
+    private void Start()
+    {
+        _controller = GetComponent<EnemyAI>();
+    }
+
     public override bool TrySetTarget(IDamagable target)
     {
         bool canSee = false;
@@ -40,7 +46,7 @@ public class TerroristSight : AISight
 
     public override bool CheckRay(Ray ray)
     {
-        if (!Physics.Raycast(ray, out var hit, SightDistance, EnemyMask | EnvironmentMask))
+        if (!Physics.Raycast(ray, out var hit, SightDistance, _controller.EnemyMask | EnvironmentMask))
             return false;
         return hit.collider.TryGetComponent(out IDamagable damagable) && damagable.Base() == Target.Base();
     }
@@ -78,7 +84,7 @@ public class TerroristSight : AISight
         if (Target != null) 
             return Target;
         
-        Collider[] colliders = Physics.OverlapSphere(Eye.position, SightDistance, EnemyMask);
+        Collider[] colliders = Physics.OverlapSphere(Eye.position, SightDistance, _controller.EnemyMask);
 
         float nearestDistance = float.MaxValue;
             
@@ -122,7 +128,7 @@ public class TerroristSight : AISight
     {
         Vector3 direction = position - Eye.position;
         
-        if (!Physics.Raycast(Eye.position, direction, out var hit, SightDistance, EnemyMask | EnvironmentMask))
+        if (!Physics.Raycast(Eye.position, direction, out var hit, SightDistance, _controller.EnemyMask | EnvironmentMask))
             return false;
         return hit.collider.TryGetComponent(out IDamagable damagable) && damagable.Base() == subCollider.Base();
     }

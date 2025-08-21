@@ -159,7 +159,8 @@ public class Inventory : MonoBehaviour
         switch (CurrentWeapon.Mode)
         {
             case FireMode.Auto:
-                    if(shooting) TryShoot();
+                if(shooting) 
+                    TryShoot();
                 break;
             case FireMode.Burst:
                 if (first)
