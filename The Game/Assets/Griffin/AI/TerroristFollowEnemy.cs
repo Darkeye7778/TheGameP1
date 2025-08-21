@@ -133,7 +133,7 @@ public class TerroristFollowEnemy : AIState
         
         Controller.InputFlags |= Inventory.InputState.Firing;
 
-        if (Controller.CurrentWeapon.Mode == FireMode.Single)
+        if (Controller.CurrentWeapon.Mode != FireMode.Auto)
         {
             InventoryThought thought = new InventoryThought
             {
