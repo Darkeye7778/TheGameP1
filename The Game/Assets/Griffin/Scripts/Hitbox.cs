@@ -1,17 +1,17 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class Hitbox : SoundProfile, IDamagable
+public class Hitbox : MaterialProfile, IDamagable
 {
     [field: SerializeField] public GameObject BaseObject { get; private set; }
     public IDamagable BaseDamagable { get; private set; }
-    public SoundProfile BaseSoundProfile { get; private set; }
+    public MaterialProfile BaseMaterialProfile { get; private set; }
     public float Multiplier = 1f;
 
     private void Start()
     {
         BaseDamagable = BaseObject.GetComponent<IDamagable>();
-        BaseSoundProfile = BaseObject.GetComponent<SoundProfile>();
+        BaseMaterialProfile = BaseObject.GetComponent<MaterialProfile>();
     }
 
     public void OnTakeDamage(DamageSource source, float damage)
@@ -34,9 +34,9 @@ public class Hitbox : SoundProfile, IDamagable
         return BaseDamagable.LookTarget();
     }
 
-    public override SoundEmitterSettings GetSettings()
+    public override MaterialSettings GetSettings()
     {
-        return base.GetSettings() ?? BaseSoundProfile?.GetSettings();
+        return base.GetSettings() ?? BaseMaterialProfile?.GetSettings();
     }
 
     public IDamagable Base()

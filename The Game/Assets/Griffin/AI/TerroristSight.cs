@@ -14,6 +14,9 @@ public class TerroristSight : AISight
     [Tooltip("X = Distance, Y = Time to spot")]
     public AnimationCurve SpottingTime;
     
+    [Tooltip("X = Angle, Y = Speed")]
+    public AnimationCurve AimSpeed;
+    
     public IDamagable Target;
 
     private float _spottingTime;
@@ -44,15 +47,48 @@ public class TerroristSight : AISight
         return true;
     }
 
-    public override bool CheckRay(Ray ray)
+    public override bool CheckTargetFOV(IDamagable target = null)
     {
+        target ??= Target;
+        
+        if (target == null)
+            return false;
+        
+        foreach (var aimTarget in target.AimTargets())
+            if (CheckTargetFOV(aimTarget))
+                return true;
+        return false;
+    }
+
+    public override bool CheckTargetFOV(Vector3 position)
+    {
+        Vector3 direction = position - Eye.position; 
+        float distance = direction.magnitude;
+        float angle = Vector3.Angle(transform.forward, direction / distance);
+
+        return distance <= SightDistance || angle <= SightAngle;
+    }
+
+    public override bool CheckTargetRay(Ray ray, IDamagable target = null)
+    {
+        target ??= Target;
+
+        if (target == null)
+            return false;
+        
         if (!Physics.Raycast(ray, out var hit, SightDistance, _controller.EnemyMask | EnvironmentMask))
             return false;
-        return hit.collider.TryGetComponent(out IDamagable damagable) && damagable.Base() == Target.Base();
+        return hit.collider.TryGetComponent(out IDamagable damagable) && damagable.Base() == target.Base();
     }
 
     public override IDamagable FindTarget(EnemyAI controller)
     {
+        if (Input.GetKeyDown(KeyCode.Plus))
+        {
+            Target = null;
+            _forceMemory = 0;
+        }
+        
         if (_forceMemory > 0)
             _forceMemory -= Time.deltaTime;
 
@@ -64,7 +100,11 @@ public class TerroristSight : AISight
                 float distance = Vector3.Distance(Eye.position, Target.AimTarget());
                 _spottingTime -= Time.deltaTime / SpottingTime.Evaluate(distance);
                 _memory = 0;
-                Eye.rotation = Quaternion.LookRotation(Target.AimTargets()[0] - Eye.position, Vector3.up);
+                
+                Quaternion targetRotation = Quaternion.LookRotation(Target.AimTarget() - Eye.position, Vector3.up);
+                
+                float speed = AimSpeed.Evaluate(Quaternion.Angle(targetRotation, Eye.rotation));
+                Eye.rotation = Quaternion.Slerp(Eye.rotation, targetRotation, Time.deltaTime * speed);
             }
             else
             {
@@ -72,8 +112,8 @@ public class TerroristSight : AISight
                 _spottingTime = 1;
             }
 
-            foreach (var target in Target.AimTargets())
-                Debug.DrawRay(Eye.position, target - Eye.position, canSee ? Color.green : Color.red);
+            /*foreach (var target in Target.AimTargets())
+                Debug.DrawRay(Eye.position, target - Eye.position, canSee ? Color.green : Color.red);*/
 
             if (Target.IsDead() || _forceMemory <= 0 && _memory > MemoryTime)
                 Target = null;
@@ -84,18 +124,14 @@ public class TerroristSight : AISight
         if (Target != null) 
             return Target;
         
-        Collider[] colliders = Physics.OverlapSphere(Eye.position, SightDistance, _controller.EnemyMask);
-
         float nearestDistance = float.MaxValue;
-            
+        Collider[] colliders = Physics.OverlapSphere(Eye.position, SightDistance, _controller.EnemyMask);
         foreach (Collider collider in colliders)
         {
             bool isDamagable = collider.TryGetComponent(out IDamagable damagable);
             damagable = damagable.Base();
-            if (!isDamagable || damagable.IsDead() ||
-                !CheckTargetVisibility(damagable, out float dist) ||
-                !(dist < nearestDistance))
-                    continue;
+            if (!isDamagable || damagable.IsDead() || !CheckTargetVisibility(damagable, out float dist) || !(dist < nearestDistance))
+                continue;
             
             Target = damagable;
             nearestDistance = dist;
@@ -110,17 +146,12 @@ public class TerroristSight : AISight
         if (target.AimTargets() == null)
             return false;
         foreach (Vector3 aimTarget in target.AimTargets())
-        {
-            Vector3 direction = aimTarget - Eye.position; 
-            distance = direction.magnitude;
-            float angle = Vector3.Angle(transform.forward, direction / distance);
-
-            if (distance > SightDistance || angle > SightAngle)
-                continue;
-
-            if (CheckTargetRaycast(target, aimTarget))
+            if(CheckTargetFOV(aimTarget) && CheckTargetRaycast(target, aimTarget))
+            {
+                distance = Mathf.Min(distance, Vector3.Distance(aimTarget, Eye.position));
                 return true;
-        }
+            }
+        
         return false;
     }
 

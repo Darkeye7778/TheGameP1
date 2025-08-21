@@ -69,6 +69,7 @@ public abstract class AIState : MonoBehaviour
     
     public abstract void OnUpdate();
     public virtual bool OverriddenByEnemy() { return true; }
+    public virtual bool OverriddenByInvestigate() { return OverriddenByEnemy(); }
     public EnemyAI Controller { get; private set; }
 }
 
@@ -85,8 +86,15 @@ public abstract class AISight : MonoBehaviour
     public abstract bool CanSee();
     public abstract IDamagable GetTarget();
     public abstract bool TrySetTarget(IDamagable target);
-    public abstract bool CheckRay(Ray ray);
-    public bool CheckRay(Vector3 origin, Vector3 direction) { return CheckRay(new Ray(origin, direction)); }
+
+    public abstract bool CheckTargetFOV(IDamagable target = null);
+    public abstract bool CheckTargetFOV(Vector3 position);
+    public abstract bool CheckTargetRay(Ray ray, IDamagable target = null);
+
+    public bool CheckTargetRay(Vector3 position, Vector3 direction, IDamagable target = null)
+    {
+        return CheckTargetRay(new Ray(position, direction), target);
+    }
 }
 
 public class EnemyAI : Inventory, IDamagable
@@ -95,7 +103,6 @@ public class EnemyAI : Inventory, IDamagable
     public IDamagable Target => Sight.GetTarget();
     public AIThoughtQueue<EnemyAI> Thoughts { get; private set; }
     
-   
     
     [field: Header("Display")]
     [field: SerializeField] public WeaponRotationPivot Pivot { get; private set; }
@@ -104,7 +111,6 @@ public class EnemyAI : Inventory, IDamagable
     
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
-    public SoundEmitterSettings DefaultSoundProfile;
     
     [Header("Hitbox")] 
     public Transform[] HitPoints;
@@ -113,6 +119,8 @@ public class EnemyAI : Inventory, IDamagable
     [Header("Misc")]
     public float FootstepOffset = 1.25f;
     public LayerMask GroundMask;
+    
+    private SoundListener _listener;
     
     private GroundState _ground;
     private bool _moving => _ground.NearGround && _velocity.sqrMagnitude > 0.01;
@@ -154,6 +162,7 @@ public class EnemyAI : Inventory, IDamagable
         base.Start();
         Agent = GetComponent<NavMeshAgent>();
         Thoughts = new AIThoughtQueue<EnemyAI>();
+        _listener = GetComponent<SoundListener>();
         
         SetState(WanderState);
     }
@@ -185,11 +194,15 @@ public class EnemyAI : Inventory, IDamagable
         if(Target != null && (!CurrentState || CurrentState.OverriddenByEnemy()))
             SetState(EnemySpottedState);
 
+        if (_listener && _listener.SoundChanged && CurrentState.OverriddenByInvestigate())
+        {
+            SetState(InvestigateState);
+            InvestigateState.SetTarget(_listener.CurrentSoundInstance.Position);
+        }
+
     #if UNITY_EDITOR
         _targetGameObject = target?.GameObject();
     #endif
-        
-        IK.LookAtWeight = Mathf.Lerp(IK.LookAtWeight, target != null ? 1f : 0f, Time.deltaTime * 10);
 
         if(Pivot)
         {
@@ -205,6 +218,7 @@ public class EnemyAI : Inventory, IDamagable
         
         if (target != null)
             IK.LookAt = target.LookTarget();
+        IK.LookAtWeight = Mathf.Lerp(IK.LookAtWeight, target != null ? 1f : 0f, Time.deltaTime * 10);
 
         Thoughts.OnUpdate(this);
         
@@ -229,6 +243,8 @@ public class EnemyAI : Inventory, IDamagable
     private void GetFootsteps()
     {
         _ground = GroundState.GetGround(transform.position, 0.1f, GroundMask);
+        if(_ground.SoundSettings == null)
+            
         _standingTimer += Time.deltaTime;
         if (_moving)
             _standingTimer = 0.0f;
@@ -240,9 +256,11 @@ public class EnemyAI : Inventory, IDamagable
         
         if (_moving && _footstepOffset >= FootstepOffset)
         {
-            _footstepAudioSource.clip = _ground.SoundSettings != null ? _ground.SoundSettings.Footstep : DefaultSoundProfile.Footstep;
+            _footstepAudioSource.clip = _ground.SoundSettings.Footstep.PickSound();
             _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
+            
+            SoundManager.Instance.EmitSound(new SoundInstance(_ground.SoundSettings.Footstep, _footstepAudioSource.clip, gameObject));
         }
     }
 
@@ -254,7 +272,7 @@ public class EnemyAI : Inventory, IDamagable
 
         if (Target == null && source.Object.TryGetComponent(out IDamagable damagable))
         {
-            if (Sight.TrySetTarget(damagable))
+            if (Sight.TrySetTarget(damagable) && CurrentState.OverriddenByInvestigate())
             {
                 SetState(InvestigateState);
                 InvestigateState.SetTarget(damagable.AimTarget());

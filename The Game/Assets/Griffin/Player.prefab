@@ -81,6 +81,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SmoothingSpeed: 60
   ResetSpeed: 1
+  RecoilMultiplier: 1
 --- !u!1 &794225869230427691
 GameObject:
   m_ObjectHideFlags: 0
@@ -842,17 +843,19 @@ MonoBehaviour:
   WalkingRecoveryMultiplier: 0.5
   StandingHeight: 3
   FootstepOffset: 1.25
+  SoundRadius: 1
   RunningSpeed: 4
   RunningDepletionRate: 1
+  RunningSoundRadius: 3
   CrouchingSpeed: 0.5
   CrouchingRecoveryRate: 2
   GroundSnapTime: 0.1
   CrouchTime: 0.2
   CrouchingHeight: 2
+  CrouchSoundRadius: 0
   Acceleration: 30
   Deacceleration: 30
   _footstepAudioSource: {fileID: 6931429584044393076}
-  DefaultSoundProfile: {fileID: 11400000, guid: 5883801b99b892449ad812de47f956ec, type: 2}
 --- !u!114 &13453393890525378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -886,6 +889,7 @@ MonoBehaviour:
   RecoilObj: {fileID: 3519763926224760780}
   UnequippedOffset: {x: 0, y: -0.5, z: 0}
   _audioSource: {fileID: 5419380807865119046}
+  _emitsSound: 1
 --- !u!143 &9121227361555790711
 CharacterController:
   m_ObjectHideFlags: 0

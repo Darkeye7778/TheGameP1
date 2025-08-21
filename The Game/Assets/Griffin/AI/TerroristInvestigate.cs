@@ -3,7 +3,6 @@ using UnityEngine;
 public class TerroristInvestigate : AIInvestigateState
 {
     public float StoppingDistance;
-
     public Vector3 Target { get; private set; }
 
     public override void SetTarget(Vector3 position)
@@ -18,12 +17,15 @@ public class TerroristInvestigate : AIInvestigateState
         controller.Agent.SetDestination(Target);
 
         Controller.Agent.stoppingDistance = StoppingDistance;
+
         Controller.IK.LookAt = Target;
-        Controller.IK.LookAtWeight = 1;
     }
 
     public override void OnUpdate()
     {
+        Controller.IK.LookAtWeight = Mathf.Lerp(Controller.IK.LookAtWeight, Controller.Sight.CheckTargetFOV(Target) ? 1f : 0f, Time.deltaTime * 10);
         
+        if(Controller.Agent.isStopped || Controller.Agent.remainingDistance < StoppingDistance)
+            Controller.SetState(Controller.WanderState);
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 public class Doors : MonoBehaviour, Interactable
 {
-    public AudioClip sound;
+    public Sound sound;
     public float swingAngle = 90f;
     public float openSpeed = 5f;
     private bool _isOpen = false;
@@ -21,7 +21,6 @@ public class Doors : MonoBehaviour, Interactable
         origRot = transform.eulerAngles;
         openRot = origRot + new Vector3(0, swingAngle, 0);
         _audioSource = GetComponent<AudioSource>();
-        _audioSource.clip = sound;
     }
 
     // Update is called once per frame
@@ -34,7 +33,13 @@ public class Doors : MonoBehaviour, Interactable
     {
         float newAngle = Vector3.Dot(interactor.transform.forward, transform.forward);
         targetSwing = swingAngle * (newAngle > 0 ? -1 : 1);
-        _audioSource.Play();
+
+        AudioClip clip = sound.PickSound();
+        _audioSource.PlayOneShot(clip);
+        
+        if(interactor.TryGetComponent<PlayerController>(out _)) 
+            SoundManager.Instance.EmitSound(new SoundInstance(sound, clip, interactor));
+        
         Open();
     }
 

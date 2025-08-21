@@ -12,6 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8974ddba423e2243a1423f9be2b9394, type: 3}
   m_Name: ConcreteSoundProfile
   m_EditorClassIdentifier: 
-  Footstep: {fileID: 8300000, guid: 91d1231bdaba315439bc4629582ba00d, type: 3}
-  HeavyFootstep: {fileID: 0}
+  Footstep:
+    Sounds:
+    - {fileID: 8300000, guid: 91d1231bdaba315439bc4629582ba00d, type: 3}
+    Radius: 2
+    Length: 0.1
+    Priority: 0
+  HeavyFootstep:
+    Sounds: []
+    Radius: 1
+    Length: 0
+    Priority: 0
   HitEffect: {fileID: 100002, guid: 556d09d7fda29fd4185eed4067d5777b, type: 3}

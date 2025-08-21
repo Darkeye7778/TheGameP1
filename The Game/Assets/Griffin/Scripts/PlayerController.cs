@@ -4,11 +4,8 @@
 
 using System;
 using JetBrains.Annotations;
-using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 [Serializable]
 public struct GroundState
@@ -16,14 +13,15 @@ public struct GroundState
     public float Distance;
     public bool NearGround;
     public bool Grounded;
-    [CanBeNull] public SoundEmitterSettings SoundSettings;
+    public MaterialSettings SoundSettings;
     
     public static GroundState GetGround(Vector3 origin, float maxDistance, LayerMask groundMask)
     {
         GroundState result = new GroundState
         {
             Grounded = false,
-            NearGround = false
+            NearGround = false,
+            SoundSettings = SoundManager.Instance.DefaultSoundProfile
         };
         
         RaycastHit rayResult;
@@ -35,10 +33,10 @@ public struct GroundState
         result.Distance = Mathf.Max(rayResult.distance, 0.0f);
         result.NearGround |= result.Distance < maxDistance;
         
-        SoundProfile profile = rayResult.collider.GetComponent<SoundProfile>();
+        MaterialProfile profile = rayResult.collider.GetComponent<MaterialProfile>();
         if (profile is not null)
             result.SoundSettings = profile.GetSettings();
-        
+    
         return result;
     }
 }
@@ -86,10 +84,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float WalkingRecoveryMultiplier = 0.5f;
     public float StandingHeight = 2.0f;
     public float FootstepOffset;
+    public float SoundRadius = 1f;
     
     [Header("Running")]
     public float RunningSpeed = 5.0f;
     public float RunningDepletionRate = 0.5f;
+    public float RunningSoundRadius = 2f;
     
     [Header("Crouching")]
     public float CrouchingSpeed = 0.7f;
@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float GroundSnapTime = 0.1f;
     public float CrouchTime = 0.2f;
     public float CrouchingHeight = 1.0f;
+    public float CrouchSoundRadius = 0.5f;
     
     [Header("Inertia")]
     public float Acceleration = 7.0f;
@@ -107,7 +108,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
-    public SoundEmitterSettings DefaultSoundProfile;
     
     public GameObject CurrentInteractable { get; private set; }
     
@@ -173,7 +173,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         Animator.SetFloat("Speed",  Mathf.Max(LocalRealVelocity.magnitude, 1) * 0.5f, 0.1f, Time.deltaTime);
         Animator.SetFloat("Velocity X", LocalRealVelocity.x, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime); 
         Animator.SetBool("Crouching", _crouch);
 
         if (_hitPoints == null || _hitPoints.Length != HitPoints.Length)
@@ -198,9 +198,15 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         if (_moving && _footstepOffset >= FootstepOffset)
         {
-            _footstepAudioSource.clip = _ground.SoundSettings != null ? _ground.SoundSettings.Footstep : DefaultSoundProfile.Footstep;
+            _footstepAudioSource.clip = _ground.SoundSettings.Footstep.PickSound();
             _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
+
+            float multiplier = SoundRadius;
+            if (_crouch) multiplier *= CrouchSoundRadius;
+            if (_running) multiplier *= RunningSoundRadius;
+            
+            SoundManager.Instance.EmitSound(new SoundInstance(_ground.SoundSettings.Footstep, _footstepAudioSource.clip, gameObject, multiplier));
         }
 
     #if PLAYERCONTROLLER_INERTIA
@@ -349,7 +355,7 @@ public class PlayerController : MonoBehaviour, IDamagable
                 CurrentInteractable = hit.collider.gameObject;
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    interactable.OnInteract(Camera);
+                    interactable.OnInteract(gameObject);
                 }
             }
             else

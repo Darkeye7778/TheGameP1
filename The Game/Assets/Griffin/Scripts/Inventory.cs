@@ -45,6 +45,7 @@ public class Inventory : MonoBehaviour
     
     [Header("Audio")]
     [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private bool _emitsSound;
 
     protected InputState InputFlags;
 
@@ -267,8 +268,10 @@ public class Inventory : MonoBehaviour
         if(_weaponMovement != null) 
             _weaponMovement.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
         
-        _audioSource.clip = CurrentWeapon.Weapon.FireSound;
-        _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
+        _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound.PickSound());
+        
+        if(_emitsSound)
+            SoundManager.Instance.EmitSound(new SoundInstance(CurrentWeapon.Weapon.FireSound, gameObject));
         
         if(ViewModel)
         {
@@ -280,8 +283,11 @@ public class Inventory : MonoBehaviour
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;
 
-        if (hit.collider.TryGetComponent(out SoundProfile profile) && profile.GetSettings() != null) 
-            Instantiate(profile.GetSettings().HitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+        MaterialSettings material = SoundManager.Instance.DefaultSoundProfile;
+        if (hit.collider.TryGetComponent(out MaterialProfile profile) && profile.GetSettings() != null)
+            material = profile.GetSettings();
+        
+        Instantiate(material.HitEffect, hit.point, Quaternion.LookRotation(hit.normal));
         
         if (!hit.collider.TryGetComponent(out IDamagable dmg))
             return;

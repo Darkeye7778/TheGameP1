@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 1658508026860688515}
   - component: {fileID: 6571534294281332166}
   - component: {fileID: 1553058225126278381}
+  - component: {fileID: 6637936800269751003}
   m_Layer: 12
   m_Name: Enemy_Normal
   m_TagString: Untagged
@@ -174,7 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1315cefc646bf1449fb5e757e5eb729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _soundProfile: {fileID: 11400000, guid: a1789f7a6cb33f242a581d618dc19814, type: 2}
+  _materialProfile: {fileID: 11400000, guid: a1789f7a6cb33f242a581d618dc19814, type: 2}
 --- !u!114 &349382079055398505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,11 +209,11 @@ MonoBehaviour:
   RecoilObj: {fileID: 6486670798528206622}
   UnequippedOffset: {x: 0, y: 0, z: 0}
   _audioSource: {fileID: 2980631632795041402}
+  _emitsSound: 0
   <Pivot>k__BackingField: {fileID: 919255057874803457}
   <AimOffset>k__BackingField: {x: 0, y: -0.5, z: 0}
   <WeaponOffsetOrigin>k__BackingField: {fileID: 4942282462775042813}
   _footstepAudioSource: {fileID: 2980631632795041402}
-  DefaultSoundProfile: {fileID: 11400000, guid: 5883801b99b892449ad812de47f956ec, type: 2}
   HitPoints:
   - {fileID: 7522390343214315492}
   - {fileID: 227040516816203434}
@@ -220,7 +221,7 @@ MonoBehaviour:
   - {fileID: 8239377380344677875}
   - {fileID: 8755676414059980120}
   - {fileID: 4182614056278347603}
-  FootstepOffset: 1.25
+  FootstepOffset: 0.75
   GroundMask:
     serializedVersion: 2
     m_Bits: 1
@@ -241,9 +242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3143d49cbc34aa4fbb5b75c6ff2f446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyMask:
-    serializedVersion: 2
-    m_Bits: 64
   EnvironmentMask:
     serializedVersion: 2
     m_Bits: 513
@@ -275,6 +273,39 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 40
       value: 1.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  AimSpeed:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 75.153725
+      value: 0.76021624
+      inSlope: 0.009941205
+      outSlope: 0.009941205
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 180
+      value: 2.5
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -334,7 +365,7 @@ MonoBehaviour:
   <Eye>k__BackingField: {fileID: 2114098535556427591}
   FollowingDistance: 5
   MinFollowingDistance: 2
-  FaceSpeed: 15
+  FaceSpeed: 3.5
   MinThinkTime: 0.3
   MaxThinkTime: 0.5
 --- !u!114 &1658508026860688515
@@ -349,7 +380,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1315cefc646bf1449fb5e757e5eb729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _soundProfile: {fileID: 11400000, guid: a1789f7a6cb33f242a581d618dc19814, type: 2}
+  _materialProfile: {fileID: 11400000, guid: a1789f7a6cb33f242a581d618dc19814, type: 2}
 --- !u!114 &6571534294281332166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,6 +409,34 @@ MonoBehaviour:
   DoorMask:
     serializedVersion: 2
     m_Bits: 512
+--- !u!114 &6637936800269751003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372274556228281715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e98a199c4b8cdf34dbd37b6bee264e01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Mask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 64
+  <CurrentSoundInstance>k__BackingField:
+    Sound:
+      Sounds: []
+      Radius: 1
+      Length: 0
+      Priority: 0
+    Layer: 0
+    Emitter: {fileID: 0}
+    Position: {x: 0, y: 0, z: 0}
+    Clip: {fileID: 0}
+    Timer: 0
+    RadiusMultiplier: 0
+  <HearingStrength>k__BackingField: 1
 --- !u!1 &1331130318462639793
 GameObject:
   m_ObjectHideFlags: 0
@@ -423,8 +482,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SmoothingSpeed: 20
-  ResetSpeed: 10
-  RecoilMultiplier: 4
+  ResetSpeed: 20
+  RecoilMultiplier: 1.75
 --- !u!1001 &1970053565968098776
 PrefabInstance:
   m_ObjectHideFlags: 0

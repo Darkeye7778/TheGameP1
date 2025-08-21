@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: -2287226434738234132}
   - component: {fileID: 6039858848663483625}
   - component: {fileID: 2340790202340033209}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Claymore
   m_TagString: Trap
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ MonoBehaviour:
   DetectionDistance: 4
   ExplosionMinRadius: 2
   ExplosionMaxRadius: 4
-  Damage: 50
+  Damage: 10
   ExplosionDelay: 0.2
   DetectionLayer:
     serializedVersion: 2
@@ -352,7 +352,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   DetectionSound: {fileID: 8300000, guid: 1057f8d30e6ff7549b7226c51852b013, type: 3}
-  ExplosionSound: {fileID: 8300000, guid: 2e50ceed6f767ef44b98a11b0a287f1a, type: 3}
+  ExplosionSound:
+    Sounds:
+    - {fileID: 8300000, guid: 2e50ceed6f767ef44b98a11b0a287f1a, type: 3}
+    Radius: 20
+    Length: 2
+    Priority: 4
 --- !u!65 &2340790202340033209
 BoxCollider:
   m_ObjectHideFlags: 0

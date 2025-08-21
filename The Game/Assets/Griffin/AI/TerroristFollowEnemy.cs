@@ -60,7 +60,7 @@ public class TerroristFollowEnemy : AIState
 
     public override bool OverriddenByEnemy()
     {
-        return false;
+        return !Controller.Sight.CanSee();
     }
 
     public override void OnStart(EnemyAI controller)
@@ -81,12 +81,10 @@ public class TerroristFollowEnemy : AIState
 
         if (Controller.Sight.CanSee())
         {
-            Vector3 offset = Controller.Target.AimTarget() - Eye.position;
-            Eye.transform.rotation = Quaternion.LookRotation(offset, Vector3.up);
-
             Controller.Agent.SetDestination(Controller.Target.GameObject().transform.position);
             
             // Only rotate on z axis.
+            Vector3 offset = Controller.Target.AimTarget() - Eye.position;
             offset.y = 0;
             Quaternion targetRotation = Quaternion.LookRotation(offset, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * FaceSpeed);
@@ -127,7 +125,7 @@ public class TerroristFollowEnemy : AIState
 
     private void Shoot()
     {
-        bool shoot = Controller.Sight.CheckRay(Controller.Eye.position, Controller.Eye.forward);
+        bool shoot = Controller.Sight.CheckTargetRay(Controller.Eye.position, Controller.Eye.forward);
         Controller.Thoughts.Push(new ShootThought{MinTime = MinThinkTime, MaxTime = MaxThinkTime, Shoot = shoot});
         
         if (!_shouldShoot)
