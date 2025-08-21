@@ -60,7 +60,7 @@ public class MapGenerator : MonoBehaviour
 
     private List<GameObject> _spawnedEntities = new List<GameObject>();
 
-    public LevelDefinition CurrentLevelDefinition { get; private set; }
+    [field: SerializeField] public LevelDefinition CurrentLevelDefinition { get; private set; }
 
     [SerializeField] int maxSeedRetries = 8;
     int _seedTries = 0;
@@ -73,6 +73,8 @@ public class MapGenerator : MonoBehaviour
         ExitLayer = LayerMask.NameToLayer("Map Generator Connection");
 
         _navMeshSurface = GetComponent<NavMeshSurface>();
+
+        Generate();
     }
 
     public void ApplyLevel(LevelDefinition def)
@@ -149,8 +151,6 @@ public class MapGenerator : MonoBehaviour
             connection.Generate();
         
         Physics.SyncTransforms();
-
-        _navMeshSurface.BuildNavMesh();
 
         _navMeshSurface.BuildNavMesh();
 
@@ -346,12 +346,6 @@ public class MapGenerator : MonoBehaviour
 
     public void Cleanup()
     {
-        foreach (GameObject go in gameManager.instance.SpawnedEntities)
-        {
-            if (go != null)
-                DestroyImmediate(go);
-        }
-        gameManager.instance.SpawnedEntities.Clear();
 
         if (_navMeshSurface != null)
         {
@@ -460,7 +454,7 @@ public class MapGenerator : MonoBehaviour
 
     Vector3 GetRandomPointInRoom(RoomProfile room, System.Random rng)
     {
-        Collider floorCollider = room.GetComponent<Collider>();
+        Collider floorCollider = room.floor.GetComponent<Collider>();
         if (!floorCollider)
         {
             Debug.LogWarning($"Room {room.name} has no collider.");
@@ -506,7 +500,7 @@ public class MapGenerator : MonoBehaviour
         TrapSpawnAmount = def.TrapSpawnAmount;
         HostageSpawnAmount = def.HostageSpawnAmount;
 
-        // seeds (0 means “randomize this run”)
+        // seeds (0 means ï¿½randomize this runï¿½)
         CustomSeed = def.UseFixedSeed ? def.FixedSeed : 0;
         CustomSpawnSeed = def.UseFixedSpawnSeed ? def.FixedSpawnSeed : 0;
     }

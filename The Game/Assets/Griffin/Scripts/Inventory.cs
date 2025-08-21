@@ -24,7 +24,8 @@ public class Inventory : MonoBehaviour
     public LayerMask EnemyMask;
     
     [field:SerializeField] public Transform Eye { get; private set; }
-    [field:SerializeField] public GameObject Viewmodel { get; private set; }
+    [field:SerializeField] public GameObject ViewModel { get; private set; }
+    [field:SerializeField] public GameObject WorldModel { get; private set; }
     [field:SerializeField] public Animator Animator { get; private set; }
     [field:SerializeField] public IKSolver IK { get; private set; }
 
@@ -46,9 +47,9 @@ public class Inventory : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
 
     protected InputState InputFlags;
+
+    private GameObject _spawnedViewModel, _spawnedWorldModel;
     
-    private MeshFilter _viewmodelMesh;
-    private Renderer _viewmodelRenderer;
     public bool IsUsingPrimary { get; private set; }
     private float _equipTime;
     public InventoryState State { get; private set; }
@@ -56,9 +57,11 @@ public class Inventory : MonoBehaviour
     
     protected void Start()
     {
-        _viewmodelMesh = Viewmodel.GetComponent<MeshFilter>();
-        _viewmodelRenderer = Viewmodel.GetComponent<Renderer>();
-        _weaponMovement = Viewmodel.GetComponent<WeaponMovement>();
+        if(ViewModel) _weaponMovement = ViewModel.GetComponent<WeaponMovement>();
+        
+        if(IK)
+            IK.LeftGripWeight = IK.RightGripWeight = WorldModel == null ? 0 : 1;
+        
         if(Primary.Valid) Primary.Reset();
         if(Secondary.Valid) Secondary.Reset();
 
@@ -72,8 +75,11 @@ public class Inventory : MonoBehaviour
         Primary.Update();
         Secondary.Update();
         
-        if(IK)
-            IK.Grip = TransformData.FromGlobal(Viewmodel.transform) * CurrentWeapon.Weapon.Grip;
+        if(IK && WorldModel)
+        {
+            IK.RightGrip = TransformData.FromGlobal(WorldModel.transform) * CurrentWeapon.Weapon.Grip;
+            IK.LeftGrip = TransformData.FromGlobal(WorldModel.transform) * CurrentWeapon.Weapon.Foregrip;
+        }
 
         if (InputFlags.HasFlag(InputState.UsePrimary)) InputUsePrimary();
         if (InputFlags.HasFlag(InputState.UseSecondary)) InputUseSecondary();
@@ -196,13 +202,40 @@ public class Inventory : MonoBehaviour
         CurrentWeapon?.Reset();
         HolsteredWeapon?.Reset();
     }
+
+    private static void SetLayerInChildren(GameObject root, int newLayer, int oldLayer = 0)
+    {
+        foreach (Transform transform in root.GetComponentsInChildren<Transform>(true))
+            if (transform.gameObject.layer == oldLayer)
+                transform.gameObject.layer = newLayer;
+    }
     
     public void SetCurrentWeapon(WeaponInstance weapon)
     {
-        _viewmodelMesh.mesh = weapon.Weapon.Mesh;
-        _viewmodelRenderer.materials = weapon.Weapon.Materials;
-        _viewmodelMesh.transform.localScale = weapon.Weapon.Transform.Scale;
-        _viewmodelMesh.transform.localRotation = weapon.Weapon.Transform.Rotation;
+        if(ViewModel)
+        {
+            if(_spawnedViewModel)
+                Destroy(_spawnedViewModel);
+            
+            _spawnedViewModel = Instantiate(weapon.Weapon.Mesh, ViewModel.transform);
+            SetLayerInChildren(_spawnedViewModel, ViewModel.layer);
+            
+            ViewModel.transform.localScale = weapon.Weapon.Transform.Scale;
+            ViewModel.transform.localRotation = weapon.Weapon.Transform.Rotation;
+        }
+        
+        if(WorldModel)
+        {
+            if(_spawnedWorldModel)
+                Destroy(_spawnedWorldModel);
+            
+            _spawnedWorldModel = Instantiate(weapon.Weapon.Mesh, WorldModel.transform);
+            SetLayerInChildren(_spawnedWorldModel, WorldModel.layer);
+            
+            
+            WorldModel.transform.localScale = weapon.Weapon.Transform.Scale;
+            WorldModel.transform.localRotation = weapon.Weapon.Transform.Rotation;
+        }
         
         _audioSource.clip = weapon.Weapon.EquipSound;
         _audioSource.Play();
@@ -216,7 +249,8 @@ public class Inventory : MonoBehaviour
         float fac = _equipTime / GetInterpolateTime();
         Vector3 target = CurrentWeapon.Weapon.Transform.Position;
 
-        Viewmodel.transform.localPosition = Vector3.Slerp(target + UnequippedOffset, target, fac);
+        if(ViewModel)
+            ViewModel.transform.localPosition = Vector3.Slerp(target + UnequippedOffset, target, fac);
     }
 
     private void TryShoot()
@@ -235,9 +269,12 @@ public class Inventory : MonoBehaviour
         _audioSource.clip = CurrentWeapon.Weapon.FireSound;
         _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound);
         
-        ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash,transform.position, Viewmodel.transform.rotation * CurrentWeapon.Weapon.Transform.Rotation);
-        flash.transform.parent = Viewmodel.transform;
-        flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Transform.Rotation) * CurrentWeapon.Weapon.Muzzle.Position;
+        if(ViewModel)
+        {
+            ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash, transform.position, ViewModel.transform.rotation * CurrentWeapon.Weapon.Transform.Rotation);
+            flash.transform.parent = ViewModel.transform;
+            flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Transform.Rotation) * CurrentWeapon.Weapon.Muzzle.Position;
+        }
         
         if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
             return;
@@ -260,5 +297,11 @@ public class Inventory : MonoBehaviour
             InventoryState.Reloading => CurrentWeapon.Weapon.ReloadTime,
             _ => 0.0f
         };
+    }
+
+    protected void DestroyAllModels()
+    {
+        Destroy(_spawnedViewModel);
+        Destroy(_spawnedWorldModel);
     }
 }

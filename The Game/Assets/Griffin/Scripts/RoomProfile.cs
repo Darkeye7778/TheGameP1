@@ -18,6 +18,7 @@ public class RoomProfile : MonoBehaviour
     [NonSerialized] public bool IsLeaf = true;
     [NonSerialized] public bool IsEntry = false;
     [NonSerialized] public bool IsInEntryZone = false;
+    [SerializeField] public GameObject floor;
 
     [SerializeField] private Transform entranceAnchor;
     [SerializeField] private bool useAnchorAsOrigin = true;

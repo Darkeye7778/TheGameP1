@@ -1,6 +1,6 @@
 #define PLAYERCONTROLLER_INERTIA
 #define PLAYERCONTROLLER_DIRECTIONAL_SPEED
-// #define PLAYERCONTROLLER_AUTOCROUCH
+#define PLAYERCONTROLLER_AUTOCROUCH
 
 using System;
 using JetBrains.Annotations;
@@ -20,6 +20,8 @@ public struct GroundState
 public class PlayerController : MonoBehaviour, IDamagable
 {
     public GameObject Camera;
+    public WeaponRotationPivot Pivot;
+    public IKSolver IK;
     
     [Range(0.01f, 10.0f)] 
     public float MouseSensitivity;
@@ -75,6 +77,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float Deacceleration = 15.0f;
     public Vector3 RealVelocity { get; private set; }
     public Vector3 LocalRealVelocity { get; private set; }
+    public bool HasTraction => _fallingTime <= GroundSnapTime;
     
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
@@ -101,6 +104,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private float _invulnUntilUnscaled = 0f;
 
     private Vector3 _cameraOrigin, _cameraTarget;
+    private Vector3 _eyeWeaponOffset;
  
     private PlayerInventory _inventory;
     void Start()
@@ -112,7 +116,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _controller.height = StandingHeight;
         _inventory = GetComponent<PlayerInventory>();
         //_cameraOrigin = Camera.transform.localPosition;
-        _previousPosition = transform.position;
+        _previousPosition = transform.position;;
     }
     
     void Update()
@@ -138,9 +142,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         CalculateRotation();
         CalculateLeaning();
         
-        Animator.SetFloat("Speed", Mathf.Max(LocalRealVelocity.magnitude, 1) * 0.5f, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity X", LocalRealVelocity.x, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Speed",  Mathf.Max(HasTraction ? LocalRealVelocity.magnitude : 1f, 1) * 0.5f, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity X", HasTraction ? LocalRealVelocity.x : 0f, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity Y", HasTraction ? LocalRealVelocity.z : 0f, 0.1f, Time.deltaTime);
         Animator.SetBool("Crouching", _crouch);
 
         if (_hitPoints == null || _hitPoints.Length != HitPoints.Length)
@@ -227,16 +231,27 @@ public class PlayerController : MonoBehaviour, IDamagable
         if(_ground.NearGround)
             _velocity += direction * (Acceleration * Time.deltaTime);
         
-        _footstepOffset += new Vector2(RealVelocity.x, RealVelocity.z).magnitude * Time.deltaTime;
+        _footstepOffset += RealVelocity.magnitude * Time.deltaTime;
     }
 
     void CalculateRotation()
     {
         float x = Input.GetAxis("Mouse X"), // Left to Right
-            y = Input.GetAxis("Mouse Y"); // Down to Up
+              y = Input.GetAxis("Mouse Y"); // Down to Up
 
         _rotationX += x * MouseSensitivity;
         _rotationY = Mathf.Clamp(_rotationY + y * MouseSensitivity, RotationClamp.x, RotationClamp.y);
+
+        if (Pivot)
+            Pivot.Rotation = _rotationY;
+
+        if (IK)
+        {
+            Vector3 lookTarget = Pivot.FinalRotation * Vector3.forward + _inventory.Eye.position;
+            
+            IK.LookAtWeight = 1;
+            IK.LookAt = lookTarget;
+        }
 
         transform.localRotation = Quaternion.Euler(0.0f, _rotationX, 0.0f);
         Camera.transform.localRotation = Quaternion.Euler(-_rotationY, 0, _leaningAngle);
@@ -430,7 +445,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         float heightDifference = StandingHeight - _controller.height / 2.0f - _controller.radius;
         // I cannot get Physics.CheckCapsule to work.
     #if PLAYERCONTROLLER_AUTOCROUCH
-        return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference);
+        return Physics.SphereCast(transform.position, _controller.radius, Vector3.up, out RaycastHit hit, heightDifference, GroundMask);
     #else
         return false;
     #endif

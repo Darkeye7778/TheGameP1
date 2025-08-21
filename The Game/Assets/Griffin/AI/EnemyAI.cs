@@ -80,6 +80,11 @@ public class EnemyAI : Inventory, IDamagable
     [Header("EnemyAI")]
     public IDamagable Target => Sight.GetTarget();
     
+    [field: Header("Display")]
+    [field: SerializeField] public WeaponRotationPivot Pivot { get; private set; }
+    [field: SerializeField] public Vector3 AimOffset { get; private set; }
+    [field: SerializeField] public Transform WeaponOffsetOrigin { get; private set; }
+    
     [Header("Hitbox")] 
     public Transform[] HitPoints;
     private Vector3[] _hitPoints;
@@ -167,6 +172,19 @@ public class EnemyAI : Inventory, IDamagable
     #endif
         
         IK.LookAtWeight = Mathf.Lerp(IK.LookAtWeight, target != null ? 1f : 0f, Time.deltaTime * 10);
+
+        if(Pivot)
+        {
+            if (Target != null)
+            {
+                Vector3 difference = Target.LookTarget() + AimOffset - WeaponOffsetOrigin.position;
+                float angle = Mathf.Asin(difference.y / difference.magnitude) * Mathf.Rad2Deg;
+                Pivot.Rotation = angle;
+            }
+            else
+                Pivot.Rotation = 0;
+        }
+        
         if (target != null)
             IK.LookAt = target.LookTarget();
         
@@ -201,14 +219,18 @@ public class EnemyAI : Inventory, IDamagable
         if (!IsDead)
             return;
 
+        if (wasDead)
+            return;
+
         Agent.enabled = false;
         Animator.SetTrigger("Death");
         
-        if(!wasDead)
-            foreach (Collider collider in GetComponentsInChildren<Collider>())
-                collider.enabled = false;
+        foreach (Collider collider in GetComponentsInChildren<Collider>())
+            collider.enabled = false;
 
-        IK.LookAtWeight = IK.GripWeight = 0;
+        IK.LookAtWeight = IK.LeftGripWeight = IK.RightGripWeight = 0;
+
+        DestroyAllModels();
     }
 
     public GameObject GameObject()

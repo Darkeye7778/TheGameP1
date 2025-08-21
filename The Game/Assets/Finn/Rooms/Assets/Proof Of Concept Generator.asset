@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15e2ccfc1fd15d3439a0dcea2326cb5b, type: 3}
+  m_Name: Proof Of Concept Generator
+  m_EditorClassIdentifier: 
+  Rules:
+  - Archetype: 2
+    CenterSmall:
+    - Prefab: {fileID: 2686022878429160205, guid: 6212a574e922af3498e6dee77d4fa0e9, type: 3}
+      Weight: 50
+    CenterLarge:
+    - Prefab: {fileID: 7174842549457031357, guid: e9549edf0d2d183488382548bd742e93, type: 3}
+      Weight: 50
+    Corner:
+    - Prefab: {fileID: 1183040927630662643, guid: cd93121d773d505499dfe3b3065e02c6, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 5220538232562253001, guid: f7823d235804d9640b0fe62f7733e0a0, type: 3}
+      Weight: 50
+    - Prefab: {fileID: 7275879421350006643, guid: 8634518a878a1db40a5474b63b196221, type: 3}
+      Weight: 50
+    Wall:
+    - Prefab: {fileID: 4537352000837669138, guid: 281a7818fd15bd74da9494e52589d8ea, type: 3}
+      Weight: 10
+    Ceiling:
+    - Prefab: {fileID: 5746836750506160867, guid: 0b48f2b11d3205f42b57ae9cc191e3a3, type: 3}
+      Weight: 10
+    MinProps: 0
+    MaxProps: 0
+    Categories:
+    - Category: 0
+      CenterSmall: []
+      CenterLarge: []
+      Corner: []
+      Wall: []
+      Ceiling: []
+      MinProps: 0
+      MaxProps: 0
