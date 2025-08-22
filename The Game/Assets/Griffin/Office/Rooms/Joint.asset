@@ -13,21 +13,26 @@ MonoBehaviour:
   m_Name: Joint
   m_EditorClassIdentifier: 
   Prefab: {fileID: 174221523080538448, guid: 0d640abcf093d5349b68495702b30dc6, type: 3}
-  Size: {x: 1, y: 1}
+  Size: {x: 1, y: 1, z: 1}
+  Offset: {x: 0, y: 0}
   Type: 0
+  HasEntranceDoor: 0
   ConnectionPoints:
   - Transform:
-      Position: {x: 0, y: 2}
+      Position: {x: 0, y: 0, z: 2}
       Rotation: 0
     Required: 0
+    HasDoor: 0
     Odds: 0.5
   - Transform:
-      Position: {x: 1, y: 1}
+      Position: {x: 1, y: 0, z: 1}
       Rotation: 1
     Required: 1
+    HasDoor: 0
     Odds: 0.25
   - Transform:
-      Position: {x: -1, y: 1}
+      Position: {x: -1, y: 0, z: 1}
       Rotation: 3
     Required: 1
+    HasDoor: 0
     Odds: 0.25

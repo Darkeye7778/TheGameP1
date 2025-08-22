@@ -6,18 +6,15 @@ using UnityEngine.Serialization;
 public enum RoomType
 {
     Hallway,
-    Room
+    Room,
 }
-public enum RoomArchetype { 
-    Hallway, 
-    SmallRoom, 
-    DoubleRoom }
+
 public enum ExitDirection
 {
-    ZPositive,
-    XPositive,
-    ZNegative,
-    XNegative,
+    ZPositive, // 0
+    XPositive, // 1
+    ZNegative, // 2
+    XNegative, // 3
     
     North = ZPositive,
     East = XPositive,
@@ -74,17 +71,17 @@ public struct GridTransform
         Rotation = direction;
     }
     
-    public Vector2 Position;
+    public Vector3 Position;
     public ExitDirection Rotation;
 
-    public Vector3 WorldPosition => new Vector3(MapGenerator.GRID_SIZE * Position.x, 0, MapGenerator.GRID_SIZE * Position.y);
+    public Vector3 WorldPosition => new Vector3(MapGenerator.GRID_SIZE * Position.x, MapGenerator.ROOM_HEIGHT * Position.y, MapGenerator.GRID_SIZE * Position.z);
 
     public static GridTransform operator*(GridTransform a, GridTransform b)
     {
-        Vector3 rotated = Direction.ToQuaternion(a.Rotation) * new Vector3(b.Position.x, 0, b.Position.y);
+        Vector3 rotated = Direction.ToQuaternion(a.Rotation) * b.Position;
         
         return new GridTransform(
-            a.Position + new Vector2(rotated.x, rotated.z),
+            a.Position + rotated,
             Direction.AddDirection(a.Rotation, b.Rotation)
         );
     }
@@ -108,15 +105,13 @@ public struct Connection
 public class RoomProperties : ScriptableObject
 {
     public GameObject Prefab;
-    public Vector2Int Size;
+    public Vector3Int Size;
     public Vector2 Offset;
     public RoomType Type;
 
     [FormerlySerializedAs("EntranceDoor")] public bool HasEntranceDoor = false;
     public Connection[] ConnectionPoints;
     
-    public Vector3 CollisionBox => new Vector3(Size.x, 1f / MapGenerator.GRID_SIZE, Size.y) * MapGenerator.GRID_SIZE * 2f;
-    public Vector3 CollisionOffset => new Vector3(0f, 0f, CollisionBox.z / 2f) + new Vector3(Offset.x, 0f, Offset.y) * MapGenerator.GRID_SIZE;
-
-    public RoomArchetype Archetype = RoomArchetype.SmallRoom;
+    public Vector3 CollisionBox => new Vector3(Size.x * MapGenerator.GRID_SIZE * 2, Size.y * MapGenerator.ROOM_HEIGHT, Size.z * MapGenerator.GRID_SIZE * 2);
+    public Vector3 CollisionOffset => new Vector3(0f, CollisionBox.y / 2f, CollisionBox.z / 2f) + new Vector3(Offset.x, 0f, Offset.y) * MapGenerator.GRID_SIZE;
 }

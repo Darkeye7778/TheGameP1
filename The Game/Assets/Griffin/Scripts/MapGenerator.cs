@@ -51,6 +51,7 @@ public class MapGenerator : MonoBehaviour
     public int Seed { get; private set; }
     
     public const int GRID_SIZE = 5;
+    public const int ROOM_HEIGHT = 6;
 
     private uint _seedRetry = 0;
     

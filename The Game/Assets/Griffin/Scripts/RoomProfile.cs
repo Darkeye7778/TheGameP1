@@ -13,6 +13,7 @@ public class RoomProfile : MonoBehaviour
     [NonSerialized] public bool HasRoomLeaf = false;
     [NonSerialized] public bool IsLeaf = true;
     [NonSerialized] public bool IsEntry = false;
+    [NonSerialized] public bool IsInEntryZone = false;
 
     private void Awake()
     {
@@ -36,9 +37,11 @@ public class RoomProfile : MonoBehaviour
 
             for (uint i = 0; i < MapGenerator.Instance.MaxLeafRetry; i++)
             {
-                GameObject leaf = Instantiate(MapGenerator.Instance.PickRandomCell().Prefab, position, rotation);
+                RoomProperties leafType = MapGenerator.Instance.PickRandomCell();
+                GameObject leaf = Instantiate(leafType.Prefab, position, rotation);
                 RoomProfile roomProfile = leaf.GetComponent<RoomProfile>();
-                    
+
+                roomProfile.Properties = leafType;
                 roomProfile.Parent = this;
                 IsLeaf = false;
                 
