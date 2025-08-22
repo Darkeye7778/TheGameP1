@@ -48,6 +48,7 @@ public class Inventory : MonoBehaviour
     [SerializeField] private bool _emitsSound;
 
     public AudioClip HitMarkerClip;
+    public float HitMarkerVolume = 0;
     protected InputState InputFlags;
 
     private GameObject _spawnedViewModel, _spawnedWorldModel;
@@ -235,7 +236,6 @@ public class Inventory : MonoBehaviour
             _spawnedWorldModel = Instantiate(weapon.Weapon.Mesh, WorldModel.transform);
             SetLayerInChildren(_spawnedWorldModel, WorldModel.layer);
             
-            
             WorldModel.transform.localScale = weapon.Weapon.Transform.Scale;
             WorldModel.transform.localRotation = weapon.Weapon.Transform.Rotation;
         }
@@ -281,7 +281,19 @@ public class Inventory : MonoBehaviour
             flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Transform.Rotation) * CurrentWeapon.Weapon.Muzzle.Position;
         }
 
-        CurrentWeapon.Weapon.CastShot(new Ray(Eye.position, Eye.forward), EnemyMask, gameObject);
+        IDamagable[] hits = CurrentWeapon.Weapon.CastShot(new Ray(Eye.position, Eye.forward), EnemyMask, gameObject);
+
+        bool hitEnemy = false;
+        foreach (IDamagable hit in hits)
+            if (hit != null) hitEnemy = true;
+
+        if (!hitEnemy)
+            return;
+        
+        if (HitMarkerClip != null)
+            _audioSource.PlayOneShot(HitMarkerClip, HitMarkerVolume);
+        if (gameManager.instance != null)
+            gameManager.instance.Reticle.Restart();
     }
 
     private float GetInterpolateTime()

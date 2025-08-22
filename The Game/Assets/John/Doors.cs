@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Serialization;
 
 public class Doors : MonoBehaviour, Interactable
@@ -14,6 +15,7 @@ public class Doors : MonoBehaviour, Interactable
     Vector3 targetRot;
 
     private AudioSource _audioSource;
+    private NavMeshObstacle _navMeshObstacle;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,6 +23,7 @@ public class Doors : MonoBehaviour, Interactable
         origRot = transform.eulerAngles;
         openRot = origRot + new Vector3(0, swingAngle, 0);
         _audioSource = GetComponent<AudioSource>();
+        _navMeshObstacle = GetComponent<NavMeshObstacle>();
     }
 
     // Update is called once per frame
@@ -28,6 +31,9 @@ public class Doors : MonoBehaviour, Interactable
     {
         targetRot = _isOpen ? openRot : origRot;
         transform.rotation = Quaternion.Lerp(Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(targetRot), Time.deltaTime * openSpeed);
+
+        if (_navMeshObstacle)
+            _navMeshObstacle.carving = IsOpen;
     }
     public void OnInteract(GameObject interactor)
     {
