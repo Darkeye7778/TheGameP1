@@ -273,26 +273,14 @@ public class Inventory : MonoBehaviour
         if(_emitsSound)
             SoundManager.Instance.EmitSound(new SoundInstance(CurrentWeapon.Weapon.FireSound, gameObject));
         
-        if(ViewModel)
+        if(ViewModel && CurrentWeapon.Weapon.MuzzleFlash != null)
         {
             ParticleSystem flash = Instantiate(CurrentWeapon.Weapon.MuzzleFlash, transform.position, ViewModel.transform.rotation * CurrentWeapon.Weapon.Transform.Rotation);
             flash.transform.parent = ViewModel.transform;
             flash.transform.localPosition = Quaternion.Inverse(CurrentWeapon.Weapon.Transform.Rotation) * CurrentWeapon.Weapon.Muzzle.Position;
         }
-        
-        if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, CurrentWeapon.Weapon.MaxRange, EnemyMask))
-            return;
 
-        MaterialSettings material = SoundManager.Instance.DefaultSoundProfile;
-        if (hit.collider.TryGetComponent(out MaterialProfile profile) && profile.GetSettings() != null)
-            material = profile.GetSettings();
-        
-        Instantiate(material.HitEffect, hit.point, Quaternion.LookRotation(hit.normal));
-        
-        if (!hit.collider.TryGetComponent(out IDamagable dmg))
-            return;
-
-        dmg.OnTakeDamage(new DamageSource{ Name = name, Object = gameObject }, CurrentWeapon.Weapon.Damage);
+        CurrentWeapon.Weapon.CastShot(new Ray(Eye.position, Eye.forward), EnemyMask, gameObject);
     }
 
     private float GetInterpolateTime()

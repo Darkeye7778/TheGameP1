@@ -123,6 +123,9 @@ public class TerroristSight : AISight
 
         if (Target != null) 
             return Target;
+
+        if (_controller == null)
+            return null;
         
         float nearestDistance = float.MaxValue;
         Collider[] colliders = Physics.OverlapSphere(Eye.position, SightDistance, _controller.EnemyMask);

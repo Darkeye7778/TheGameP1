@@ -40,7 +40,10 @@ public class DoorOpener : MonoBehaviour
         if (!Physics.Raycast(center, transform.forward, out RaycastHit hit, OpeningRadius, DoorMask))
             return;
 
-        if (!hit.collider.TryGetComponent(out Doors door) || door.IsOpen)
+        if (!hit.collider.TryGetComponent(out Doors door))
+            return;
+
+        if (door.IsOpen)
             return;
 
         _controller.Thoughts.Push(new OpenDoorThought

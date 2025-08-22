@@ -72,6 +72,8 @@ public class TransformData
 [CreateAssetMenu(fileName = "Weapon", menuName = "Scriptable Objects/Weapon")]
 public class Weapon : ScriptableObject
 {
+    private const float DECAL_OFFSET = 0.1f;
+    
     public string Name;
     public Sprite Image;
 
@@ -129,6 +131,41 @@ public class Weapon : ScriptableObject
                 return (FireMode)(1 << shiftCount);
 
         return 0;
+    }
+
+    public virtual IDamagable[] CastShot(Ray ray, LayerMask mask, GameObject inflicter)
+    {
+        return new[] { CastRay(ray, mask, inflicter) };
+    }
+
+    protected virtual IDamagable CastRay(Ray ray, LayerMask mask, GameObject inflicter)
+    {
+        if (!Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, MaxRange, mask))
+            return null;
+        
+        MaterialSettings material = SoundManager.Instance.DefaultSoundProfile;
+        if (hit.collider.TryGetComponent(out MaterialProfile profile) && profile.GetSettings() != null)
+            material = profile.GetSettings();
+        
+        AudioClip impactSound = material.BulletHitSound.PickSound();
+        if(impactSound != null)
+            AudioSource.PlayClipAtPoint(impactSound, hit.point);
+        
+        Instantiate(material.HitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+
+        if (material.BulletHoles != null && material.BulletHoles.Length != 0)
+        {
+            GameObject decal = Instantiate(Utils.PickRandom(material.BulletHoles), hit.transform);
+            decal.transform.position = hit.point + hit.normal * DECAL_OFFSET;
+            decal.transform.rotation = Quaternion.LookRotation(-hit.normal);
+        }
+        
+        if (!hit.collider.TryGetComponent(out IDamagable dmg))
+            return null;
+        
+        dmg.OnTakeDamage(new DamageSource{ Name = name, Object = inflicter }, Damage);
+
+        return dmg;
     }
 }
 

@@ -12,46 +12,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b76cd2e7ce49924cb5d58ad55f4573f, type: 3}
   m_Name: Uzi
   m_EditorClassIdentifier: 
-  Name: Uzi
+  Name: IWI Micro Uzi
   Image: {fileID: 21300000, guid: 94e14c5e8c1282a40afc27e3ef4d2e3f, type: 3}
-  Mesh: {fileID: -6222581352149868263, guid: a957639d15248134a9be03d5ae4fed7f, type: 3}
+  Mesh: {fileID: 5580461060574919715, guid: 7f0d40e79930b834b90fda25f4b2f27c, type: 3}
   Transform:
     Position: {x: 0.256, y: -0.18, z: 0.27}
     Rotation: {x: 0, y: 0, z: 0, w: 0}
-    Scale: {x: 0.15, y: 0.15, z: 0.15}
+    Scale: {x: 1, y: 1, z: 1}
   Grip:
-    Position: {x: -0.4, y: 0.29, z: 0.75}
-    Rotation: {x: -0.5164213, y: -0.041602165, z: -0.85413086, w: -0.045152504}
+    Position: {x: 0, y: 0.01, z: -0.04}
+    Rotation: {x: -0.08739635, y: 0.037845034, z: -0.6898035, w: 0.7177052}
     Scale: {x: 1, y: 1, z: 1}
   Foregrip:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    Scale: {x: 0, y: 0, z: 0}
-  Muzzle:
-    Position: {x: 0, y: 0.5, z: 0.85}
-    Rotation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
+    Position: {x: -0.03, y: 0.01, z: -0.01}
+    Rotation: {x: -0.08994373, y: 0.062222324, z: 0.70921946, w: 0.69645256}
     Scale: {x: 1, y: 1, z: 1}
-  EquipSound: {fileID: 8300000, guid: 1cdffcc5cb2fb9640997b65aa17962b4, type: 3}
+  Muzzle:
+    Position: {x: 0, y: 0.075, z: 0.264}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Scale: {x: 1, y: 1, z: 1}
+  EquipSound: {fileID: 8300000, guid: 8ac666738407d5b449900a68a5c391d7, type: 3}
   FireSound:
-    Sounds: []
-    Radius: 1
-    Length: 0
-    Priority: 0
-  ReloadSound: {fileID: 8300000, guid: 69c4a7d098fc32143ab1661c3a8fe49e, type: 3}
+    Sounds:
+    - {fileID: 8300000, guid: 269883cb22b3e24408f9b45f12968867, type: 3}
+    Radius: 15
+    Length: 0.2
+    Priority: 2
+  ReloadSound: {fileID: 8300000, guid: 134e27a07dbb53743bf71ca1935fe051, type: 3}
   EmptySound: {fileID: 8300000, guid: 9c7af20e3021e8c40b03e281ec990277, type: 3}
-  Capacity: 20
-  ReserveCapacity: 100
-  FireRate: 1000
-  BurstFireRate: 1000
+  Capacity: 25
+  ReserveCapacity: 75
+  FireRate: 1200
+  BurstFireRate: 800
   BurstCooldown: 0
-  Damage: 10
-  FireModes: 7
-  BurstFireCount: 5
+  Damage: 15
+  FireModes: 5
+  BurstFireCount: 3
   OpenBolt: 0
   ReloadTime: 1.5
   EquipTime: 0.5
   MaxRange: 50
-  RecoilIntensity: 2.5
+  RecoilIntensity: 2
   RecoilX: 1
-  RecoilY: -0.19
+  RecoilY: 0.25
   MuzzleFlash: {fileID: 19800004, guid: 234e5aa95353f0643b0181dc3872cda9, type: 3}

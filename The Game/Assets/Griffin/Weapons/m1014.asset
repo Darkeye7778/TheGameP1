@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 885f395b5cd0f5e4e8c9f4c16edff039, type: 3}
+  m_Name: m1014
+  m_EditorClassIdentifier: 
+  Name: Berelli M4
+  Image: {fileID: 0}
+  Mesh: {fileID: 5580461060574919715, guid: 4e82f807a5d927646a3d78910f690ef2, type: 3}
+  Transform:
+    Position: {x: 0.256, y: -0.18, z: 0.27}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Scale: {x: 1, y: 1, z: 1}
+  Grip:
+    Position: {x: 0, y: 0, z: -0.09}
+    Rotation: {x: 0.038009476, y: 0.03616398, z: 0.65904415, w: -0.75027215}
+    Scale: {x: 1, y: 1, z: 1}
+  Foregrip:
+    Position: {x: -0.07, y: 0.03, z: 0.19}
+    Rotation: {x: 0.4524274, y: -0.08155307, z: 0.88806045, w: 0.0027014613}
+    Scale: {x: 1, y: 1, z: 1}
+  Muzzle:
+    Position: {x: 0, y: 0.09, z: 0.67}
+    Rotation: {x: 0.008726535, y: 0, z: 0, w: 0.9999619}
+    Scale: {x: 1, y: 1, z: 1}
+  EquipSound: {fileID: 8300000, guid: 4c0c5ac771800f34a94b377e36af6314, type: 3}
+  FireSound:
+    Sounds:
+    - {fileID: 8300000, guid: b9cb1355ca20a5545bb11858e3333ab7, type: 3}
+    Radius: 15
+    Length: 0.5
+    Priority: 3
+  ReloadSound: {fileID: 8300000, guid: d5624e872cde8304d855f65f1e8a7d45, type: 3}
+  EmptySound: {fileID: 8300000, guid: 9c7af20e3021e8c40b03e281ec990277, type: 3}
+  Capacity: 7
+  ReserveCapacity: 21
+  FireRate: 60
+  BurstFireRate: 0
+  BurstCooldown: 0
+  Damage: 15
+  FireModes: 1
+  BurstFireCount: 0
+  OpenBolt: 0
+  ReloadTime: 2
+  EquipTime: 0.5
+  MaxRange: 30
+  RecoilIntensity: 20.99
+  RecoilX: 1
+  RecoilY: 0.32
+  MuzzleFlash: {fileID: 19800004, guid: 234e5aa95353f0643b0181dc3872cda9, type: 3}
+  Pellets: 8
+  SpreadAngle: 11.3

@@ -33,6 +33,9 @@ public class MaterialSettings : ScriptableObject
     public Sound HeavyFootstep;
 
     public GameObject HitEffect;
+    public Sound BulletHitSound;
+
+    public GameObject[] BulletHoles;
 
     Sound GetSound(SoundType type)
     {
