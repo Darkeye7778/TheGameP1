@@ -6385,6 +6385,7 @@ GameObject:
   - component: {fileID: 526418008691693294}
   - component: {fileID: 3045111128105296970}
   - component: {fileID: 163793760636409742}
+  - component: {fileID: 6788002893886676423}
   m_Layer: 5
   m_Name: Reticle
   m_TagString: Untagged
@@ -6449,6 +6450,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6788002893886676423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7156311650256890870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6842a43624b89a459264f71e7c69de8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playOnStart: 0
+  transitionSpeed: 100
+  targetScaleOffset: 2.5
 --- !u!1 &7382687485308192133
 GameObject:
   m_ObjectHideFlags: 0
@@ -6596,6 +6612,8 @@ MonoBehaviour:
   loadoutsScreen: {fileID: 2313191884546953758}
   InteractionPopup: {fileID: 75334529047893487}
   playerUI: {fileID: 4737648290036862310}
+  Reticle: {fileID: 6788002893886676423}
+  LastLoadout: {fileID: 0}
   isPaused: 0
   player: {fileID: 0}
   playerScript: {fileID: 0}
@@ -6621,10 +6639,20 @@ MonoBehaviour:
   SecondaryGun: {fileID: 4193125707158098724}
   GunAmmoBar: {fileID: 492353653333670579}
   PlayerHurt: {fileID: 8793773454289087570}
+  audioSource: {fileID: 0}
   HealthFlash: {fileID: 9194209359082654917}
-  WinLines: []
+  WinLines:
+  - {fileID: 8300000, guid: d7cf12f9fb674e743873006f3fbbedfd, type: 3}
+  - {fileID: 8300000, guid: 1952964a090727943bd9021baef26818, type: 3}
   StartLines:
   - {fileID: 8300000, guid: 5479a6e7e22800b4fb2f8325d456f804, type: 3}
+  - {fileID: 8300000, guid: 7baad862fd7366e409e33f727fc4fee0, type: 3}
+  - {fileID: 8300000, guid: f1a1a093c5a79594a84a01c81252c25f, type: 3}
+  - {fileID: 8300000, guid: 0a7e956c6e5227d4f9712286ea51744a, type: 3}
+  TimeLines:
+  - {fileID: 8300000, guid: 7af84f32205fd9f4a8cba77b37f7c205, type: 3}
+  - {fileID: 8300000, guid: e31b28b6d8b28d848b693a813f64d450, type: 3}
+  - {fileID: 8300000, guid: 1ad2a8ea7f5ea5c429c1f9d498b47f76, type: 3}
   SpawnedEntities: []
   timerFlashThreshold: 30
   flashSpeed: 1
@@ -6659,8 +6687,8 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0

@@ -42,11 +42,12 @@ public class Inventory : MonoBehaviour
     public WeaponInstance HolsteredWeapon => IsUsingPrimary ? Secondary : Primary;
     
     public Vector3 UnequippedOffset;
-    
-    [Header("Audio")]
+
+    [Header("Audio")] 
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private bool _emitsSound;
 
+    public AudioClip HitMarkerClip;
     protected InputState InputFlags;
 
     private GameObject _spawnedViewModel, _spawnedWorldModel;
@@ -293,6 +294,8 @@ public class Inventory : MonoBehaviour
             return;
 
         dmg.OnTakeDamage(new DamageSource{ Name = name, Object = gameObject }, CurrentWeapon.Weapon.Damage);
+        if (HitMarkerClip != null) _audioSource.PlayOneShot(HitMarkerClip);
+        if (gameManager.instance != null) gameManager.instance.Reticle.Restart();
     }
 
     private float GetInterpolateTime()
