@@ -20,6 +20,8 @@ public class GenerationParams
     public List<PlayerSpawnPoint> PlayerSpawnPoints;
     public List<EnemySpawnPoint> EnemySpawnPoints;
     public List<TrapSpawnPoint> TrapSpawnPoints;
+
+    public List<Bounds> PlacedBounds;
 }
 
 public class MapGenerator : MonoBehaviour
@@ -123,8 +125,12 @@ public class MapGenerator : MonoBehaviour
             room.IsInEntryZone = true;
         }
         entryProfile.Initialize();
-        
-        for(uint i = 0; Parameters.RemainingRooms > 0 && i < MaxIterations; i++)
+
+        Parameters.Rooms.Add(entryProfile);
+        Parameters.IterationRooms.Add(entryProfile);
+        Parameters.PlacedBounds.Add(WorldAABB(entryProfile));
+
+        for (uint i = 0; Parameters.RemainingRooms > 0 && i < MaxIterations; i++)
             Iterate();
         
         Debug.Log($"Remaining rooms: {Parameters.RemainingRooms}");
@@ -380,7 +386,8 @@ public class MapGenerator : MonoBehaviour
             PlayerSpawnPoints = new List<PlayerSpawnPoint>(),
             EnemySpawnPoints = new List<EnemySpawnPoint>(),
             HostageSpawnPoints = new List<HostageSpawnPoint>(),
-            TrapSpawnPoints = new List<TrapSpawnPoint>()
+            TrapSpawnPoints = new List<TrapSpawnPoint>(),
+            PlacedBounds = new List<Bounds>()
         };
     }
 
@@ -509,6 +516,96 @@ public class MapGenerator : MonoBehaviour
     {
         yield return null;
         Generate();
+    }
+
+    static Vector3 Facing(ExitDirection d, Vector3 right, Vector3 forward)
+    {
+        switch (d)
+        {
+            case ExitDirection.East: return right;
+            case ExitDirection.West: return -right;
+            case ExitDirection.North: return forward;
+            case ExitDirection.South: return -forward;
+        }
+        return forward;
+    }
+
+    static float YawFromTo(Vector3 fromDir, Vector3 toDir)
+    {
+        fromDir.y = 0f; toDir.y = 0f;
+        if (fromDir.sqrMagnitude < 1e-6f || toDir.sqrMagnitude < 1e-6f) return 0f;
+        fromDir.Normalize(); toDir.Normalize();
+        float angle = Vector3.SignedAngle(fromDir, toDir, Vector3.up);
+        return angle;
+    }
+
+    static void RotateYaw(Transform t, float deltaYawDeg)
+    {
+        var e = t.eulerAngles;
+        e.y += deltaYawDeg;
+        t.eulerAngles = e;
+    }
+
+    static Bounds WorldAABB(RoomProfile room)
+    {
+        Bounds? acc = null;
+        var rends = room.GetComponentsInChildren<Renderer>(true);
+        for (int i = 0; i < rends.Length; i++)
+            acc = acc == null ? rends[i].bounds : Encapsulate(acc.Value, rends[i].bounds);
+
+        var cols = room.GetComponentsInChildren<Collider>(true);
+        for (int i = 0; i < cols.Length; i++)
+            acc = acc == null ? cols[i].bounds : Encapsulate(acc.Value, cols[i].bounds);
+
+        return acc ?? new Bounds(room.transform.position, Vector3.one);
+    }
+
+    static Bounds Encapsulate(Bounds a, Bounds b) { a.Encapsulate(b); return a; }
+
+    static bool OverlapsAny(Bounds b, List<Bounds> existing, float margin)
+    {
+        b.Expand(margin);
+        for (int i = 0; i < existing.Count; i++)
+            if (b.Intersects(existing[i])) return true;
+        return false;
+    }
+
+    public static bool TryAttach(RoomProfile parent, Connection parentCP, RoomProfile child, Connection childCP, float wallThickness = 0.30f, float gap = 0.02f)
+    {
+        Vector3 P = parent.GetConnWorldPos(parentCP);
+        Vector3 C = child.GetConnWorldPos(childCP);
+
+        Vector3 pr = Vector3.ProjectOnPlane(parent.transform.right, Vector3.up).normalized;
+        Vector3 pf = Vector3.ProjectOnPlane(parent.transform.forward, Vector3.up).normalized;
+        Vector3 cr = Vector3.ProjectOnPlane(child.transform.right, Vector3.up).normalized;
+        Vector3 cf = Vector3.ProjectOnPlane(child.transform.forward, Vector3.up).normalized;
+
+        Vector3 faceP = Facing(parentCP.Transform.Rotation, pr, pf);
+        Vector3 faceC = Facing(childCP.Transform.Rotation, cr, cf);
+
+        float yaw = YawFromTo(faceC, -faceP);
+        RotateYaw(child.transform, yaw);
+
+        C = child.GetConnWorldPos(childCP);
+
+        Vector3 delta = P - C;
+        child.transform.position += delta;
+
+        child.transform.position += faceP * (gap - wallThickness * 0.5f);
+
+        return true;
+    }
+
+    public bool RegisterPlacedRoom(RoomProfile room, float margin = 0.02f)
+    {
+        if (room == null) return false;
+
+        Bounds b = WorldAABB(room);
+        if (OverlapsAny(b, Parameters.PlacedBounds, margin))
+            return false;
+
+        Parameters.PlacedBounds.Add(b);
+        return true;
     }
 }
 

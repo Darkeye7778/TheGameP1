@@ -1,6 +1,7 @@
 //#define ROOM_KEEP_PARENT
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.LightTransport;
 using static UnityEngine.UI.Image;
@@ -44,7 +45,7 @@ public class RoomProfile : MonoBehaviour
 
         if (entranceAnchor == null) entranceAnchor = transform.Find("DoorAnchor");
     }
-    
+
     public void GenerateLeafs()
     {
         foreach (Connection connection in Properties.GetResolvedConnectionPoints())
@@ -64,29 +65,52 @@ public class RoomProfile : MonoBehaviour
 
                 GameObject leaf = Instantiate(prefab);
                 RoomProfile child = leaf.GetComponent<RoomProfile>();
-
-                Transform childAnchor =
-                    (child && child.entranceAnchor) ? child.entranceAnchor : leaf.transform;
-
-                leaf.transform.rotation = connRot * /*Quaternion.Euler(0, 180, 0) */ Quaternion.Inverse(childAnchor.localRotation);
-
-                leaf.transform.position = connPos - leaf.transform.rotation * childAnchor.localPosition;
-
                 if (child == null)
                 {
-                    Debug.LogError($"[MapGen] Prefab '{prefab.name}' is missing RoomProfile.");
+                    Debug.LogError("[MapGen] Prefab '" + prefab.name + "' is missing RoomProfile.");
+                    DestroyImmediate(leaf);
+                    continue;
+                }
+
+                ExitDirection want = Opposite(connection.Transform.Rotation);
+                Connection[] childCps = child.Properties.GetResolvedConnectionPoints();
+                List<int> candidates = new List<int>();
+                for (int k = 0; k < childCps.Length; k++)
+                {
+                    if (childCps[k].Transform.Rotation == want && childCps[k].HasDoor && childCps[k].Odds > 0f)
+                        candidates.Add(k);
+                }
+
+                if (candidates.Count == 0)
+                {
+                    DestroyImmediate(leaf);
+                    continue;
+                }
+
+                int childCpIndex = candidates[Random.Range(0, candidates.Count)];
+                Connection childCP = childCps[childCpIndex];
+
+                bool attached = MapGenerator.TryAttach(this, connection, child, childCP, 0.30f, 0.02f);
+                if (!attached)
+                {
+                    DestroyImmediate(leaf);
+                    continue;
+                }
+
+                if (!MapGenerator.Instance.RegisterPlacedRoom(child))
+                {
                     DestroyImmediate(leaf);
                     continue;
                 }
 
                 child.Parent = this;
                 IsLeaf = false;
-
-                if (child.TryFit()) // If it fits, let it be. Otherwise, try again.
+                if (child.TryFit())
                     break;
             }
         }
     }
+
 
     public void GenerateConnections()
     {
@@ -161,22 +185,23 @@ public class RoomProfile : MonoBehaviour
         return entranceAnchor.localPosition + entranceAnchor.localRotation * anchorLocal;
     }
 
-    Vector3 GetConnWorldPos(Connection c)
+    public Vector3 GetConnWorldPos(Connection c)
     {
-        float G = MapGenerator.GRID_SIZE;               // 5
-        Vector2 p = c.Transform.Position;                 // Vector2 (gridX, gridZ), origin at entry
-        Vector3 origin = (entranceAnchor != null) ? entranceAnchor.position : transform.position;      // world position of entry
-        var right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
-        var forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+        if (c.Transform.Position == null) return transform.position;
 
-        right = -right;
-        forward = -forward;
+        float G = MapGenerator.GRID_SIZE;
+        Vector2 p = c.Transform.Position; // grid (x,z)
 
-        Vector3 world = origin
-              + right * (p.x * G)             // left/right along room X
-              + forward * (p.y * G);             // “into the room” along room Z
-        float y = (entranceAnchor != null) ? entranceAnchor.position.y : 0;
-        world.y = y;          // clamp height to door height (or 0)
+        Vector3 origin = (entranceAnchor != null) ? entranceAnchor.position : transform.position;
+
+        Vector3 right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
+        Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+
+        Vector3 world = origin + right * (p.x * G) + forward * (p.y * G);
+
+        float y = (entranceAnchor != null) ? entranceAnchor.position.y : origin.y;
+        world.y = y;
+
         return world;
     }
 
@@ -184,4 +209,17 @@ public class RoomProfile : MonoBehaviour
     {
         return transform.rotation * Direction.ToQuaternion(c.Transform.Rotation);
     }
+
+    static ExitDirection Opposite(ExitDirection d)
+    {
+        switch (d)
+        {
+            case ExitDirection.ZPositive: return ExitDirection.ZNegative;
+            case ExitDirection.ZNegative: return ExitDirection.ZPositive;
+            case ExitDirection.XPositive: return ExitDirection.XNegative;
+            case ExitDirection.XNegative: return ExitDirection.XPositive;
+        }
+        return d;
+    }
+
 }
