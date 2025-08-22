@@ -42,11 +42,12 @@ public class Inventory : MonoBehaviour
     public WeaponInstance HolsteredWeapon => IsUsingPrimary ? Secondary : Primary;
     
     public Vector3 UnequippedOffset;
-    
-    [Header("Audio")]
+
+    [Header("Audio")] 
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private bool _emitsSound;
 
+    public AudioClip HitMarkerClip;
     protected InputState InputFlags;
 
     private GameObject _spawnedViewModel, _spawnedWorldModel;

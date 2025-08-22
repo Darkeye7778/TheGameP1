@@ -17,6 +17,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject loadoutsScreen;
     [SerializeField] GameObject InteractionPopup;
     [SerializeField] GameObject playerUI;
+    public UIAnimationScale Reticle;
     public Loadout LastLoadout;
     public bool isPaused;
     public GameObject player;
