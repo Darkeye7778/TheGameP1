@@ -16,9 +16,9 @@ public class TerroristWander : AIState
     private bool _startTimer;
     private float _resetTimer;
     
-    public override void OnStart(EnemyAI controller)
+    public override void OnStart(EnemyAI controller, AIState previousState)
     {
-        base.OnStart(controller);
+        base.OnStart(controller, previousState);
         
         _resetTimer = 0;
         _startTimer = false;

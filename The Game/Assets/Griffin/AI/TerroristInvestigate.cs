@@ -4,21 +4,23 @@ public class TerroristInvestigate : AIInvestigateState
 {
     public float StoppingDistance;
     public Vector3 Target { get; private set; }
+    [field: SerializeField] public Sound InvestigateSound { get; private set; }
 
     public override void SetTarget(Vector3 position)
     {
         Target = position;
     }
 
-    public override void OnStart(EnemyAI controller)
+    public override void OnStart(EnemyAI controller, AIState previousState)
     {
-        base.OnStart(controller);
+        base.OnStart(controller, previousState);
 
         controller.Agent.SetDestination(Target);
-
         Controller.Agent.stoppingDistance = StoppingDistance;
-
         Controller.IK.LookAt = Target;
+        
+        if (previousState == controller.WanderState) 
+            Controller.AudioSource.PlayOneShot(InvestigateSound.PickSound());
     }
 
     public override void OnUpdate()

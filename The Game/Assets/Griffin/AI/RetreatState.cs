@@ -3,10 +3,9 @@ using UnityEngine;
 
 public class RetreatState : AIState
 {
-    public override void OnStart(EnemyAI controller)
+    public override void OnStart(EnemyAI controller, AIState previousState)
     {
-        base.OnStart(controller);
-        
+        base.OnStart(controller, previousState);
     }
 
     public override bool OverriddenByEnemy()

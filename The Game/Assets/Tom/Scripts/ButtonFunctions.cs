@@ -21,6 +21,7 @@ public class ButtonFunctions : MonoBehaviour
         MapGenerator.Instance.GenerateSame();
         gameManager.instance.ResetLoseMenu();
         gameManager.instance.SetPlayer();
+        gameManager.instance.ResetTimer();
         SetLoadout(gameManager.instance.LastLoadout);
     }
 

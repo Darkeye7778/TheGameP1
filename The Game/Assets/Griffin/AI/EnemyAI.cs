@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 [Serializable]
@@ -62,7 +62,7 @@ public class AIThoughtQueue<T>
 
 public abstract class AIState : MonoBehaviour
 {
-    public virtual void OnStart(EnemyAI controller)
+    public virtual void OnStart(EnemyAI controller, AIState previousState)
     {
         Controller = controller;
     }
@@ -111,6 +111,7 @@ public class EnemyAI : Inventory, IDamagable
     
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
+    [field: SerializeField] public Sound DeathSound { get; private set; }
     
     [Header("Hitbox")] 
     public Transform[] HitPoints;
@@ -128,7 +129,7 @@ public class EnemyAI : Inventory, IDamagable
     private Vector3 _previousPosition, _velocity;
     
     public AIState CurrentState { get; private set; }
-    private bool _queueState;
+    [CanBeNull] private AIState _newState;
 
     public InputState InputFlags
     {
@@ -138,8 +139,7 @@ public class EnemyAI : Inventory, IDamagable
 
     public void SetState(AIState state)
     {
-        CurrentState = state;
-        _queueState = true;
+        _newState = state;
     }
     
 #if UNITY_EDITOR
@@ -183,10 +183,13 @@ public class EnemyAI : Inventory, IDamagable
         CalculateVelocity();
         GetFootsteps();
 
-        if (_queueState)
+        if (_newState != null)
         {
-            CurrentState.OnStart(this);
-            _queueState = false;
+            AIState oldState = CurrentState;
+            
+            CurrentState = _newState;
+            CurrentState.OnStart(this, oldState);
+            _newState = null;
         }
         CurrentState.OnUpdate();
 
@@ -243,8 +246,7 @@ public class EnemyAI : Inventory, IDamagable
     private void GetFootsteps()
     {
         _ground = GroundState.GetGround(transform.position, 0.1f, GroundMask);
-        if(_ground.SoundSettings == null)
-            
+        
         _standingTimer += Time.deltaTime;
         if (_moving)
             _standingTimer = 0.0f;
@@ -284,6 +286,8 @@ public class EnemyAI : Inventory, IDamagable
 
         Agent.enabled = false;
         Animator.SetTrigger("Death");
+        
+        AudioSource.PlayOneShot(DeathSound.PickSound());
         
         foreach (Collider collider in GetComponentsInChildren<Collider>())
             collider.enabled = false;

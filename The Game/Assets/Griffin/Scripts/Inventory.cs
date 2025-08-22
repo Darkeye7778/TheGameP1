@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Inventory : MonoBehaviour
 {
@@ -43,8 +44,9 @@ public class Inventory : MonoBehaviour
     
     public Vector3 UnequippedOffset;
 
+    [FormerlySerializedAs("_audioSource")]
     [Header("Audio")] 
-    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] public AudioSource AudioSource;
     [SerializeField] private bool _emitsSound;
 
     public AudioClip HitMarkerClip;
@@ -92,10 +94,10 @@ public class Inventory : MonoBehaviour
             _equipTime += Time.deltaTime;
             InterpolateWeapon();
             
-            if(State == InventoryState.Reloading && CurrentWeapon.IsEmpty && !_audioSource.isPlaying)
+            if(State == InventoryState.Reloading && CurrentWeapon.IsEmpty && !AudioSource.isPlaying)
             {
-                _audioSource.clip = CurrentWeapon.Weapon.EquipSound;
-                _audioSource.Play();
+                AudioSource.clip = CurrentWeapon.Weapon.EquipSound;
+                AudioSource.Play();
             }
 
             if (_equipTime < GetInterpolateTime())
@@ -141,8 +143,8 @@ public class Inventory : MonoBehaviour
         if (CurrentWeapon.Locked || !CurrentWeapon.CanReload)
             return;
         
-        _audioSource.clip = CurrentWeapon.Weapon.ReloadSound;
-        _audioSource.Play();
+        AudioSource.clip = CurrentWeapon.Weapon.ReloadSound;
+        AudioSource.Play();
         if(Animator) 
             Animator.SetTrigger("Reload");
         State = InventoryState.Reloading;
@@ -155,8 +157,8 @@ public class Inventory : MonoBehaviour
         
         if (first && CurrentWeapon.IsEmpty)
         {
-            _audioSource.clip = CurrentWeapon.Weapon.EmptySound;
-            _audioSource.Play();
+            AudioSource.clip = CurrentWeapon.Weapon.EmptySound;
+            AudioSource.Play();
         }
             
         switch (CurrentWeapon.Mode)
@@ -240,8 +242,8 @@ public class Inventory : MonoBehaviour
             WorldModel.transform.localRotation = weapon.Weapon.Transform.Rotation;
         }
         
-        _audioSource.clip = weapon.Weapon.EquipSound;
-        _audioSource.Play();
+        AudioSource.clip = weapon.Weapon.EquipSound;
+        AudioSource.Play();
         
         _equipTime = 0.0f;
         State = InventoryState.Equipping;
@@ -269,7 +271,7 @@ public class Inventory : MonoBehaviour
         if(_weaponMovement != null) 
             _weaponMovement.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
         
-        _audioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound.PickSound());
+        AudioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound.PickSound());
         
         if(_emitsSound)
             SoundManager.Instance.EmitSound(new SoundInstance(CurrentWeapon.Weapon.FireSound, gameObject));
@@ -291,7 +293,7 @@ public class Inventory : MonoBehaviour
             return;
         
         if (HitMarkerClip != null)
-            _audioSource.PlayOneShot(HitMarkerClip, HitMarkerVolume);
+            AudioSource.PlayOneShot(HitMarkerClip, HitMarkerVolume);
         if (gameManager.instance != null)
             gameManager.instance.Reticle.Restart();
     }

@@ -208,12 +208,24 @@ MonoBehaviour:
     Mode: 0
   RecoilObj: {fileID: 6486670798528206622}
   UnequippedOffset: {x: 0, y: 0, z: 0}
-  _audioSource: {fileID: 2980631632795041402}
+  AudioSource: {fileID: 2980631632795041402}
   _emitsSound: 0
+  HitMarkerClip: {fileID: 0}
+  HitMarkerVolume: 0
   <Pivot>k__BackingField: {fileID: 919255057874803457}
   <AimOffset>k__BackingField: {x: 0, y: -0.5, z: 0}
   <WeaponOffsetOrigin>k__BackingField: {fileID: 4942282462775042813}
   _footstepAudioSource: {fileID: 2980631632795041402}
+  <DeathSound>k__BackingField:
+    Sounds:
+    - {fileID: 8300000, guid: 97018eeea4be8504488b5feb5595b66b, type: 3}
+    - {fileID: 8300000, guid: a6c8c14751e12e447a880699a367c883, type: 3}
+    - {fileID: 8300000, guid: 3d5a4ebe8a12bcc4ebb56404801b362d, type: 3}
+    - {fileID: 8300000, guid: eb47da63cfa4bad4f806a2a74467850d, type: 3}
+    - {fileID: 8300000, guid: e2bb64ebfd3fd5640917e903a8f725c2, type: 3}
+    Radius: 1
+    Length: 0
+    Priority: 0
   HitPoints:
   - {fileID: 7522390343214315492}
   - {fileID: 227040516816203434}
@@ -349,6 +361,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StoppingDistance: 2
+  <InvestigateSound>k__BackingField:
+    Sounds:
+    - {fileID: 8300000, guid: bf9fca29d6732314bb80e5442344217b, type: 3}
+    - {fileID: 8300000, guid: 523f30d3917d9144988c1727a01daf9d, type: 3}
+    - {fileID: 8300000, guid: adc212ab38645104fa660210a5f71df3, type: 3}
+    - {fileID: 8300000, guid: 85f5cadf3524be845b8095f4183e4ca1, type: 3}
+    - {fileID: 8300000, guid: 4147664f239f613488b5d2373c0fe0d4, type: 3}
+    Radius: 1
+    Length: 0
+    Priority: 0
 --- !u!114 &3220675043529310407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,6 +385,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <RetreatState>k__BackingField: {fileID: 6571534294281332166}
   <Eye>k__BackingField: {fileID: 2114098535556427591}
+  <SpottedSound>k__BackingField:
+    Sounds:
+    - {fileID: 8300000, guid: cc4bbf68ee08fad4ea1f6df3afd94857, type: 3}
+    - {fileID: 8300000, guid: 6d8fff662be2d2a47983ec32849f05e4, type: 3}
+    Radius: 1
+    Length: 0
+    Priority: 0
   FollowingDistance: 5
   MinFollowingDistance: 2
   FaceSpeed: 3.5

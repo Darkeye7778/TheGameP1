@@ -76,11 +76,16 @@ public class gameManager : MonoBehaviour
         instance = this;
         timeScaleOrig = Time.timeScale;
 
-        Timer = StartingTime;
+        ResetTimer();
         if (TimerTxt != null)
         {
             timerColorOrig = TimerTxt.color;
         }
+    }
+
+    public void ResetTimer()
+    {
+        Timer = StartingTime;
     }
 
     private void Start()

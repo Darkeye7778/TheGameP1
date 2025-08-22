@@ -28,6 +28,8 @@ public class TerroristFollowEnemy : AIState
     
     [field: SerializeField] public Transform Eye { get; private set; }
     
+    [field: SerializeField] public Sound SpottedSound { get; private set; }
+    
     public float FollowingDistance = 5;
     public float MinFollowingDistance = 2;
     public float FaceSpeed = 5;
@@ -60,12 +62,15 @@ public class TerroristFollowEnemy : AIState
 
     public override bool OverriddenByEnemy()
     {
-        return !Controller.Sight.CanSee();
+        return !Controller?.Sight.CanSee() ?? false;
     }
 
-    public override void OnStart(EnemyAI controller)
+    public override void OnStart(EnemyAI controller, AIState previousState)
     {
-        base.OnStart(controller);
+        base.OnStart(controller, previousState);
+        
+        if(previousState == controller.WanderState || previousState == controller.InvestigateState)
+            Controller.AudioSource.PlayOneShot(SpottedSound.PickSound());
 
         Controller.Thoughts.Clear();
     }
