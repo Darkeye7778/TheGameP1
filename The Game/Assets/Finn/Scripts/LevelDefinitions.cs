@@ -5,8 +5,6 @@ public class LevelDefinition : ScriptableObject
 {
     public LevelClass Level;
     public MapType MapType;              // Which tileset/rooms/doors/player prefab to use
-    public PropTheme Theme;
-    public ThemeCategoryTable CategoryTable;
 
     [Header("Generation Overrides")]
     public uint TargetRooms = 10;
