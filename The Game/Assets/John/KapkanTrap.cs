@@ -38,10 +38,12 @@ public class KapkanTrap : MonoBehaviour, IDamagable
     public float ExplosionDelay;
     public LayerMask DetectionLayer, DamageLayer;
 
-    public AudioClip DetectionSound, ExplosionSound;
+    public AudioClip DetectionSound;
+    public Sound ExplosionSound;
 
     private float _explosionTimer;
     private bool _detected;
+    private GameObject _interactor;
     private AudioSource _audioSource;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -55,7 +57,7 @@ public class KapkanTrap : MonoBehaviour, IDamagable
     {
         if (!_detected)
         {
-            _detected = Physics.Raycast(transform.position, transform.right, DetectionDistance, DetectionLayer);
+            _detected = Physics.Raycast(transform.position, transform.right, out var hit, DetectionDistance, DetectionLayer);
         #if UNITY_EDITOR
             Debug.DrawRay(transform.position, transform.right * DetectionDistance, Color.red);
         #endif
@@ -63,6 +65,12 @@ public class KapkanTrap : MonoBehaviour, IDamagable
                 return;
             
             _audioSource.PlayOneShot(DetectionSound);
+
+            _interactor = hit.transform.gameObject;
+
+
+            if (hit.collider.TryGetComponent(out IDamagable dmg))
+                _interactor = dmg.Base().GameObject();
         }
 
         _explosionTimer += Time.deltaTime;
@@ -79,8 +87,11 @@ public class KapkanTrap : MonoBehaviour, IDamagable
 
             dmg.OnTakeDamage(new DamageSource("Explosive Trap", gameObject), damage);
         }
+
+        AudioClip clip = ExplosionSound.PickSound();
+        AudioSource.PlayClipAtPoint(clip, transform.position);
         
-        AudioSource.PlayClipAtPoint(ExplosionSound, transform.position);
+        SoundManager.Instance.EmitSound(new SoundInstance(ExplosionSound, clip, _interactor));
         
         Destroy(gameObject);
     }

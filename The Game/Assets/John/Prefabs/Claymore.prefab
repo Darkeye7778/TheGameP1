@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 1884996909376230896}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.49, y: 0.52, z: 0.54}
+  m_LocalPosition: {x: 0, y: -0.436, z: 0.012}
+  m_LocalScale: {x: 2.94, y: 3.12, z: 3.2400002}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4317235033778138419}
@@ -57,7 +57,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c22777d6e868e4f2fb421913386b154e, type: 2}
+  - {fileID: 2100000, guid: 5cc6553d5940f8849bcc1d71e179d410, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -86,7 +86,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1884996909376230896}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -630269656852731252, guid: 4478711e370648041b3a35b9ed3f38fb, type: 3}
 --- !u!64 &7849578266790850398
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -136,8 +136,8 @@ Transform:
   m_GameObject: {fileID: 7850007562659098837}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.395, y: 0, z: 0}
-  m_LocalScale: {x: 2.4588857, y: 0.097962394, z: 0.097962394}
+  m_LocalPosition: {x: 1.395, y: -0.085, z: -0.035}
+  m_LocalScale: {x: 2.4588857, y: 0.0075120404, z: -0.001871974}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4317235033778138419}
@@ -173,7 +173,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: a4570edc1e816e147beeb9b450b2cb84, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: -2287226434738234132}
   - component: {fileID: 6039858848663483625}
   - component: {fileID: 2340790202340033209}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Claymore
   m_TagString: Trap
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ MonoBehaviour:
   DetectionDistance: 4
   ExplosionMinRadius: 2
   ExplosionMaxRadius: 4
-  Damage: 50
+  Damage: 10
   ExplosionDelay: 0.2
   DetectionLayer:
     serializedVersion: 2
@@ -352,7 +352,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   DetectionSound: {fileID: 8300000, guid: 1057f8d30e6ff7549b7226c51852b013, type: 3}
-  ExplosionSound: {fileID: 8300000, guid: 2e50ceed6f767ef44b98a11b0a287f1a, type: 3}
+  ExplosionSound:
+    Sounds:
+    - {fileID: 8300000, guid: 2e50ceed6f767ef44b98a11b0a287f1a, type: 3}
+    Radius: 20
+    Length: 2
+    Priority: 4
 --- !u!65 &2340790202340033209
 BoxCollider:
   m_ObjectHideFlags: 0

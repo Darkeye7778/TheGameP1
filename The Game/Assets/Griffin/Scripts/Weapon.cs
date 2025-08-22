@@ -85,7 +85,7 @@ public class Weapon : ScriptableObject
 
     [Header("Sounds")]
     public AudioClip EquipSound;
-    public AudioClip FireSound;
+    public Sound FireSound;
     public AudioClip ReloadSound;
     public AudioClip EmptySound;
 

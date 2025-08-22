@@ -4,10 +4,8 @@
 
 using System;
 using JetBrains.Annotations;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 [Serializable]
 public struct GroundState
@@ -15,7 +13,32 @@ public struct GroundState
     public float Distance;
     public bool NearGround;
     public bool Grounded;
-    [CanBeNull] public SoundEmitterSettings SoundSettings;
+    public MaterialSettings SoundSettings;
+    
+    public static GroundState GetGround(Vector3 origin, float maxDistance, LayerMask groundMask)
+    {
+        GroundState result = new GroundState
+        {
+            Grounded = false,
+            NearGround = false,
+            SoundSettings = SoundManager.Instance.DefaultSoundProfile
+        };
+        
+        RaycastHit rayResult;
+        if (!Physics.Raycast(origin, Vector3.down, out rayResult, maxDistance, groundMask))
+            return result;
+        
+        Debug.DrawRay(origin, Vector3.down * rayResult.distance, Color.red);
+
+        result.Distance = Mathf.Max(rayResult.distance, 0.0f);
+        result.NearGround |= result.Distance < maxDistance;
+        
+        MaterialProfile profile = rayResult.collider.GetComponent<MaterialProfile>();
+        if (profile is not null)
+            result.SoundSettings = profile.GetSettings();
+    
+        return result;
+    }
 }
 
 public class PlayerController : MonoBehaviour, IDamagable
@@ -31,8 +54,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     public LayerMask GroundMask;
     public LayerMask InteractSkip;
     public int Health => (int) _health;
-    public bool TookDamage => Health < _previousHealth;
-    public bool GainedHealth => Health > _previousHealth;
+    public bool TookDamage => _health < _previousHealth;
+    public bool GainedHealth => _health > _previousHealth;
     public bool IsDead => Health <= 0;
     public float HealthRelative => Mathf.Floor(_health) / MaximumHealth;
     public float Height => _controller.height;
@@ -61,10 +84,12 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float WalkingRecoveryMultiplier = 0.5f;
     public float StandingHeight = 2.0f;
     public float FootstepOffset;
+    public float SoundRadius = 1f;
     
     [Header("Running")]
     public float RunningSpeed = 5.0f;
     public float RunningDepletionRate = 0.5f;
+    public float RunningSoundRadius = 2f;
     
     [Header("Crouching")]
     public float CrouchingSpeed = 0.7f;
@@ -72,6 +97,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float GroundSnapTime = 0.1f;
     public float CrouchTime = 0.2f;
     public float CrouchingHeight = 1.0f;
+    public float CrouchSoundRadius = 0.5f;
     
     [Header("Inertia")]
     public float Acceleration = 7.0f;
@@ -82,7 +108,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     [Header("Audio")]
     [SerializeField] private AudioSource _footstepAudioSource;
-    public SoundEmitterSettings DefaultSoundProfile;
     
     public GameObject CurrentInteractable { get; private set; }
     
@@ -117,7 +142,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         _controller.height = StandingHeight;
         _inventory = GetComponent<PlayerInventory>();
         //_cameraOrigin = Camera.transform.localPosition;
-        _previousPosition = transform.position;;
+        _previousPosition = transform.position;
     }
     
     void Update()
@@ -148,7 +173,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         Animator.SetFloat("Speed",  Mathf.Max(LocalRealVelocity.magnitude, 1) * 0.5f, 0.1f, Time.deltaTime);
         Animator.SetFloat("Velocity X", LocalRealVelocity.x, 0.1f, Time.deltaTime);
-        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime);
+        Animator.SetFloat("Velocity Y", LocalRealVelocity.z, 0.1f, Time.deltaTime); 
         Animator.SetBool("Crouching", _crouch);
 
         if (_hitPoints == null || _hitPoints.Length != HitPoints.Length)
@@ -173,9 +198,15 @@ public class PlayerController : MonoBehaviour, IDamagable
         
         if (_moving && _footstepOffset >= FootstepOffset)
         {
-            _footstepAudioSource.clip = _ground.SoundSettings != null ? _ground.SoundSettings.Footstep : DefaultSoundProfile.Footstep;
+            _footstepAudioSource.clip = _ground.SoundSettings.Footstep.PickSound();
             _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
+
+            float multiplier = SoundRadius;
+            if (_crouch) multiplier *= CrouchSoundRadius;
+            if (_running) multiplier *= RunningSoundRadius;
+            
+            SoundManager.Instance.EmitSound(new SoundInstance(_ground.SoundSettings.Footstep, _footstepAudioSource.clip, gameObject, multiplier));
         }
 
     #if PLAYERCONTROLLER_INERTIA
@@ -324,7 +355,7 @@ public class PlayerController : MonoBehaviour, IDamagable
                 CurrentInteractable = hit.collider.gameObject;
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    interactable.OnInteract(Camera);
+                    interactable.OnInteract(gameObject);
                 }
             }
             else
@@ -359,7 +390,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         _health = MaximumHealth;
         _stamina = MaximumStamina;
 
-        _velocity = Vector3.zero;
+        _previousPosition = transform.position;
+        
         _previousHealth = _health;
         _fallingTime = 0;
         _standingTimer = 0;
@@ -390,26 +422,11 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private GroundState GetGround()
     {
-        GroundState result = new GroundState
-        {
-            Grounded = _controller.isGrounded,
-            NearGround = _controller.isGrounded
-        };
-
         Vector3 rayOrigin = transform.position + Vector3.down * (_controller.height / 2.0f);
         
-        RaycastHit rayResult;
-        if (!Physics.Raycast(rayOrigin, Vector3.down, out rayResult, _controller.stepOffset, GroundMask))
-            return result;
-        
-        Debug.DrawRay(rayOrigin, Vector3.down * rayResult.distance, Color.red);
-
-        result.Distance = Mathf.Max(rayResult.distance - _controller.skinWidth, 0.0f);
-        result.NearGround |= result.Distance < _controller.stepOffset;
-        
-        SoundProfile profile = rayResult.collider.GetComponent<SoundProfile>();
-        if (profile is not null)
-            result.SoundSettings = profile.GetSettings();
+        GroundState result = GroundState.GetGround(rayOrigin, _controller.stepOffset, GroundMask);
+        result.Grounded |= _controller.isGrounded;
+        result.NearGround |= _controller.isGrounded;
         
         return result;
     }
@@ -469,6 +486,17 @@ public class PlayerController : MonoBehaviour, IDamagable
         RealVelocity = (transform.position - _previousPosition) / Time.deltaTime;
         LocalRealVelocity = transform.InverseTransformDirection(RealVelocity);
         _previousPosition = transform.position;
+
+        RealVelocity = FixNan(RealVelocity);
+        LocalRealVelocity = FixNan(LocalRealVelocity);
+    }
+
+    private static Vector3 FixNan(Vector3 vec)
+    {
+        if (float.IsNaN(vec.x)) vec.x = 0;
+        if (float.IsNaN(vec.y)) vec.y = 0;
+        if (float.IsNaN(vec.z)) vec.z = 0;
+        return vec;
     }
 
     public void GrantTemporaryInvulnerability(float seconds)
