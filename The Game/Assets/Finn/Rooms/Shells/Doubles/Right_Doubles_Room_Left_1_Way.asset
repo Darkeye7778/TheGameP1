@@ -19,9 +19,13 @@ MonoBehaviour:
   HasEntranceDoor: 1
   ConnectionPoints:
   - Transform:
-      Position: {x: -3, y: 1}
-      Rotation: 3
+      Position: {x: -3.03, y: 1.03}
+      Rotation: 1
     Required: 0
     HasDoor: 1
-    Odds: 0.25
+    Odds: 1
   Archetype: 2
+  UsePrefabConnectionMarkers: 0
+  MarkerPrefix: .ConnectionPoint_
+  ExplicitMarkerRefs: []
+  AnchorName: DoorAnchor

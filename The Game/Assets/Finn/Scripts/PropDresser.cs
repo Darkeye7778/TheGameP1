@@ -175,9 +175,9 @@ public static class PropDresser
 
     static bool IsInsideAnyDoorBand(Vector3 localPos, RoomProperties props, float grid, float doorHalfWidth, float doorHalfDepth)
     {
-        if (props == null || props.ConnectionPoints == null) return false;
+        if (props == null || props.GetResolvedConnectionPoints() == null) return false;
 
-        foreach (var c in props.ConnectionPoints)
+        foreach (var c in props.GetResolvedConnectionPoints())
         {
             var p2 = c.Transform.Position;              // grid coords
             int r = ((int)c.Transform.Rotation) & 3;    // 0=Z+, 1=X+, 2=Z-, 3=X-

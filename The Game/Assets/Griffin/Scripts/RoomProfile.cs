@@ -2,6 +2,8 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.LightTransport;
+using static UnityEngine.UI.Image;
 using Random = UnityEngine.Random;
 
 public class RoomProfile : MonoBehaviour
@@ -28,7 +30,7 @@ public class RoomProfile : MonoBehaviour
 
     private void Reset()
     {
-        if (!entranceAnchor) entranceAnchor = transform.Find("DoorAnchor");
+        if (entranceAnchor == null) entranceAnchor = transform.Find("DoorAnchor");
     }
 
     private void Awake()
@@ -40,12 +42,12 @@ public class RoomProfile : MonoBehaviour
         collider.size = Properties.CollisionBox;
         collider.center = Properties.CollisionOffset;
 
-        if (!entranceAnchor) entranceAnchor = transform.Find("DoorAnchor");
+        if (entranceAnchor == null) entranceAnchor = transform.Find("DoorAnchor");
     }
     
     public void GenerateLeafs()
     {
-        foreach (Connection connection in Properties.ConnectionPoints)
+        foreach (Connection connection in Properties.GetResolvedConnectionPoints())
         {
             if (!connection.Required &&
                 Random.Range(0f, 1f) > connection.Odds &&
@@ -66,7 +68,7 @@ public class RoomProfile : MonoBehaviour
                 Transform childAnchor =
                     (child && child.entranceAnchor) ? child.entranceAnchor : leaf.transform;
 
-                leaf.transform.rotation = connRot * Quaternion.Inverse(childAnchor.localRotation);
+                leaf.transform.rotation = connRot * /*Quaternion.Euler(0, 180, 0) */ Quaternion.Inverse(childAnchor.localRotation);
 
                 leaf.transform.position = connPos - leaf.transform.rotation * childAnchor.localPosition;
 
@@ -97,7 +99,7 @@ public class RoomProfile : MonoBehaviour
                 HasDoor = Properties.HasEntranceDoor
             });
         
-        foreach (Connection connection in Properties.ConnectionPoints)
+        foreach (Connection connection in Properties.GetResolvedConnectionPoints())
             GenerateExit(connection);
     }
 
@@ -118,10 +120,10 @@ public class RoomProfile : MonoBehaviour
 
         collider.enabled = false;
         bool hit = Physics.CheckBox(
-            transform.position + transform.rotation * Properties.CollisionOffset,
-            Properties.CollisionBox * 0.5f,
-            transform.rotation,
-            MapGenerator.Instance.GridMask
+        transform.position + transform.rotation * Properties.CollisionOffset,
+        Properties.CollisionBox * 0.5f,
+        transform.rotation,
+        MapGenerator.Instance.GridMask
         );
         collider.enabled = true;
         
@@ -161,15 +163,25 @@ public class RoomProfile : MonoBehaviour
 
     Vector3 GetConnWorldPos(Connection c)
     {
-        var localFromAnchor = GridToLocal(c.Transform.Position);
-        return (useAnchorAsOrigin && entranceAnchor)
-            ? entranceAnchor.TransformPoint(localFromAnchor)
-            : transform.TransformPoint(localFromAnchor);
+        float G = MapGenerator.GRID_SIZE;               // 5
+        Vector2 p = c.Transform.Position;                 // Vector2 (gridX, gridZ), origin at entry
+        Vector3 origin = (entranceAnchor != null) ? entranceAnchor.position : transform.position;      // world position of entry
+        var right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
+        var forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+
+        right = -right;
+        forward = -forward;
+
+        Vector3 world = origin
+              + right * (p.x * G)             // left/right along room X
+              + forward * (p.y * G);             // “into the room” along room Z
+        float y = (entranceAnchor != null) ? entranceAnchor.position.y : 0;
+        world.y = y;          // clamp height to door height (or 0)
+        return world;
     }
 
     Quaternion GetConnWorldRot(Connection c)
     {
-        var baseRot = (useAnchorAsOrigin && entranceAnchor) ? entranceAnchor.rotation : transform.rotation;
-        return baseRot * Direction.ToQuaternion(c.Transform.Rotation);
+        return transform.rotation * Direction.ToQuaternion(c.Transform.Rotation);
     }
 }
