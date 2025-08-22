@@ -5,7 +5,8 @@ public enum LevelClass
     Hub,        // Police station
     Office,
     Mansion,
-    Bunker
+    Bunker,
+    Test
 }
 
 

@@ -20,7 +20,6 @@ public class GenerationParams
     public List<PlayerSpawnPoint> PlayerSpawnPoints;
     public List<EnemySpawnPoint> EnemySpawnPoints;
     public List<TrapSpawnPoint> TrapSpawnPoints;
-
     public List<Bounds> PlacedBounds;
 }
 
@@ -67,6 +66,10 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] int maxSeedRetries = 8;
     int _seedTries = 0;
 
+    [Header("Debug")]
+    [SerializeField] bool DebugTrace = true;
+    [SerializeField] bool ForceFirstAttachIfEmpty = true;
+
     void Awake()
     {
         Instance = this;
@@ -100,62 +103,173 @@ public class MapGenerator : MonoBehaviour
         Generate();
     }
 
+    // ===================== MapGenerator.Generate() =====================
     public void Generate()
     {
         Cleanup();
 
-        if (CustomSeed == 0)
-            Seed = Random.Range(int.MinValue, int.MaxValue);
-        else
-            Seed = CustomSeed;
-        
+        Seed = (CustomSeed == 0) ? Random.Range(int.MinValue, int.MaxValue) : CustomSeed;
+        SpawnSeed = (CustomSpawnSeed == 0) ? System.Guid.NewGuid().GetHashCode() : CustomSpawnSeed;
         Random.InitState(Seed);
 
-        if (CustomSpawnSeed == 0)
-            SpawnSeed = System.Guid.NewGuid().GetHashCode();
-        else
-            SpawnSeed = CustomSpawnSeed;
+        const bool debugTrace = true;
+        const bool forceFirstAttachIfEmpty = true;
 
-        GameObject entry = Instantiate(Utils.PickRandom(Type.StartingRooms).Prefab);
-        RoomProfile entryProfile = entry.GetComponent<RoomProfile>();
-        
-        entryProfile.IsEntry = true;
-        foreach (RoomProfile room in entry.GetComponentsInChildren<RoomProfile>())
+        void TraceTileset()
         {
-            room.IsInEntryZone = true;
+            if (!debugTrace) return;
+            Debug.Log($"[GenDiag] MapType={(Type ? Type.name : "NULL")}  TargetRooms={TargetRooms}  MaxIterations={MaxIterations}  MaxLeafRetry={MaxLeafRetry}");
+            Debug.Log($"[GenDiag] Pools: Starting={(Type?.StartingRooms?.Length ?? 0)} Rooms={(Type?.Rooms?.Length ?? 0)} Halls={(Type?.Hallways?.Length ?? 0)}");
         }
-        entryProfile.Initialize();
 
-        Parameters.Rooms.Add(entryProfile);
-        Parameters.IterationRooms.Add(entryProfile);
-        Parameters.PlacedBounds.Add(WorldAABB(entryProfile));
+        void TraceEntry(RoomProfile entry)
+        {
+            if (!debugTrace || !entry || !entry.Properties) return;
+            var cps = entry.Properties.GetResolvedConnectionPoints();
+            Debug.Log($"[GenDiag] Entry={entry.name} CPs={cps.Length}");
+            for (int i = 0; i < cps.Length; i++)
+                Debug.Log($"[GenDiag]  CP[{i}] pos={cps[i].Transform.Position} dir={cps[i].Transform.Rotation} required={cps[i].Required} hasDoor={cps[i].HasDoor}");
+        }
+
+        bool TryForceFirstAttach(RoomProfile entry)
+        {
+            if (!entry || !entry.Properties) return false;
+
+            var points = entry.Properties.GetResolvedConnectionPoints();
+            if (points == null || points.Length == 0)
+            {
+                Debug.LogWarning("[GenDiag] Entry has 0 connection points.");
+                return false;
+            }
+
+            var ordered = new List<Connection>(points);
+            ordered.Sort((a, b) => b.Required.CompareTo(a.Required));
+            
+            int maxTries = Mathf.Max(6, (int)MaxLeafRetry * 2);
+
+            foreach (var parentCP in ordered)
+            {
+                for (int t = 0; t < maxTries; t++)
+                {
+                    var cell = PickRandomCell();
+                    var prefab = cell != null ? cell.Prefab : null;
+                    if (!prefab) break;
+
+                    var go = Instantiate(prefab);
+                    var child = go.GetComponent<RoomProfile>();
+                    if (!child) { Destroy(go); continue; }
+
+                    var childCPs = child.Properties != null ? child.Properties.GetResolvedConnectionPoints() : Array.Empty<Connection>();
+                    Connection? match = null;
+                    var want = Direction.Opposite(parentCP.Transform.Rotation);
+                    foreach (var c in childCPs) if (c.Transform.Rotation == want) { match = c; break; }
+                    if (match == null) { Destroy(go); continue; }
+
+                    if (!TryAttach(entry, parentCP, child, match.Value))
+                    {
+                        Destroy(go);
+                        continue;
+                    }
+
+                    child.Parent = entry;
+
+                    var m = typeof(RoomProfile).GetMethod("TryFit", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    bool ok = m != null && (bool)m.Invoke(child, null);
+
+                    if (ok)
+                    {
+                        if (debugTrace) Debug.Log($"[GenDiag] Forced first attach: entry={entry.name} -> child={child.name} via {parentCP.Transform.Rotation}");
+                        return true;
+                    }
+
+                    Destroy(go);
+                }
+            }
+
+            if (debugTrace) Debug.LogWarning("[GenDiag] Failed to force first attach on entry.");
+            return false;
+        }
+        
+        TraceTileset();
+        if (!Type)
+        {
+            Debug.LogError("[GenDiag] MapType is NULL. Cannot generate.");
+            return;
+        }
+        if ((Type.Rooms == null || Type.Rooms.Length == 0) && (Type.Hallways == null || Type.Hallways.Length == 0))
+        {
+            Debug.LogError("[GenDiag] MapType has no Rooms and no Hallways.");
+            return;
+        }
+        
+        GameObject entryGO = Instantiate(Utils.PickRandom(Type.StartingRooms).Prefab);
+        var entry = entryGO.GetComponent<RoomProfile>();
+
+        entry.IsEntry = true;
+        foreach (var r in entryGO.GetComponentsInChildren<RoomProfile>())
+            r.IsInEntryZone = true;
+
+        entry.Initialize();
+
+        RegisterPlacedRoom(entry);
+
+        TraceEntry(entry);
+
+        if (MaxIterations == 0 && forceFirstAttachIfEmpty)
+            TryForceFirstAttach(entry);
 
         for (uint i = 0; Parameters.RemainingRooms > 0 && i < MaxIterations; i++)
             Iterate();
-        
+
         Debug.Log($"Remaining rooms: {Parameters.RemainingRooms}");
 
+        for (int i = 0; i < Parameters.Rooms.Count; i++)
+            Parameters.Rooms[i].HasRoomLeaf = false;
+
+        for (int i = 0; i < Parameters.Rooms.Count; i++)
+        {
+            var r = Parameters.Rooms[i];
+            if (r && r.Properties && r.Properties.Type != RoomType.Hallway)
+                r.HasRoomLeaf = true;
+        }
+        
         for (int i = Parameters.Rooms.Count; i > 0; i--)
         {
-            RoomProfile room = Parameters.Rooms[i - 1];
-            
-            if(room.Parent == null)
-                continue;
-            
-            if (room.Properties.Type != RoomType.Hallway || room.HasRoomLeaf) 
-                room.Parent.HasRoomLeaf = room.HasRoomLeaf = true;
+            var r = Parameters.Rooms[i - 1];
+            if (r && r.Parent && r.HasRoomLeaf)
+                r.Parent.HasRoomLeaf = true;
         }
 
-        Parameters.Rooms.RemoveAll(RemoveRoomlessLeafs);
-        
+        int before = Parameters.Rooms.Count;
+        int removed = Parameters.Rooms.RemoveAll(RemoveRoomlessLeafs);
+        if (removed > 0)
+            Debug.Log($"[MapGen] Pruned {removed} roomless leaves, kept {Parameters.Rooms.Count}/{before}");
+
+        if (Parameters.RemainingRooms > 0)
+        {
+            _seedTries++;
+            if (_seedTries >= maxSeedRetries)
+            {
+                Debug.LogError($"[MapGenerator] Failed after {maxSeedRetries} attempts. Remaining = {Parameters.RemainingRooms}. " +
+                               "Check Starting room connection points and room pools.");
+                _seedTries = 0;
+                return;
+            }
+            Debug.LogWarning($"[MapGenerator] Degenerate Layout (remaining = {Parameters.RemainingRooms}). Retrying seed {_seedTries}/{maxSeedRetries}...");
+            CustomSeed = 0;
+            StartCoroutine(RestartNextFrame());
+            return;
+        }
+        _seedTries = 0;
+
         foreach (RoomProfile room in Parameters.Rooms)
             room.GenerateConnections();
-        
+
         Physics.SyncTransforms();
-        
-        foreach (ConnectionProfile connection in Parameters.Connections) 
+
+        foreach (ConnectionProfile connection in Parameters.Connections)
             connection.Generate();
-        
+
         Physics.SyncTransforms();
 
         _navMeshSurface.BuildNavMesh();
@@ -173,65 +287,71 @@ public class MapGenerator : MonoBehaviour
         }
 
         StartCoroutine(SpawnAllDeferred());
-
-        // Degenerate seed
-        if (Parameters.RemainingRooms <= 0)
-        {
-            _seedTries++;
-            if(_seedTries >= maxSeedRetries)
-            {
-                Debug.LogError($"[MapGenerator] Failed after {maxSeedRetries} attempts. Remaining = {Parameters.RemainingRooms}." + "Check Starting room connection points and room pools.");
-                _seedTries = 0;
-                return;
-            }
-            Debug.LogWarning($"[MapGenerator] Degenerate Layout (remaining = {Parameters.RemainingRooms}). Retrying seed {_seedTries}/{maxSeedRetries}...");
-            CustomSeed = 0;
-
-            StartCoroutine(RestartNextFrame());
-            return;
-        }
-
-        _seedTries = 0;
     }
+
+
 
     public void SpawnAll()
     {
+        if (true) Debug.Log("[GenDiag] SpawnAll() start");
         System.Random spawnRng = new System.Random(SpawnSeed);
 
         Transform spawnPoint;
+        bool usedFallback = false;
+
         if (Parameters.PlayerSpawnPoints != null && Parameters.PlayerSpawnPoints.Count > 0)
         {
             spawnPoint = Utils.PickRandom(Parameters.PlayerSpawnPoints).transform;
+            Debug.Log($"[GenDiag] Using PlayerSpawnPoint: {spawnPoint.name} at {spawnPoint.position}");
         }
         else
         {
+            usedFallback = true;
+            
             var entryRoom = Parameters.Rooms.Find(r => r.IsEntry);
             Vector3 pos = entryRoom ? entryRoom.transform.position + Vector3.up : Vector3.up;
 
+            if (entryRoom && entryRoom.floor)
+            {
+                var floorCol = entryRoom.floor.GetComponent<Collider>();
+                if (floorCol)
+                    pos = new Vector3(floorCol.bounds.center.x, floorCol.bounds.max.y + 0.05f, floorCol.bounds.center.z);
+            }
+
             var tmp = new GameObject("FallbackPlayerSpawn");
             tmp.transform.position = pos;
-            gameManager.instance.RegisterEntity(tmp); 
+            gameManager.instance.RegisterEntity(tmp);
 
             Debug.LogWarning("No PlayerSpawnPoint found; using fallback near entry.");
             spawnPoint = tmp.transform;
+            Debug.Log($"[GenDiag] Fallback spawn at {spawnPoint.position}");
         }
 
+        Vector3 p = spawnPoint.position;
+        
+        if (usedFallback)
+        {
+            if (Physics.Raycast(p + Vector3.up * 2f, Vector3.down, out var hit, 5f, ~0, QueryTriggerInteraction.Ignore))
+                p = hit.point + Vector3.up * 0.05f;
+            
+            if (UnityEngine.AI.NavMesh.SamplePosition(p, out var nHit, 5f, UnityEngine.AI.NavMesh.AllAreas))
+                p = nHit.position + Vector3.up * 0.05f;
+        }
+
+        Debug.Log($"[GenDiag] Final player spawn pos: {p}  (usedFallback={usedFallback})");
 
         GameObject player = gameManager.instance.player;
         if (player == null)
         {
-            player = Instantiate(Type.Player, spawnPoint.position, Quaternion.identity);
+            player = Instantiate(Type.Player, p, Quaternion.identity);
             gameManager.instance.SetPlayer(player);
 
             var pc = player.GetComponent<PlayerController>();
-            Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
             if (pc != null)
             {
                 pc.ResetState();
                 pc.GrantTemporaryInvulnerability(1.0f);
-                Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
             }
-            Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
         }
         else
         {
@@ -239,30 +359,27 @@ public class MapGenerator : MonoBehaviour
             if (controller != null)
             {
                 controller.enabled = false;
-                controller.transform.position = spawnPoint.position;
+                controller.transform.position = p;
                 controller.enabled = true;
             }
-            else player.transform.position = spawnPoint.position;
+            else player.transform.position = p;
 
             var pc = player.GetComponent<PlayerController>();
-            Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
-
             if (pc != null)
             {
                 pc.ResetState();
                 pc.GrantTemporaryInvulnerability(1.0f);
-                Debug.Log($"[Spawn] Health={pc.Health}, Max={pc.MaximumHealth}");
             }
 
             var inventory = player.GetComponent<PlayerInventory>();
             if (inventory != null) inventory.ResetWeapons();
         }
 
-
         SpawnOnNavMesh(Type.Enemies, EnemySpawnAmount, spawnRng);
         SpawnOnNavMesh(Type.Hostages, HostageSpawnAmount, spawnRng);
         Spawn(ref Parameters.TrapSpawnPoints, ref Type.Traps, TrapSpawnAmount);
     }
+
 
     private void CollectSpawnPointsFromRooms()
     {
@@ -352,33 +469,49 @@ public class MapGenerator : MonoBehaviour
 
     public void Cleanup()
     {
-
         if (_navMeshSurface != null)
-        {
             _navMeshSurface.RemoveData();
-        }
 
         if (Parameters != null)
         {
-            foreach (RoomProfile room in Parameters.Rooms)
-                DestroyImmediate(room.gameObject);
+            // Snapshot everything we might destroy to avoid "collection modified" and MissingReference during enumeration
+            var toDestroy = new HashSet<GameObject>();
 
-            foreach (EnemySpawnPoint spawn in Parameters.EnemySpawnPoints)
-                DestroyImmediate(spawn);
-            
-            foreach (TrapSpawnPoint spawn in Parameters.TrapSpawnPoints)
-                DestroyImmediate(spawn);
-            
-            foreach (HostageSpawnPoint spawn in Parameters.HostageSpawnPoints)
-                DestroyImmediate(spawn);
-            
-            foreach (PlayerSpawnPoint spawn in Parameters.PlayerSpawnPoints)
-                DestroyImmediate(spawn);
+            void AddAll<T>(IEnumerable<T> comps) where T : Component
+            {
+                if (comps == null) return;
+                foreach (var c in comps)
+                {
+                    if (!c) continue;                // destroyed/null-safe
+                    var go = c.gameObject;
+                    if (go) toDestroy.Add(go);
+                }
+            }
+
+            AddAll(Parameters.Rooms);
+            AddAll(Parameters.Connections);
+            AddAll(Parameters.PlayerSpawnPoints);
+            AddAll(Parameters.EnemySpawnPoints);
+            AddAll(Parameters.TrapSpawnPoints);
+            AddAll(Parameters.HostageSpawnPoints);
+
+            // Destroy unique gameobjects (safe in Edit/Play)
+            foreach (var go in toDestroy)
+                SafeDestroy(go);
+
+            // Make sure lists are empty and won’t hold destroyed refs
+            Parameters.Rooms.Clear();
+            Parameters.Connections.Clear();
+            Parameters.PlayerSpawnPoints.Clear();
+            Parameters.EnemySpawnPoints.Clear();
+            Parameters.TrapSpawnPoints.Clear();
+            Parameters.HostageSpawnPoints.Clear();
         }
 
+        // Fresh parameter object for the next run
         Parameters = new GenerationParams
         {
-            RemainingRooms = (int) TargetRooms,
+            RemainingRooms = (int)TargetRooms,
             Rooms = new List<RoomProfile>(),
             IterationRooms = new List<RoomProfile>(),
             IterationBackbuffer = new List<RoomProfile>(),
@@ -546,18 +679,27 @@ public class MapGenerator : MonoBehaviour
         t.eulerAngles = e;
     }
 
-    static Bounds WorldAABB(RoomProfile room)
+    public Bounds WorldAABB(RoomProfile room)
     {
-        Bounds? acc = null;
-        var rends = room.GetComponentsInChildren<Renderer>(true);
-        for (int i = 0; i < rends.Length; i++)
-            acc = acc == null ? rends[i].bounds : Encapsulate(acc.Value, rends[i].bounds);
+        Transform t = room.transform;
+        Vector3 size = room.Properties.CollisionBox;
+        Vector3 center = room.Properties.CollisionOffset;
 
-        var cols = room.GetComponentsInChildren<Collider>(true);
-        for (int i = 0; i < cols.Length; i++)
-            acc = acc == null ? cols[i].bounds : Encapsulate(acc.Value, cols[i].bounds);
+        Vector3 half = size * 0.5f;
 
-        return acc ?? new Bounds(room.transform.position, Vector3.one);
+        Vector3[] corners = new Vector3[8];
+        int k = 0;
+        for (int sx = -1; sx <= 1; sx += 2)
+            for (int sy = -1; sy <= 1; sy += 2)
+                for (int sz = -1; sz <= 1; sz += 2)
+                {
+                    Vector3 local = center + new Vector3(half.x * sx, half.y * sy, half.z * sz);
+                    corners[k++] = t.TransformPoint(local);
+                }
+
+        Bounds b = new Bounds(corners[0], Vector3.zero);
+        for (int i = 1; i < 8; i++) b.Encapsulate(corners[i]);
+        return b;
     }
 
     static Bounds Encapsulate(Bounds a, Bounds b) { a.Encapsulate(b); return a; }
@@ -570,7 +712,7 @@ public class MapGenerator : MonoBehaviour
         return false;
     }
 
-    public static bool TryAttach(RoomProfile parent, Connection parentCP, RoomProfile child, Connection childCP, float wallThickness = 0.30f, float gap = 0.02f)
+    public static bool TryAttach(RoomProfile parent, Connection parentCP, RoomProfile child, Connection childCP, float epsilon = 0.005f)
     {
         Vector3 P = parent.GetConnWorldPos(parentCP);
         Vector3 C = child.GetConnWorldPos(childCP);
@@ -587,25 +729,79 @@ public class MapGenerator : MonoBehaviour
         RotateYaw(child.transform, yaw);
 
         C = child.GetConnWorldPos(childCP);
+        
+        Vector3 cCenter = child.transform.TransformPoint(child.Properties.CollisionOffset);
+
+        static int DominantAxisIndex(Vector3 n, Transform t)
+        {
+            n = n.normalized;
+            float dx = Mathf.Abs(Vector3.Dot(n, t.right));
+            float dy = Mathf.Abs(Vector3.Dot(n, t.up));
+            float dz = Mathf.Abs(Vector3.Dot(n, t.forward));
+            if (dx >= dy && dx >= dz) return 0;
+            if (dy >= dz) return 1;
+            return 2;
+        }
+        static float HalfSizeAlong(int axisIndex, Vector3 size)
+            => (axisIndex == 0 ? size.x : axisIndex == 1 ? size.y : size.z) * 0.5f;
+
+        static float DistancePointToFace(Vector3 n, Transform t, Vector3 centerWorld, Vector3 size, Vector3 pointWorld)
+        {
+            n = n.normalized;
+            int i = DominantAxisIndex(n, t);
+            Vector3 axis = (i == 0 ? t.right : i == 1 ? t.up : t.forward);
+            float half = HalfSizeAlong(i, size);
+            float sign = Mathf.Sign(Vector3.Dot(n, axis));
+            Vector3 facePoint = centerWorld + axis * (sign * half);
+            return Vector3.Dot(n, (facePoint - pointWorld));
+        }
+
+        Vector3 nChildOut = -faceP;
+        float dChild = DistancePointToFace(nChildOut, child.transform, cCenter, child.Properties.CollisionBox, C);
+
+        if (Mathf.Abs(dChild) > 1e-5f)
+        {
+            child.transform.position += -nChildOut * dChild;
+            C = child.GetConnWorldPos(childCP);
+        }
 
         Vector3 delta = P - C;
         child.transform.position += delta;
 
-        child.transform.position += faceP * (gap - wallThickness * 0.5f);
+        if (epsilon > 0f)
+            child.transform.position += faceP * epsilon;
 
         return true;
     }
 
-    public bool RegisterPlacedRoom(RoomProfile room, float margin = 0.02f)
+
+    public bool RegisterPlacedRoom(RoomProfile room, float margin = 0.015f)
     {
-        if (room == null) return false;
+        Bounds trueB = WorldAABB(room);
 
-        Bounds b = WorldAABB(room);
-        if (OverlapsAny(b, Parameters.PlacedBounds, margin))
-            return false;
+        Bounds testB = trueB;
+        testB.Expand(-2f * margin);
 
-        Parameters.PlacedBounds.Add(b);
+        foreach (var existing in Parameters.PlacedBounds)
+        {
+            Bounds ex = existing;
+            ex.Expand(-2f * margin);
+
+            if (testB.Intersects(ex))
+            {
+                Debug.Log($"[AABB] Reject {room.name} against existing bounds.");
+                return false;
+            }
+        }
+
+        Parameters.PlacedBounds.Add(trueB);
         return true;
+    }
+    static void SafeDestroy(GameObject go)
+    {
+        if (!go) return;
+        if (Application.isPlaying) Destroy(go);
+        else DestroyImmediate(go);
     }
 }
 

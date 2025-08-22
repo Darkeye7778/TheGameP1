@@ -29,6 +29,32 @@ public class RoomProfile : MonoBehaviour
     float G => MapGenerator.GRID_SIZE;
     Vector3 GridToLocal(Vector2 grid) => new Vector3(grid.x * G, 0f, grid.y * G);
 
+    private Connection[] _resolvedConnections;   // per-instance copy
+    private int _entranceIdx = -1;
+
+    private Connection[] GetResolved()
+    {
+        return _resolvedConnections ??= (Properties != null
+            ? Properties.GetResolvedConnectionPoints()
+            : Array.Empty<Connection>());
+    }
+
+    public void MarkEntrance(Connection used)
+    {
+        var arr = GetResolved();
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if (arr[i].Transform.Position == used.Transform.Position &&
+                arr[i].Transform.Rotation == used.Transform.Rotation)
+            {
+                arr[i].IsEntrance = true;   // mark the *used* CP as entrance
+                _resolvedConnections[i] = arr[i];
+                _entranceIdx = i;
+                return;
+            }
+        }
+    }
+
     private void Reset()
     {
         if (entranceAnchor == null) entranceAnchor = transform.Find("DoorAnchor");
@@ -48,88 +74,65 @@ public class RoomProfile : MonoBehaviour
 
     public void GenerateLeafs()
     {
-        foreach (Connection connection in Properties.GetResolvedConnectionPoints())
+        var points = Properties != null ? Properties.GetResolvedConnectionPoints() : Array.Empty<Connection>();
+        if (points.Length == 0) return;
+
+        foreach (var parentCP in points)
         {
-            if (!connection.Required &&
-                Random.Range(0f, 1f) > connection.Odds &&
-                MapGenerator.Instance.Parameters.RemainingRooms <= 0)
-                continue;
+            if (!parentCP.Required)
+            {
+                if (MapGenerator.Instance.Parameters.RemainingRooms <= 0) continue;
+                if (UnityEngine.Random.value > parentCP.Odds) continue;
+            }
 
-            Vector3 connPos = GetConnWorldPos(connection);
-            Quaternion connRot = GetConnWorldRot(connection);
-
-            for (uint i = 0; i < MapGenerator.Instance.MaxLeafRetry; i++)
+            for (uint t = 0; t < MapGenerator.Instance.MaxLeafRetry; t++)
             {
                 var cell = MapGenerator.Instance.PickRandomCell();
-                var prefab = cell.Prefab;
+                var prefab = cell != null ? cell.Prefab : null;
+                if (!prefab) break;
 
-                GameObject leaf = Instantiate(prefab);
-                RoomProfile child = leaf.GetComponent<RoomProfile>();
-                if (child == null)
+                var go = Instantiate(prefab);
+                var child = go.GetComponent<RoomProfile>();
+                if (!child) { Destroy(go); continue; }
+
+                var childCPs = child.Properties != null ? child.Properties.GetResolvedConnectionPoints() : Array.Empty<Connection>();
+                Connection? match = null;
+                var want = Direction.Opposite(parentCP.Transform.Rotation);
+                foreach (var c in childCPs)
+                    if (c.Transform.Rotation == want) { match = c; break; }
+                if (match == null) { Destroy(go); continue; }
+
+                if (!MapGenerator.TryAttach(this, parentCP, child, match.Value))
                 {
-                    Debug.LogError("[MapGen] Prefab '" + prefab.name + "' is missing RoomProfile.");
-                    DestroyImmediate(leaf);
-                    continue;
-                }
-
-                ExitDirection want = Opposite(connection.Transform.Rotation);
-                Connection[] childCps = child.Properties.GetResolvedConnectionPoints();
-                List<int> candidates = new List<int>();
-                for (int k = 0; k < childCps.Length; k++)
-                {
-                    if (childCps[k].Transform.Rotation == want && childCps[k].HasDoor && childCps[k].Odds > 0f)
-                        candidates.Add(k);
-                }
-
-                if (candidates.Count == 0)
-                {
-                    DestroyImmediate(leaf);
-                    continue;
-                }
-
-                int childCpIndex = candidates[Random.Range(0, candidates.Count)];
-                Connection childCP = childCps[childCpIndex];
-
-                bool attached = MapGenerator.TryAttach(this, connection, child, childCP, 0.30f, 0.02f);
-                if (!attached)
-                {
-                    DestroyImmediate(leaf);
-                    continue;
-                }
-
-                if (!MapGenerator.Instance.RegisterPlacedRoom(child))
-                {
-                    DestroyImmediate(leaf);
+                    Destroy(go);
                     continue;
                 }
 
                 child.Parent = this;
                 IsLeaf = false;
-                if (child.TryFit())
-                    break;
+
+                if (child.TryFit()) break;
             }
         }
     }
 
 
+
+
     public void GenerateConnections()
     {
-        if(!IsEntry)
-            GenerateExit(new Connection
-            {
-                Transform = new GridTransform(Vector2Int.zero, ExitDirection.South),
-                Required = true,
-                IsEntrance = true,
-                HasDoor = Properties.HasEntranceDoor
-            });
-        
-        foreach (Connection connection in Properties.GetResolvedConnectionPoints())
+        foreach (var connection in GetResolved())
             GenerateExit(connection);
     }
 
     private void GenerateExit(Connection connection)
     {
         GameObject exit = Instantiate(MapGenerator.Instance.ExitPrefab, transform);
+
+        int exitLayer = MapGenerator.Instance.ExitLayer;
+        foreach (var t in exit.GetComponentsInChildren<Transform>(true))
+            t.gameObject.layer = exitLayer;
+
         exit.transform.SetPositionAndRotation(
             GetConnWorldPos(connection),
             GetConnWorldRot(connection)
@@ -137,6 +140,7 @@ public class RoomProfile : MonoBehaviour
 
         exit.GetComponent<ConnectionProfile>().Connection = connection;
     }
+
 
     private bool CheckCollision()
     {
@@ -157,24 +161,39 @@ public class RoomProfile : MonoBehaviour
     private bool TryFit()
     {
         bool didFit = !CheckCollision();
-        
-        if(!didFit)
+
+        if (didFit)
         {
-            GetComponent<Collider>().enabled = false;
+            const float aabbMargin = 0.015f; // 1.5 cm
+            if (!MapGenerator.Instance.RegisterPlacedRoom(this, aabbMargin))
+                didFit = false;
+        }
+
+        if (!didFit)
+        {
+            Debug.LogWarning($"[FitFail] {name} under parent {Parent?.name}  phys=False aabb=True");
+            var col = GetComponent<Collider>(); if (col) col.enabled = false;
             DestroyImmediate(gameObject);
         }
         else
+        {
             Initialize();
-
+        }
         return didFit;
     }
+
+
+
+
 
     public void Initialize()
     {
         MapGenerator.Instance.Parameters.IterationRooms.Add(this);
         MapGenerator.Instance.Parameters.Rooms.Add(this);
-            
-        if(Properties.Type != RoomType.Hallway)
+
+        if (IsEntry) return;
+
+        if (Properties.Type != RoomType.Hallway)
             MapGenerator.Instance.Parameters.RemainingRooms--;
     }
 
@@ -197,6 +216,9 @@ public class RoomProfile : MonoBehaviour
         Vector3 right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
 
+        //right = -right;
+        //forward = -forward;
+            
         Vector3 world = origin + right * (p.x * G) + forward * (p.y * G);
 
         float y = (entranceAnchor != null) ? entranceAnchor.position.y : origin.y;

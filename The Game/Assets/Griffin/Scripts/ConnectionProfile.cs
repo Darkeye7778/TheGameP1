@@ -24,19 +24,70 @@ public class ConnectionProfile : MonoBehaviour
 
     public void Generate()
     {
-        if (!Generated)
-        {
-            Collider collider = GetComponent<Collider>();
-            collider.enabled = false;
-            Connected = Physics.Raycast(
-                transform.position + transform.forward * -0.1f,
-                transform.forward, out RaycastHit hit, 1f,
-                MapGenerator.Instance.ExitMask);
-            collider.enabled = true;
+        if (Generated) return;
 
-            if (Connected)
+        var col = GetComponent<Collider>();
+        bool prevEnabled = col ? col.enabled : true;
+        if (col) col.enabled = false;
+        
+        int mask = MapGenerator.Instance.ExitMask;
+        Vector3 origin = transform.position - transform.forward * 0.02f;
+        float radius = 0.08f;
+
+        Connected = false;
+        Other = null;
+
+        var hits = Physics.OverlapSphere(origin, radius, mask, QueryTriggerInteraction.Ignore);
+        if (hits != null && hits.Length > 0)
+        {
+            float best = float.MaxValue;
+            for (int i = 0; i < hits.Length; i++)
             {
-                Other = hit.collider.GetComponent<ConnectionProfile>();
+                var cp = hits[i].GetComponent<ConnectionProfile>();
+                if (!cp || cp == this) continue;
+
+                float facing = Vector3.Dot(transform.forward, -cp.transform.forward);
+                if (facing < 0.85f) continue;
+
+                float d = (cp.transform.position - origin).sqrMagnitude;
+                if (d < best)
+                {
+                    best = d;
+                    Other = cp;
+                }
+            }
+
+            if (Other) Connected = true;
+        }
+
+        if (!Connected)
+        {
+            if (Physics.Raycast(origin, transform.forward, out var hit, 1.5f, mask, QueryTriggerInteraction.Ignore))
+            {
+                var cp = hit.collider.GetComponent<ConnectionProfile>();
+                if (cp && cp != this)
+                {
+                    float facing = Vector3.Dot(transform.forward, -cp.transform.forward);
+                    if (facing >= 0.85f)
+                    {
+                        Other = cp;
+                        Connected = true;
+                    }
+                }
+            }
+        }
+
+        if (col) col.enabled = prevEnabled;
+
+        if (Connected)
+        {
+            if (!Other || !Other.gameObject)
+            {
+                Connected = false;
+                Other = null;
+            }
+            else
+            {
                 Other.Generated = true;
                 Other.Connected = true;
                 Other.Other = this;
@@ -48,27 +99,29 @@ public class ConnectionProfile : MonoBehaviour
 
         if (!Connected)
         {
-            // was: Instantiate(Utils.PickRandom(MapGenerator.Instance.Type.ClosedDoors), transform);
             TrySpawnRandom(MapGenerator.Instance.Type.ClosedDoors, transform);
             return;
         }
 
-        bool isEntrance = Connection.IsEntrance || Other.Connection.IsEntrance;
-        if (!isEntrance && UnityEngine.Random.Range(0f, 1f) > MapGenerator.Instance.Type.ConnectRoomsOdds)
+        bool keep =
+            Connection.IsEntrance || (Other != null && Other.Connection.IsEntrance) ||
+            Connection.Required || (Other != null && Other.Connection.Required);
+
+        if (!keep && Random.Range(0f, 1f) > MapGenerator.Instance.Type.ConnectRoomsOdds)
         {
             Connected = false;
-            Other.Connected = false;
+            if (Other != null) Other.Connected = false;
             TrySpawnRandom(MapGenerator.Instance.Type.ClosedDoors, transform);
             return;
         }
 
-        bool isDoor = Connection.HasDoor || Other.Connection.HasDoor;
-        if (!Generated && isDoor)
-        {
-            // was: Instantiate(Utils.PickRandom(MapGenerator.Instance.Type.OpenDoors), transform);
+        bool wantsDoor = Connection.HasDoor || (Other != null && Other.Connection.HasDoor);
+        if (wantsDoor && !Generated)
             TrySpawnRandom(MapGenerator.Instance.Type.OpenDoors, transform);
-        }
+
+        Generated = true;
     }
+
 
     private void Update()
     {

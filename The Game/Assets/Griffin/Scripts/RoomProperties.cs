@@ -30,7 +30,7 @@ public static class Direction
 {
     public static ExitDirection AddDirection(ExitDirection a, ExitDirection b)
     {
-        return (ExitDirection) ((uint)a + (uint)b % 4);
+        return (ExitDirection)(((int)a + (int)b) & 3);
     }
 
     public static float GetDirection(ExitDirection direction)
@@ -50,7 +50,7 @@ public static class Direction
 
     public static ExitDirection Opposite(ExitDirection a)
     {
-        return AddDirection(a, (ExitDirection)2);
+        return (ExitDirection)(((int)a + 2) & 3);
     }
 
     public static ExitDirection RotateToSouth(ExitDirection a)
@@ -92,7 +92,7 @@ public struct GridTransform
 
     public GridTransform Inverse()
     {
-        return new GridTransform(-Position, Direction.RotateToSouth(Rotation));
+        return new GridTransform(-Position, Direction.Opposite(Rotation));
     }
 }
 
@@ -138,7 +138,6 @@ public class RoomProperties : ScriptableObject
     {
         if (!UsePrefabConnectionMarkers || Prefab == null)
         {
-            Debug.LogError($"The points of connections are {ConnectionPoints} on {Prefab.name}");
             return ConnectionPoints;
         }
         //Debug.Log($"The points of connection are {BuildConnectionsFromPrefab(Prefab)}");
