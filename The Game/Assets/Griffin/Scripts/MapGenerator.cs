@@ -70,6 +70,14 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] bool DebugTrace = true;
     [SerializeField] bool ForceFirstAttachIfEmpty = true;
 
+    [SerializeField] LayerMask navIncludeLayers = ~0;
+    [SerializeField] bool navUseColliders = true;
+    [SerializeField] float navPadding = 2f;
+
+    //[SerializeField] string navProxyLayerName = "NavProxy";
+    //[SerializeField] float navProxyThickness = 0.04f;
+    //[SerializeField] float navProxyPad = 0.02f;
+    //private float _baseFloorY;
     void Awake()
     {
         Instance = this;
@@ -103,7 +111,6 @@ public class MapGenerator : MonoBehaviour
         Generate();
     }
 
-    // ===================== MapGenerator.Generate() =====================
     public void Generate()
     {
         Cleanup();
@@ -272,7 +279,7 @@ public class MapGenerator : MonoBehaviour
 
         Physics.SyncTransforms();
 
-        _navMeshSurface.BuildNavMesh();
+        RebuildNavMeshForRooms();
 
         if (CurrentLevelDefinition != null && CurrentLevelDefinition.CategoryTable != null)
         {
@@ -765,6 +772,9 @@ public class MapGenerator : MonoBehaviour
             C = child.GetConnWorldPos(childCP);
         }
 
+        AlignChildFloorYToParent(parent, child);
+        C = child.GetConnWorldPos(childCP);
+
         Vector3 delta = P - C;
         child.transform.position += delta;
 
@@ -802,6 +812,60 @@ public class MapGenerator : MonoBehaviour
         if (!go) return;
         if (Application.isPlaying) Destroy(go);
         else DestroyImmediate(go);
+    }
+
+    Bounds ComputeRoomsWorldBounds()
+    {
+        Bounds b = new Bounds(Vector3.zero, Vector3.zero);
+        bool inited = false;
+        foreach (var r in Parameters.Rooms)
+        {
+            if (!r) continue;
+            var rb = WorldAABB(r);
+            if (!inited) { b = rb; inited = true; }
+            else b.Encapsulate(rb);
+        }
+        if (!inited) b = new Bounds(transform.position, Vector3.one * 4f);
+        b.Expand(new Vector3(navPadding * 2f, 4f, navPadding * 2f));
+        return b;
+    }
+
+    void RebuildNavMeshForRooms()
+    {
+        _navMeshSurface.layerMask = navIncludeLayers;
+        _navMeshSurface.useGeometry = navUseColliders ? NavMeshCollectGeometry.PhysicsColliders : NavMeshCollectGeometry.RenderMeshes;
+
+        if (_navMeshSurface.collectObjects == CollectObjects.Volume)
+        {
+            var wb = ComputeRoomsWorldBounds();
+            _navMeshSurface.center = _navMeshSurface.transform.InverseTransformPoint(wb.center);
+            _navMeshSurface.size = Vector3.Scale(wb.size, new Vector3(1f / _navMeshSurface.transform.lossyScale.x, 1f / _navMeshSurface.transform.lossyScale.y, 1f / _navMeshSurface.transform.lossyScale.z));
+        }
+        else if (_navMeshSurface.collectObjects == CollectObjects.Children)
+        {
+            foreach (var r in Parameters.Rooms)
+                if (r && r.transform.parent != _navMeshSurface.transform)
+                    r.transform.SetParent(_navMeshSurface.transform, true);
+        }
+
+        _navMeshSurface.BuildNavMesh();
+    }
+
+    static void AlignChildFloorYToParent(RoomProfile parent, RoomProfile child)
+    {
+        if (!parent || !child) return;
+        if (!parent.floor || !child.floor) return;
+
+        var pCol = parent.floor.GetComponent<Collider>();
+        var cCol = child.floor.GetComponent<Collider>();
+        if (!pCol || !cCol) return;
+
+        float parentTop = pCol.bounds.max.y;
+        float childTop = cCol.bounds.max.y;
+
+        float dy = parentTop - childTop;
+        if (Mathf.Abs(dy) > 0.0005f)
+            child.transform.position += new Vector3(0f, dy, 0f);
     }
 }
 
