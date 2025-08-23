@@ -54,7 +54,7 @@ public class TerroristWander : AIState
             return;
         }
 
-        _startTimer = Controller.Agent.isStopped || Controller.Agent.remainingDistance < StoppingDistance;
+        _startTimer = !Controller.Agent.pathPending && (Controller.Agent.isStopped || Controller.Agent.remainingDistance < StoppingDistance);
         if (_startTimer)
             _resetTimer = Random.Range(MinWaitTime, MaxWaitTime);
 

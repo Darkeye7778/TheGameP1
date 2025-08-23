@@ -142,7 +142,7 @@ public class TerroristFollowEnemy : AIState
         {
             InventoryThought thought = new InventoryThought
             {
-                MinTime = MinThinkTime,
+                MinTime = MinThinkTime, 
                 MaxTime = MaxThinkTime,
                 Flags = Inventory.InputState.FiringFirst
             };

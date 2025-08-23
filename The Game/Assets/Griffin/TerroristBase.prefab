@@ -88,7 +88,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 30
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -226,6 +226,7 @@ MonoBehaviour:
     Radius: 1
     Length: 0
     Priority: 0
+    Volume: 1
   HitPoints:
   - {fileID: 7522390343214315492}
   - {fileID: 227040516816203434}
@@ -259,7 +260,7 @@ MonoBehaviour:
     m_Bits: 513
   Eye: {fileID: 2114098535556427591}
   SightDistance: 50
-  SightAngle: 75
+  SightAngle: 45
   MemoryTime: 8
   SpottingTime:
     serializedVersion: 2
@@ -360,7 +361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c38452a24ebd0947b0568021026ad3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StoppingDistance: 2
+  StoppingDistance: 1
   <InvestigateSound>k__BackingField:
     Sounds:
     - {fileID: 8300000, guid: bf9fca29d6732314bb80e5442344217b, type: 3}
@@ -371,6 +372,7 @@ MonoBehaviour:
     Radius: 1
     Length: 0
     Priority: 0
+    Volume: 1
 --- !u!114 &3220675043529310407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392,6 +394,7 @@ MonoBehaviour:
     Radius: 1
     Length: 0
     Priority: 0
+    Volume: 1
   FollowingDistance: 5
   MinFollowingDistance: 2
   FaceSpeed: 3.5
@@ -459,6 +462,7 @@ MonoBehaviour:
       Radius: 1
       Length: 0
       Priority: 0
+      Volume: 1
     Layer: 0
     Emitter: {fileID: 0}
     Position: {x: 0, y: 0, z: 0}

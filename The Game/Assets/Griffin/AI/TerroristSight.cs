@@ -66,7 +66,7 @@ public class TerroristSight : AISight
         float distance = direction.magnitude;
         float angle = Vector3.Angle(transform.forward, direction / distance);
 
-        return distance <= SightDistance || angle <= SightAngle;
+        return distance <= SightDistance && angle <= SightAngle;
     }
 
     public override bool CheckTargetRay(Ray ray, IDamagable target = null)

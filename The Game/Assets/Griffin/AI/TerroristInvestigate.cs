@@ -15,19 +15,20 @@ public class TerroristInvestigate : AIInvestigateState
     {
         base.OnStart(controller, previousState);
 
-        controller.Agent.SetDestination(Target);
+        Controller.Agent.SetDestination(Target);
         Controller.Agent.stoppingDistance = StoppingDistance;
         Controller.IK.LookAt = Target;
         
-        if (previousState == controller.WanderState) 
+        if (previousState == controller.WanderState)
             Controller.AudioSource.PlayOneShot(InvestigateSound.PickSound());
     }
 
     public override void OnUpdate()
     {
+        Controller.Agent.destination = Target;
         Controller.IK.LookAtWeight = Mathf.Lerp(Controller.IK.LookAtWeight, Controller.Sight.CheckTargetFOV(Target) ? 1f : 0f, Time.deltaTime * 10);
         
-        if(Controller.Agent.isStopped || Controller.Agent.remainingDistance < StoppingDistance)
+        if(!Controller.Agent.pathPending && Controller.Agent.remainingDistance < StoppingDistance) 
             Controller.SetState(Controller.WanderState);
     }
 }
