@@ -9,6 +9,7 @@ public class Sound
     public float Radius = 1;
     public float Length = 0;
     public int Priority = 0;
+    public float Volume = 1;
 
     [CanBeNull]
     public AudioClip PickSound()

@@ -6,6 +6,11 @@ public class HostageAI : MonoBehaviour, IDamagable
     [SerializeField] Renderer model;
     [SerializeField] float HP;
     [SerializeField] private Transform Head;
+    [SerializeField] private Sound Voicelines;
+    [SerializeField] private float MinVoicelineInterval, MaxVoicelineInterval;
+    private AudioSource _audioSource;
+
+    private float _timer;
 
     Color colorOrig;
 
@@ -14,11 +19,21 @@ public class HostageAI : MonoBehaviour, IDamagable
     void Start()
     {
         colorOrig = model.material.color;
+        _audioSource = GetComponent<AudioSource>();
+        _timer = Random.Range(MinVoicelineInterval, MaxVoicelineInterval);
     }
 
     // Update is called once per frame
     void Update()
     {
+        _timer -= Time.deltaTime;
+
+        if (_timer <= 0)
+        {
+            _timer = Random.Range(MinVoicelineInterval, MaxVoicelineInterval);
+            _audioSource.PlayOneShot(Voicelines.PickSound(), Voicelines.Volume);
+        }
+            
         if (playerInTrigger)
         {
             Destroy(gameObject);
