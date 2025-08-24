@@ -271,7 +271,7 @@ public class Inventory : MonoBehaviour
         if(_weaponMovement != null) 
             _weaponMovement.AddRecoil(CurrentWeapon.Weapon.RecoilIntensity);
         
-        AudioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound.PickSound());
+        AudioSource.PlayOneShot(CurrentWeapon.Weapon.FireSound.PickSound(), CurrentWeapon.Weapon.FireSound.Volume);
         
         if(_emitsSound)
             SoundManager.Instance.EmitSound(new SoundInstance(CurrentWeapon.Weapon.FireSound, gameObject));

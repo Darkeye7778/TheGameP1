@@ -199,6 +199,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (_moving && _footstepOffset >= FootstepOffset)
         {
             _footstepAudioSource.clip = _ground.SoundSettings.Footstep.PickSound();
+            _footstepAudioSource.volume = _ground.SoundSettings.Footstep.Volume;
             _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
 
@@ -206,7 +207,7 @@ public class PlayerController : MonoBehaviour, IDamagable
             if (_crouch) multiplier *= CrouchSoundRadius;
             if (_running) multiplier *= RunningSoundRadius;
             
-            SoundManager.Instance.EmitSound(new SoundInstance(_ground.SoundSettings.Footstep, _footstepAudioSource.clip, gameObject, multiplier));
+            SoundManager.Instance.EmitSound(new SoundInstance(_ground.SoundSettings.Footstep,  _footstepAudioSource.clip, gameObject, multiplier));
         }
 
     #if PLAYERCONTROLLER_INERTIA

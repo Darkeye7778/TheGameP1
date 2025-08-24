@@ -10,19 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8974ddba423e2243a1423f9be2b9394, type: 3}
-  m_Name: ConcreteSoundProfile
+  m_Name: Concrete
   m_EditorClassIdentifier: 
   Footstep:
     Sounds:
-    - {fileID: 8300000, guid: 91d1231bdaba315439bc4629582ba00d, type: 3}
+    - {fileID: 8300000, guid: 5f782f0f50f1a0845b0e6cb706ea04f7, type: 3}
+    - {fileID: 8300000, guid: eab7a427766c0ab48b0d5ceedc0c1abd, type: 3}
+    - {fileID: 8300000, guid: 2876901fd1eab324ca66e12199375006, type: 3}
+    - {fileID: 8300000, guid: aa813a802f3786b4cbe2f4b6ffabd171, type: 3}
     Radius: 2
     Length: 0.1
     Priority: 0
+    Volume: 3
   HeavyFootstep:
     Sounds: []
     Radius: 1
     Length: 0
     Priority: 0
+    Volume: 1
   HitEffect: {fileID: 100002, guid: 556d09d7fda29fd4185eed4067d5777b, type: 3}
   BulletHitSound:
     Sounds:
@@ -31,5 +36,6 @@ MonoBehaviour:
     Radius: 1
     Length: 0
     Priority: 0
+    Volume: 1
   BulletHoles:
   - {fileID: 8040445156451260176, guid: e214af456f7e4854492f169018a8e018, type: 3}

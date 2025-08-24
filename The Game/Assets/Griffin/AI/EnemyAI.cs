@@ -66,10 +66,11 @@ public abstract class AIState : MonoBehaviour
     {
         Controller = controller;
     }
-    
     public abstract void OnUpdate();
     public virtual bool OverriddenByEnemy() { return true; }
     public virtual bool OverriddenByInvestigate() { return OverriddenByEnemy(); }
+    public virtual void OnExit(AIState nextState) { }
+    public virtual void OnDeath() { }
     public EnemyAI Controller { get; private set; }
 }
 
@@ -188,6 +189,8 @@ public class EnemyAI : Inventory, IDamagable
             AIState oldState = CurrentState;
             
             CurrentState = _newState;
+            if(oldState != null)
+                oldState.OnExit(CurrentState);
             CurrentState.OnStart(this, oldState);
             _newState = null;
         }
@@ -259,6 +262,7 @@ public class EnemyAI : Inventory, IDamagable
         if (_moving && _footstepOffset >= FootstepOffset)
         {
             _footstepAudioSource.clip = _ground.SoundSettings.Footstep.PickSound();
+            _footstepAudioSource.volume = _ground.SoundSettings.Footstep.Volume;
             _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
             
@@ -283,6 +287,8 @@ public class EnemyAI : Inventory, IDamagable
 
         if (!IsDead || wasDead)
             return;
+        
+        CurrentState.OnDeath();
 
         Agent.enabled = false;
         Animator.SetTrigger("Death");
