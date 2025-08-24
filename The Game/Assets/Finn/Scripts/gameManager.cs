@@ -221,13 +221,24 @@ public class gameManager : MonoBehaviour
         statePause();
     }
     void LoadLoadouts()
-    {
+    {    
+        List<Loadout> alreadyLoaded = new List<Loadout>();
+
         foreach (LoadoutLoader loader in loadoutLoaders)
         {
-            loader.gameObject.SetActive(true);
-            
-            loader.Load(loadouts[Random.Range(0, loadouts.Length)]);
+            Loadout L;
+
+            // Keep rolling until we find one that's not taken
+            do
+            {
+                L = loadouts[Random.Range(0, loadouts.Length)];
+            }
+            while (alreadyLoaded.Exists(x => x.name == L.name));
+
+            loader.Load(L);
+            alreadyLoaded.Add(L);
         }
+
         statePause();
     }
     public void stateUnpause()
