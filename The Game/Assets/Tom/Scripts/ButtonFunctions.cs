@@ -63,7 +63,16 @@ public void Restart()
         inv.SetCurrentWeapon(inv.Primary);
         player.ResetState();
     }
-    
+
+    public void LoadHub()
+    {
+        SceneManager.LoadScene("Hub");
+    }
+
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene("Start Menu");
+    }
     public void Quit()
     {
 #if UNITY_EDITOR
