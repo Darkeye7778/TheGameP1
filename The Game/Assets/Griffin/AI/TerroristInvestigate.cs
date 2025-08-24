@@ -11,6 +11,11 @@ public class TerroristInvestigate : AIInvestigateState
         Target = position;
     }
 
+    public override bool OverriddenByInvestigate()
+    {
+        return false;
+    }
+
     public override void OnStart(EnemyAI controller, AIState previousState)
     {
         base.OnStart(controller, previousState);
