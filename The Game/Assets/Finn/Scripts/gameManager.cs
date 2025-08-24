@@ -197,7 +197,7 @@ public class gameManager : MonoBehaviour
         if (!PlayerReady) return;                   
         if (playerScript.IsDead && !loseMenuUp)
         {
-            Debug.LogError($"[Lose] Player died. Health={playerScript.Health}, Max={playerScript.MaximumHealth}");
+            
             loseMenuUp = true;
             youLose();
         }
@@ -225,6 +225,7 @@ public class gameManager : MonoBehaviour
         foreach (LoadoutLoader loader in loadoutLoaders)
         {
             loader.gameObject.SetActive(true);
+            
             loader.Load(loadouts[Random.Range(0, loadouts.Length)]);
         }
         statePause();
@@ -329,7 +330,6 @@ public class gameManager : MonoBehaviour
     }
     public void youLose()
     {
-        Debug.LogError($"[Lose] Player died. Health={playerScript.Health}, Max={playerScript.MaximumHealth}");
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);

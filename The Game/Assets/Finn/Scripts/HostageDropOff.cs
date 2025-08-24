@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class HostageDropOff : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class HostageDropOff : MonoBehaviour
             isPlayerInside = true;
 
             int hostages = gameManager.instance.gameHostageSaved;
-
+            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Level1")) PlayerPrefs.SetInt("OfficeStats", PlayerPrefs.GetInt("OfficeStats") + hostages);
             if (hostages >= 1)
             {
                 if(hostages != 1)
@@ -33,7 +34,9 @@ public class HostageDropOff : MonoBehaviour
                     helicopterSprite,
                     "Ground Control",
                     noHostagesMessage);
+                
                 Debug.Log("No Hostages, Go Go GO!");
+                
             }
         }
     }
