@@ -18,7 +18,7 @@ public class GrenadierFollowEnemy : AIState
 
     public override bool OverriddenByEnemy()
     {
-        return !Controller?.Sight.CanSee() ?? false;
+        return Controller.Target != null;
     }
 
     public override void OnStart(EnemyAI controller, AIState previousState)
