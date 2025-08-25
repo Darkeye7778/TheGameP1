@@ -40,6 +40,9 @@ public class SoundListener : MonoBehaviour
     
     void Start()
     {
+        CurrentSoundInstance = null;
+        _previousSoundInstance = null;
+        
         SoundManager.Instance.AddListener(this);
     }
 

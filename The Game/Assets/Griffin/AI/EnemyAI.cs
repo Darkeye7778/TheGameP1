@@ -265,8 +265,6 @@ public class EnemyAI : Inventory, IDamagable
             _footstepAudioSource.volume = _ground.SoundSettings.Footstep.Volume;
             _footstepAudioSource.Play();
             _footstepOffset %= FootstepOffset;
-            
-            SoundManager.Instance.EmitSound(new SoundInstance(_ground.SoundSettings.Footstep, _footstepAudioSource.clip, gameObject));
         }
     }
 
