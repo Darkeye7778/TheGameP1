@@ -202,6 +202,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Grenadier
       objectReference: {fileID: 0}
+    - target: {fileID: 5895823701910046623, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: m_Speed
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3220675043529310407, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
     m_RemovedGameObjects: []
@@ -237,6 +241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Eye>k__BackingField: {fileID: 3842340018710668585}
+  <SuicideDistance>k__BackingField: 3
   <SpottedSound>k__BackingField:
     Sounds:
     - {fileID: 8300000, guid: cc4bbf68ee08fad4ea1f6df3afd94857, type: 3}
@@ -255,8 +260,8 @@ MonoBehaviour:
   <BombSoundEmitter>k__BackingField: {fileID: 1892471826160010219}
   ExplosionDamage: 10
   ExplosionRadius: 6
-  ExplosionMinRadius: 3
-  FollowingDistance: 2.5
+  ExplosionMinRadius: 2
+  StoppingDistance: 0
   FaceSpeed: 3.5
 --- !u!4 &3842340018710668585 stripped
 Transform:

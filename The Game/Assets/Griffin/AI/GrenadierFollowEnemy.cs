@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 public class GrenadierFollowEnemy : AIState
 {
     [field: SerializeField] public Transform Eye { get; private set; }
-    
+    [field: SerializeField] public float SuicideDistance { get; set; }
     [field: SerializeField] public Sound SpottedSound { get; private set; }
     [field: SerializeField] public Sound ExplosionSound { get; private set; }
     [field: SerializeField] public AudioSource BombSoundEmitter { get; private set; }
@@ -54,8 +54,8 @@ public class GrenadierFollowEnemy : AIState
             Quaternion targetRotation = Quaternion.LookRotation(offset, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * FaceSpeed);
 
-            bool nearPlayer = Vector3.Distance(transform.position, Controller.Target.GameObject().transform.position) < StoppingDistance;
-            if(nearPlayer && Controller.Agent.remainingDistance <= StoppingDistance)
+            bool nearPlayer = Vector3.Distance(transform.position, Controller.Target.GameObject().transform.position) < SuicideDistance;
+            if(nearPlayer)
                 Explode();
         }
     }
@@ -72,6 +72,8 @@ public class GrenadierFollowEnemy : AIState
             dmg.OnTakeDamage(new DamageSource("Suicide Bomber", gameObject), damage);
         }
 
+        BombSoundEmitter.Pause();
+        
         AudioClip clip = ExplosionSound.PickSound();
         AudioSource.PlayClipAtPoint(clip, transform.position);
         SoundManager.Instance.EmitSound(new SoundInstance(ExplosionSound, clip, Controller.Target.GameObject()));
