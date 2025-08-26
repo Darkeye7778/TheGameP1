@@ -1,1 +1,1 @@
-Scripts in this directory contain code written by both me and my teammates.
+Scripts in this directory contain code written primarily by myself and minor changes by teammates.
