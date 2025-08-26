@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GrenadierFollowEnemy : AIState
 {
@@ -13,7 +14,7 @@ public class GrenadierFollowEnemy : AIState
     public float ExplosionDamage;
     public float ExplosionRadius;
     public float ExplosionMinRadius;
-    public float FollowingDistance = 2;
+    [FormerlySerializedAs("FollowingDistance")] public float StoppingDistance = 2;
     public float FaceSpeed = 5;
 
     public override bool OverriddenByEnemy()
@@ -35,7 +36,7 @@ public class GrenadierFollowEnemy : AIState
 
     public override void OnUpdate()
     {
-        Controller.Agent.stoppingDistance = FollowingDistance;
+        Controller.Agent.stoppingDistance = StoppingDistance;
         
         if(Controller.Target == null)
         {
@@ -53,7 +54,8 @@ public class GrenadierFollowEnemy : AIState
             Quaternion targetRotation = Quaternion.LookRotation(offset, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * FaceSpeed);
 
-            if(Vector3.Distance(transform.position, Controller.Target.AimTarget()) < FollowingDistance * 1.1f)
+            bool nearPlayer = Vector3.Distance(transform.position, Controller.Target.GameObject().transform.position) < StoppingDistance;
+            if(nearPlayer && Controller.Agent.remainingDistance <= StoppingDistance)
                 Explode();
         }
     }

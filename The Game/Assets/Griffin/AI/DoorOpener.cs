@@ -2,12 +2,11 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem.XR;
 
-
-public class OpenDoorThought : AIThought<EnemyAI>
+public class OpenDoorThought : AIThought<DoorOpener>
 {
     public Doors Door;
     
-    public override void Think(EnemyAI t)
+    public override void Think(DoorOpener t)
     {
         Door.OnInteract(t.gameObject);
     }
@@ -23,30 +22,26 @@ public class OpenDoorThought : AIThought<EnemyAI>
 public class DoorOpener : MonoBehaviour
 {
     public float OpeningRadius = 1;
+    public Transform Eye;
+    
     public LayerMask DoorMask;
-    
 
-    private EnemyAI _controller;
-    
-    void Start()
-    {
-        _controller = GetComponent<EnemyAI>(); 
-    }
+    private AIThoughtQueue<DoorOpener> _thoughts = new AIThoughtQueue<DoorOpener>();
     
     void Update()
     {
-        // Center of enemy collider
-        Vector3 center = transform.position + _controller.Agent.height * 0.5f * Vector3.up;
-        if (!Physics.Raycast(center, transform.forward, out RaycastHit hit, OpeningRadius, DoorMask))
+        _thoughts.OnUpdate(this);
+        
+        if (!Physics.Raycast(Eye.position, Eye.forward, out RaycastHit hit, OpeningRadius, DoorMask))
             return;
-
-        if (!hit.collider.TryGetComponent(out Doors door))
+        
+        if (!hit.transform.TryGetComponent(out Doors door))
             return;
-
+        
         if (door.IsOpen)
             return;
 
-        _controller.Thoughts.Push(new OpenDoorThought
+        _thoughts.Push(new OpenDoorThought
         {
             MinTime = 0.4f,
             MaxTime = 0.5f,

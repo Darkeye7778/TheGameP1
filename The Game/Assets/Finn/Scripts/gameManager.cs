@@ -215,6 +215,9 @@ public class gameManager : MonoBehaviour
 
     public void ShowLoadouts()
     {
+        if (!loadoutsScreen)
+            return;
+        
         menuActive = loadoutsScreen;
         menuActive.SetActive(true);
         LoadLoadouts();

@@ -117,7 +117,7 @@ public class Inventory : MonoBehaviour
         
         InputShoot();
         
-        Debug.DrawRay(Eye.position, Eye.forward * CurrentWeapon.Weapon.MaxRange, Color.red);
+        // Debug.DrawRay(Eye.position, Eye.forward * CurrentWeapon.Weapon.MaxRange, Color.red);
     }
     
     void InputUsePrimary()

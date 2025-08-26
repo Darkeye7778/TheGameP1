@@ -197,7 +197,7 @@ public class EnemyAI : Inventory, IDamagable
         CurrentState.OnUpdate();
 
         IDamagable target = Sight.FindTarget(this);
-        if(Target != null && (!CurrentState || CurrentState.OverriddenByEnemy()))
+        if(Target != null && Sight.CanSee() && (!CurrentState || CurrentState.OverriddenByEnemy()))
             SetState(EnemySpottedState);
 
         if (_listener && _listener.SoundChanged && CurrentState.OverriddenByInvestigate())
@@ -249,7 +249,7 @@ public class EnemyAI : Inventory, IDamagable
     private void GetFootsteps()
     {
         _ground = GroundState.GetGround(transform.position, 0.1f, GroundMask);
-        
+            
         _standingTimer += Time.deltaTime;
         if (_moving)
             _standingTimer = 0.0f;

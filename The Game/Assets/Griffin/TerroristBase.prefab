@@ -437,7 +437,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9d61d3d80887e64bbf0812927675616, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OpeningRadius: 2
+  OpeningRadius: 2.5
+  Eye: {fileID: 2114098535556427591}
   DoorMask:
     serializedVersion: 2
     m_Bits: 512
@@ -456,19 +457,6 @@ MonoBehaviour:
   <Mask>k__BackingField:
     serializedVersion: 2
     m_Bits: 64
-  <CurrentSoundInstance>k__BackingField:
-    Sound:
-      Sounds: []
-      Radius: 1
-      Length: 0
-      Priority: 0
-      Volume: 1
-    Layer: 0
-    Emitter: {fileID: 0}
-    Position: {x: 0, y: 0, z: 0}
-    Clip: {fileID: 0}
-    Timer: 0
-    RadiusMultiplier: 0
   <HearingStrength>k__BackingField: 1
 --- !u!1 &1331130318462639793
 GameObject:

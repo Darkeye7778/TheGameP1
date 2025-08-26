@@ -4,16 +4,22 @@ using UnityEngine;
 public class SoundListener : MonoBehaviour
 {
     [field: SerializeField] public LayerMask Mask { get; private set; }
-    [field: SerializeField] public SoundInstance CurrentSoundInstance { get; private set; }
+
+    public SoundInstance CurrentSoundInstance => _currentSoundInstance;
+    
+    private SoundInstance _currentSoundInstance;
     public float CurrentSoundDistance { get; private set; }
     [field: SerializeField] public float HearingStrength { get; private set; } = 1;
 
-    public bool SoundChanged => _previousSoundInstance != CurrentSoundInstance && CurrentSoundInstance != null;
+    public bool SoundChanged => _previousSoundInstance != _currentSoundInstance && _currentSoundInstance != null;
 
     private SoundInstance _previousSoundInstance;
 
     public void ReceiveSound(SoundInstance soundInstance)
     {
+        if (soundInstance == null)
+            return;
+        
         if (Mask != 0 && ((1 << soundInstance.Layer) & Mask) == 0)
             return;
         
@@ -21,26 +27,26 @@ public class SoundListener : MonoBehaviour
         if (distance > soundInstance.Radius * HearingStrength)
             return;
         
-        if(CurrentSoundInstance != null)
+        if(_currentSoundInstance != null)
         {
-            if (soundInstance.Priority <= CurrentSoundInstance.Priority && distance >= CurrentSoundDistance)
+            if (soundInstance.Priority <= _currentSoundInstance.Priority && distance >= CurrentSoundDistance)
                 return;
         }
         
-        CurrentSoundInstance = soundInstance;
+        _currentSoundInstance = soundInstance;
         CurrentSoundDistance = distance;
     }
 
     public void ResetSound()
     {
-        _previousSoundInstance = CurrentSoundInstance;
-        CurrentSoundInstance = null;
+        _previousSoundInstance = _currentSoundInstance;
+        _currentSoundInstance = null;
         CurrentSoundDistance = 0;
     }
     
     void Start()
     {
-        CurrentSoundInstance = null;
+        _currentSoundInstance = null;
         _previousSoundInstance = null;
         
         SoundManager.Instance.AddListener(this);

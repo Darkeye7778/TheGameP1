@@ -49,6 +49,9 @@ public void Restart()
     
     public void SetLoadout(Loadout loadout)
     {
+        if (loadout == null)
+            return;
+        
         gameManager.instance.LastLoadout = loadout;
         gameManager.instance.stateUnpause();
         PlayerInventory inv = gameManager.instance.inventoryScript;
