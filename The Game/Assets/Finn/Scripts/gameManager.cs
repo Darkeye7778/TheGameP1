@@ -121,21 +121,43 @@ public class gameManager : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetButtonDown("Cancel"))
+        if (Application.platform != RuntimePlatform.WebGLPlayer)
         {
-            if (menuActive == null)
+            if (Input.GetButtonDown("Cancel"))
             {
-                statePause(); 
-                menuActive = menuPause; 
-                menuActive.SetActive(true);
+                if (menuActive == null)
+                {
+                    statePause(); 
+                    menuActive = menuPause; 
+                    menuActive.SetActive(true);
                 
-            }
-            else if (menuActive == menuPause)
-            {
-                stateUnpause();
+                }
+                else if (menuActive == menuPause)
+                {
+                    stateUnpause();
                 
+                }
             }
         }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                if (menuActive == null)
+                {
+                    statePause(); 
+                    menuActive = menuPause; 
+                    menuActive.SetActive(true);
+                
+                }
+                else if (menuActive == menuPause)
+                {
+                    stateUnpause();
+                
+                }
+            }
+        }
+        
 
         if(PickedUpHostageCountTxt)
             PickedUpHostageCountTxt.text = gameHostageSaved.ToString();

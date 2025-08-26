@@ -150,10 +150,6 @@ public class PlayerController : MonoBehaviour, IDamagable
     
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            gameManager.instance.ShowLoadouts();
-        }
         if (Time.timeScale == 0.0f)
             return;
 
