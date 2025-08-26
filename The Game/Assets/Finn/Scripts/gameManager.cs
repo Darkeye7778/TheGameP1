@@ -31,6 +31,7 @@ public class gameManager : MonoBehaviour
     public int gameHostageSaved;
     [SerializeField] public TextMeshProUGUI TimerTxt;
     [SerializeField] public TextMeshProUGUI HostageTxt;
+    [SerializeField] public TextMeshProUGUI PickedUpHostageCountTxt;
     [SerializeField] TextMeshProUGUI GunName;
     [SerializeField] TextMeshProUGUI CurrentAmmoTxt;
     [SerializeField] TextMeshProUGUI GunModeTxt;
@@ -135,6 +136,9 @@ public class gameManager : MonoBehaviour
                 
             }
         }
+
+        if(PickedUpHostageCountTxt)
+            PickedUpHostageCountTxt.text = gameHostageSaved.ToString();
 
         
         Timer -= Time.deltaTime;

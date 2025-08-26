@@ -143,6 +143,9 @@ public class PlayerController : MonoBehaviour, IDamagable
         _inventory = GetComponent<PlayerInventory>();
         //_cameraOrigin = Camera.transform.localPosition;
         _previousPosition = transform.position;
+
+        transform.position += (StandingHeight - _controller.height) * Vector3.up;
+        _controller.height = StandingHeight;
     }
     
     void Update()
