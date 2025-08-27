@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -68,6 +69,25 @@ public class gameManager : MonoBehaviour
     playerScript != null && inventoryScript != null;
 
     private bool _thresholdPassed = false;
+
+    public int levelNum;
+
+    public void SetLevel(string level)
+    {
+        if(level == "Hub")
+        {
+            levelNum = 0;
+        }
+        else if(level == "Office")
+        {
+            levelNum = 1;
+        }
+        else
+        {
+            return;
+        }
+    }
+
     void Awake()
     {
         menuActive = null;
@@ -162,8 +182,14 @@ public class gameManager : MonoBehaviour
         if(PickedUpHostageCountTxt)
             PickedUpHostageCountTxt.text = gameHostageSaved.ToString();
 
-        
-        Timer -= Time.deltaTime;
+        if (levelNum > 0)
+        {
+            Timer -= Time.deltaTime;
+        }
+        else
+        {
+            Timer = Timer;
+        }
         if (TimerTxt) TimerTxt.text = $"{(int)Timer / 60:00}:{(int)Timer % 60:00}";
         if (Timer <= timerFlashThreshold)
         {

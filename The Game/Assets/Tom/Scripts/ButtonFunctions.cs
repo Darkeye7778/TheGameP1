@@ -17,6 +17,7 @@ public class ButtonFunctions : MonoBehaviour
 
     public void Respawn()
     {
+        gameManager.instance.updateHostagesSaved(-(gameManager.instance.gameHostageSaved));
         gameManager.instance.stateUnpause();
         MapGenerator.Instance.GenerateSame();
         gameManager.instance.ResetLoseMenu();
