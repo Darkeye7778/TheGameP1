@@ -141,7 +141,6 @@ public class TerroristSight : AISight
             }
             else
             {
-                Debug.LogWarning("damagable is null");
                 break;
             }
         }

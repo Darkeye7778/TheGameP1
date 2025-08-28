@@ -138,6 +138,10 @@ public class EnemyAI : Inventory, IDamagable
     public AIState CurrentState { get; private set; }
     [CanBeNull] private AIState _newState;
 
+    [SerializeField] GameObject[] Drops;
+    [SerializeField] float[] DropWeights;
+    public int dropRate;
+
     public InputState InputFlags
     {
         get => base.InputFlags;
@@ -290,6 +294,16 @@ public class EnemyAI : Inventory, IDamagable
         if (!IsDead || wasDead)
             return;
 
+        int dropItem = Random.Range(0, 100);
+        if (dropItem < dropRate)
+        {
+            int itemToDrop = GetWeightedDropIndex(DropWeights);
+            Vector3 spawnPos = Eye ? Eye.position : transform.position;
+            GameObject drop = Instantiate(Drops[itemToDrop], spawnPos, Quaternion.identity);
+            if (gameManager.instance != null)
+                gameManager.instance.RegisterEntity(drop);
+        }
+
         CurrentState.OnDeath();
 
         Agent.enabled = false;
@@ -303,6 +317,24 @@ public class EnemyAI : Inventory, IDamagable
         IK.LookAtWeight = IK.LeftGripWeight = IK.RightGripWeight = 0;
 
         DestroyAllModels();
+    }
+
+    int GetWeightedDropIndex(float[] weights)
+    {
+        float totalWeight = 0f;
+        for (int i = 0; i < weights.Length; i++)
+            totalWeight += weights[i];
+
+        float randomWeight = Random.Range(0f, totalWeight);
+
+        for (int i = 0; i < weights.Length; i++)
+        {
+            if (randomWeight < weights[i])
+                return i;
+            randomWeight -= weights[i];
+        }
+
+        return weights.Length - 1; // fallback in case of rounding
     }
 
     public GameObject GameObject()

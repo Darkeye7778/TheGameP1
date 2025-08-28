@@ -8,15 +8,26 @@ public class AmmoBox : MonoBehaviour, Interactable
     {
         inventory = GameObject.FindWithTag("Player").GetComponent<PlayerInventory>();
     }
+    
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            inventory.CurrentWeapon.ReserveAmmo = Math.Min(
+                inventory.CurrentWeapon.ReserveAmmo + ammoCount,
+                inventory.CurrentWeapon.Weapon.ReserveCapacity
+            );
+            Destroy(gameObject);
+        }
+    }
+
     public void OnInteract(GameObject interactor)
     {
-       
         inventory.CurrentWeapon.ReserveAmmo = Math.Min(
             inventory.CurrentWeapon.ReserveAmmo + ammoCount,
             inventory.CurrentWeapon.Weapon.ReserveCapacity
         );
         Destroy(gameObject);
     }
-
 
 }

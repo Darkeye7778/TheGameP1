@@ -49,9 +49,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: dropRate
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: Primary.Weapon
       value: 
       objectReference: {fileID: 11400000, guid: 86a8d4dae62a4d84f95283160549b771, type: 2}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: Drops.Array.size
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: EnemyMask.m_Bits
       value: 64
@@ -61,8 +69,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: eceeb88fb03e1b140b042496945c5f60, type: 2}
     - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: 'Drops.Array.data[0]'
+      value: 
+      objectReference: {fileID: 7981549162008834492, guid: 6ff9fc98a75b8224b9171102f5a0ce10, type: 3}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: 'Drops.Array.data[1]'
+      value: 
+      objectReference: {fileID: 5197083879131849205, guid: 0d6e8e4e30b9ae742bc021ae631d642c, type: 3}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: DropWeights.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: <Health>k__BackingField
       value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: 'DropWeights.Array.data[0]'
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: 'DropWeights.Array.data[1]'
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: <TargetMask>k__BackingField.m_Bits

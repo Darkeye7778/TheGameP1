@@ -7099,6 +7099,7 @@ GameObject:
   - component: {fileID: 2033247035089989488}
   - component: {fileID: 7054970248743840688}
   - component: {fileID: 5589792587382966646}
+  - component: {fileID: 4225079869747832823}
   m_Layer: 5
   m_Name: GameManager
   m_TagString: Untagged
@@ -7192,6 +7193,7 @@ MonoBehaviour:
   flashSpeed: 1
   StartingTime: 120
   helicopterSprite: {fileID: 21300000, guid: ae870bcdbfaed4d48842b78de6907525, type: 3}
+  levelNum: 0
 --- !u!114 &7054970248743840688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7306,6 +7308,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4225079869747832823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7544021542991888473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5e2eba6e145afe4c9c27064fbddd3ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadoutRoot: {fileID: 2313191884546953758}
+  firstSelected: {fileID: 2071569676999778179}
+  playerFreeze: {fileID: 0}
+  pauseWorld: 1
 --- !u!1 &7680269498550803296
 GameObject:
   m_ObjectHideFlags: 0
@@ -8980,12 +8998,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 879e03a030a7c0c4c98c1487fb93a583, type: 3}
+--- !u!1 &2071569676999778179 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6553753788843766018, guid: 879e03a030a7c0c4c98c1487fb93a583, type: 3}
+  m_PrefabInstance: {fileID: 5065474242388029057}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4171553699606823928 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9198734183233875321, guid: 879e03a030a7c0c4c98c1487fb93a583, type: 3}
   m_PrefabInstance: {fileID: 5065474242388029057}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2071569676999778179}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3647c7a7c38ae8e4bbda85019bc85528, type: 3}

@@ -16,5 +16,14 @@ public class HealthPickup : MonoBehaviour, Interactable
         Destroy(gameObject);
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            DamageSource dmg = new DamageSource("Health Pickup", gameObject);
+            player.OnTakeDamage(dmg, -healthAmount);
+            Destroy(gameObject);
+        }
+    }
 
 }

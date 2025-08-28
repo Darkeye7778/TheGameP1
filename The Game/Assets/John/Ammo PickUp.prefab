@@ -340,6 +340,7 @@ GameObject:
   - component: {fileID: 1120472691469924073}
   - component: {fileID: 4348754854292959449}
   - component: {fileID: 4303865039922675603}
+  - component: {fileID: 8925409965807153282}
   - component: {fileID: 212085690343385008}
   m_Layer: 0
   m_Name: Ammo PickUp
@@ -356,7 +357,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7981549162008834492}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.12525699, w: 0.9921244}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.307, y: 2.439, z: -13.205}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -406,12 +407,33 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2, y: 1, z: 1.02}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &8925409965807153282
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7981549162008834492}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.64558613, y: 0.40730914, z: 0.52}
-  m_Center: {x: 0.032792896, y: 0.03365461, z: 0}
+  m_Size: {x: 0.55, y: 0.35, z: 0.37}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &212085690343385008
 MonoBehaviour:
   m_ObjectHideFlags: 0
