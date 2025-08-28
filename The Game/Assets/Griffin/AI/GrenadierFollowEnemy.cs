@@ -25,8 +25,8 @@ public class GrenadierFollowEnemy : AIState
     public override void OnStart(EnemyAI controller, AIState previousState)
     {
         base.OnStart(controller, previousState);
-        
-        if(previousState == controller.WanderState)
+
+        if (previousState == controller.WanderState)
             Controller.AudioSource.PlayOneShot(SpottedSound.PickSound());
 
         BombSoundEmitter.pitch = 1.5f;
@@ -37,17 +37,17 @@ public class GrenadierFollowEnemy : AIState
     public override void OnUpdate()
     {
         Controller.Agent.stoppingDistance = StoppingDistance;
-        
-        if(Controller.Target == null)
+
+        if (Controller.Target == null)
         {
             Controller.SetState(Controller.WanderState);
             return;
         }
-        
+
         if (Controller.Sight.CanSee())
         {
             Controller.Agent.SetDestination(Controller.Target.GameObject().transform.position);
-            
+
             // Only rotate on z axis.
             Vector3 offset = Controller.Target.AimTarget() - Eye.position;
             offset.y = 0;
@@ -55,14 +55,16 @@ public class GrenadierFollowEnemy : AIState
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * FaceSpeed);
 
             bool nearPlayer = Vector3.Distance(transform.position, Controller.Target.GameObject().transform.position) < SuicideDistance;
-            if(nearPlayer)
+            if (nearPlayer)
                 Explode();
         }
     }
 
     private void Explode()
     {
-        List<IDamagable> inRadius = Explosion.GetObjectsInRadius(transform.position, ExplosionRadius, Controller.EnemyMask);
+        // Use Controller.TargetMask so only true opponents are damaged by the blast.
+        List<IDamagable> inRadius =
+            Explosion.GetObjectsInRadius(transform.position, ExplosionRadius, Controller.TargetMask);
 
         foreach (IDamagable dmg in inRadius)
         {
@@ -73,7 +75,7 @@ public class GrenadierFollowEnemy : AIState
         }
 
         BombSoundEmitter.Pause();
-        
+
         AudioClip clip = ExplosionSound.PickSound();
         AudioSource.PlayClipAtPoint(clip, transform.position);
         SoundManager.Instance.EmitSound(new SoundInstance(ExplosionSound, clip, Controller.Target.GameObject()));
@@ -84,7 +86,7 @@ public class GrenadierFollowEnemy : AIState
     public override void OnExit(AIState nextState)
     {
         BombSoundEmitter.pitch = 1f;
-        if(Controller.IsDead)
+        if (Controller.IsDead)
             BombSoundEmitter.Pause();
     }
 

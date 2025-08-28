@@ -70,6 +70,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     // Update is called once per frame 
     void Update()
     {
+        Debug.Log("why");
         _doorCooldown += Time.deltaTime;
 
         if (isBomber)
@@ -92,6 +93,7 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     void NormalUpdate()
     {
+        Debug.Log("why");
         anim.SetFloat("Speed", agent.velocity.magnitude);
 
         if (agent.remainingDistance < 0.01f)
@@ -105,6 +107,7 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     void BomberUpdate()
     {
+        Debug.Log("why");
         anim.SetFloat("Speed", agent.velocity.magnitude);
 
         switch (bomberState)
@@ -158,6 +161,7 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     void roamCheck()
     {
+        Debug.Log("why");
         if (roamTimer >= roamPauseTime && agent.remainingDistance < 0.01f)
         {
             roam();
@@ -165,6 +169,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     }
     void roam()
     {
+        Debug.Log("why");
         roamTimer = 0;
         agent.stoppingDistance = 0;
 
@@ -177,6 +182,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     }
     bool canSeePlayer()
     {
+        Debug.Log("why");
         playerDir = gameManager.instance.player.transform.position - headPos.position;
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
 
@@ -208,6 +214,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     }
     bool BomberCanSeePlayer()
     {
+        Debug.Log("why");
         Vector3 bomberDir = gameManager.instance.player.transform.position - headPos.position;
         float bomberAngleToPlayer = Vector3.Angle(bomberDir, transform.forward);
 
@@ -225,6 +232,7 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     void CheckDoor()
     {
+        Debug.Log("why");
         Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
 
         foreach (var collider in colliders)
@@ -240,11 +248,14 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     void faceTarget()
     {
+        Debug.Log("why");
         Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, transform.position.y, playerDir.z));
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
     }
+
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("why");
         if (other.CompareTag("Player"))
         {
             playerInTrigger = true;
@@ -257,6 +268,7 @@ public class enemyAI : MonoBehaviour, IDamagable
     }
     private void OnTriggerExit(Collider other)
     {
+        Debug.Log("why");
         if (other.CompareTag("Player"))
         {
             playerInTrigger = false;
@@ -265,6 +277,8 @@ public class enemyAI : MonoBehaviour, IDamagable
     }
     public void OnTakeDamage(DamageSource source, float amount)
     {
+        Debug.Log("why");
+        Debug.Log($"{source.Name}, {amount}");
         HP -= amount;
         if (HP <= 0)
         {
@@ -301,6 +315,7 @@ public class enemyAI : MonoBehaviour, IDamagable
 
     void shoot()
     {
+        Debug.Log("why");
         shootTimer = 0;
 
         Instantiate(bullet, shootPos.position, transform.rotation);

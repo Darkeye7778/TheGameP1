@@ -191,6 +191,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: aeca8b95596f30344abce9c7b87da1c5, type: 2}
     - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: EnemyMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: <Health>k__BackingField
       value: 450
       objectReference: {fileID: 0}
@@ -198,6 +202,18 @@ PrefabInstance:
       propertyPath: <EnemySpottedState>k__BackingField
       value: 
       objectReference: {fileID: 8215329433130740946}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: <TargetMask>k__BackingField.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: <BulletStopMask>k__BackingField.m_Bits
+      value: 4609
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: <VisionBlockMask>k__BackingField.m_Bits
+      value: 4609
+      objectReference: {fileID: 0}
     - target: {fileID: 372274556228281715, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: m_Name
       value: Grenadier
@@ -217,6 +233,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 372274556228281715, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8215329433130740946}
+    - targetCorrespondingSourceObject: {fileID: 372274556228281715, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3135292460529586774}
   m_SourcePrefab: {fileID: 100100000, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
 --- !u!4 &3088711550966633692 stripped
 Transform:
@@ -263,6 +282,19 @@ MonoBehaviour:
   ExplosionMinRadius: 2
   StoppingDistance: 0
   FaceSpeed: 3.5
+--- !u!114 &3135292460529586774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3255793799537946397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f41cf021643301c4b9dad5d149cc2dcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Faction: 1
 --- !u!4 &3842340018710668585 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2114098535556427591, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}

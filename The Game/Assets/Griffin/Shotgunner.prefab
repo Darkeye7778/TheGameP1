@@ -53,12 +53,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 5879e45a0b0fb2f4192281ab5edcec66, type: 2}
     - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: EnemyMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: Secondary.Weapon
       value: 
       objectReference: {fileID: 11400000, guid: eceeb88fb03e1b140b042496945c5f60, type: 2}
     - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: <Health>k__BackingField
       value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: <TargetMask>k__BackingField.m_Bits
+      value: 4609
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: <BulletStopMask>k__BackingField.m_Bits
+      value: 4609
+      objectReference: {fileID: 0}
+    - target: {fileID: 349382079055398505, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      propertyPath: <VisionBlockMask>k__BackingField.m_Bits
+      value: 4609
       objectReference: {fileID: 0}
     - target: {fileID: 372274556228281715, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
       propertyPath: m_Name
@@ -67,5 +83,26 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 372274556228281715, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 400536967080932563}
   m_SourcePrefab: {fileID: 100100000, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+--- !u!1 &8366635407453290980 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 372274556228281715, guid: 323c4c1e569798945bdfd9d798de1b13, type: 3}
+  m_PrefabInstance: {fileID: 8157944374719849623}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &400536967080932563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8366635407453290980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f41cf021643301c4b9dad5d149cc2dcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Faction: 1

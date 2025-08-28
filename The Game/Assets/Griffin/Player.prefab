@@ -729,6 +729,7 @@ GameObject:
   - component: {fileID: 5196501353832197646}
   - component: {fileID: 13453393890525378}
   - component: {fileID: 9121227361555790711}
+  - component: {fileID: 4165808858592305610}
   - component: {fileID: 2488708159466718120}
   m_Layer: 6
   m_Name: Player
@@ -888,7 +889,7 @@ MonoBehaviour:
     Mode: 0
   RecoilObj: {fileID: 3519763926224760780}
   UnequippedOffset: {x: 0, y: -0.5, z: 0}
-  _audioSource: {fileID: 5419380807865119046}
+  AudioSource: {fileID: 5419380807865119046}
   _emitsSound: 1
   HitMarkerClip: {fileID: 8300000, guid: 0e89a729e0746234db9127dff7d8bb4f, type: 3}
   HitMarkerVolume: 10
@@ -917,6 +918,19 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4165808858592305610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8678175753631285267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f41cf021643301c4b9dad5d149cc2dcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Faction: 0
 --- !u!114 &2488708159466718120
 MonoBehaviour:
   m_ObjectHideFlags: 0
