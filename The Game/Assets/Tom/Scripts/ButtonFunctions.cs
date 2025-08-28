@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 public class ButtonFunctions : MonoBehaviour
 {
@@ -76,6 +77,12 @@ public void Restart()
     public void LoadMainMenu()
     {
         SceneManager.LoadScene("Start Menu");
+    }
+
+    public void SetAudio(float volume)
+    {
+        AudioListener.volume = volume;
+        PlayerPrefs.SetFloat("VolumeSaver", volume);
     }
     public void Quit()
     {
